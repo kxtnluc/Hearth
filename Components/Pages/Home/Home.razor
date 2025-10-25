@@ -1,0 +1,115 @@
+﻿@using Hearth.Data
+@using Hearth.Models
+@using Microsoft.EntityFrameworkCore
+@using Hearth.Services
+@using Hearth.Parts
+@inject NavigationManager _navigation
+@inject HearthDbContext _dbContext
+@page "/"
+
+<div class="home-main">
+    @if (isLoggedIn)
+    {
+        // If user is logged in, show this page header instead.
+        <div class="h-header header-primary">Welcome Back, @loggedInUser.Name</div>
+    }
+    else
+    {
+        <div class="h-header header-primary">Welcome to the Hearth</div>
+    }
+
+    
+    <div class="login-container">
+        @if (!isLoggedIn)
+        {
+            //If user is NOT logged in, show the login screen
+            <div class="l-c">
+                <div class="l-c-name-container">
+                    <HearthInput Type="text" Label="Name" @bind-Value="@nameInput" TxtColor="white"/>
+                </div>
+                <div class="l-c-password-container">
+                    <HearthInput Type="text" Label="Pin" @bind-Value="@pinInput" TxtColor="white"/>
+                </div>
+                <div class="l-c-error">
+                    @if(loginError)
+                    {
+                        <span class="text-error">User not found, please try again.</span>
+                    }
+                </div>
+                <div class="btn-container">
+                    <HearthButton Label="Login" OnClick="Login" Icon="login" IconAfterLabel="true" />
+                </div>
+            </div>
+        }
+        else
+        {
+            // If user IS logged in, show the normal home page.
+            <HearthButton OnClick="Logout" Label="Logout" IconAfterLabel=true Icon="logout" />
+        }
+    </div>
+</div>
+
+@code{
+    // Variables ==========================================================================================
+    bool isLoggedIn = false;
+
+    private List<User> users;
+
+    private User loggedInUser = new User { };
+
+    private string nameInput;
+    private string pinInput;
+    private bool loginError = false;
+
+    // QolService qolService = new QolService();
+
+    // On Load
+     
+     
+    protected override async Task OnInitializedAsync()
+    {
+        // Fetch Session Data
+        isLoggedIn = await QolService.IsUserLoggedIn();
+        loggedInUser = await QolService.GetActiveUserData();
+    }
+
+
+    // Functions ==========================================================================================
+    private async Task Login()
+    {
+        var foundUser = await _dbContext.Users.SingleOrDefaultAsync(fu => fu.Name == nameInput && fu.Pin == pinInput);
+
+        if(foundUser == null)
+        {
+            loginError = true;
+            return;
+        }
+
+        // Generate a session token here
+        var sessionToken = SessionService.GenerateSessionToken(foundUser);
+
+        // Store a session token or timestamp here
+        await SecureStorage.SetAsync("session_token", sessionToken);
+
+        // Navigate to main page
+        _navigation.NavigateTo("/", forceLoad: true);
+    }
+
+    private Task Logout()
+    {
+        SecureStorage.Remove("session_token");
+        _navigation.NavigateTo("/", forceLoad: true);
+        return Task.CompletedTask;
+    }
+
+    private async void CheckDb()
+    {
+        var tableExists = await _dbContext.Database.ExecuteSqlRawAsync("SELECT * FROM Users;");
+        if (tableExists == 0)
+        {
+            throw new Exception("Users table does not exist.");
+        }
+    }
+
+
+}

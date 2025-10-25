@@ -1,0 +1,41 @@
+.table {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    width: 100%;
+/*    background-color: red;*/
+}
+
+.row {
+    display: flex;
+    align-items: center;
+    width: 100%;
+/*    background-color: green;*/
+}
+
+.bar-label {
+    width: 150px;
+    font-weight: 600;
+}
+
+.bar-container {
+    overflow: hidden;
+    height: 24px;
+    width: 75rem;
+    border-radius: 5px;
+    padding-right: 1rem;
+    margin-left: 1rem;
+}
+
+.bar {
+    border-radius: 5px;
+    background: var(--info-color);
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 5px;
+    color: white;
+    font-size: 0.8rem;
+    transition: width 0.3s ease-in-out;
+}

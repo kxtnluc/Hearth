@@ -1,0 +1,214 @@
+.r-main {
+    /*    border: 5px red solid;*/
+    margin-bottom: 2rem;
+    max-width: 100%;
+}
+
+.r-h-header {
+    float: left;
+}
+
+.r-h-time-filters {
+    /*    border: 1px red solid;*/
+    display: flex;
+    justify-content: right;
+    flex-flow: row nowrap;
+    height: 3.83rem;
+    align-items: center;
+}
+
+.r-pf-footer {
+    /*    border: 1px red solid;*/
+    display: flex;
+    justify-content: space-between;
+}
+
+.r-pf-btn {
+    all: unset;
+    align-items: center;
+    /*    border: 2px solid black;*/
+    margin-right: 5px;
+    margin-left: 5px;
+    cursor: pointer;
+}
+
+.r-h-tf-select-month {
+    align-self: center;
+}
+
+.r-h-tf-select-year {
+    align-self: center;
+    margin-right: 1rem;
+}
+
+.r-body {
+    list-style: none;
+    padding-left: 0;
+    width: 100%;
+}
+
+/* section one */
+.r-section-one {
+    display: flex;
+    justify-content: center;
+}
+
+.r-s-o-summary {
+/*        border: red 2px dashed;*/
+    align-self: center;
+    text-align: center;
+}
+
+.r-s-o-s-percents {
+    display: flex;
+    justify-content: space-around;
+}
+
+.comp-container {
+/*        border: solid, black, 1px;*/
+    display: flex;
+    justify-content: space-between;
+    width: 8vw;
+}
+
+.icon-container-good {
+    color: var(--success-color);
+    margin-right: 0.5rem;
+}
+
+.icon-container-bad {
+    color: var(--error-color);
+    margin-right: 0.5rem;
+}
+
+.value-container {
+/*        border: 1px, solid, black;*/
+    margin-left: 0.5rem;
+    text-align: left;
+    width: 5vw;
+    align-self: center;
+}
+
+.percent-value {
+}
+
+.num-value {
+}
+
+.r-s-o-graph {
+/*    border: 5px red dashed;*/
+    width: 25vw;
+    align-self: center;
+}
+
+
+
+.r-s-o-s-profit {
+    color: var(--success-color);
+    font-size: var(--font-size-l);
+    font-weight: var(--font-weight-l);
+}
+
+.r-s-o-s-text-net {
+    color: var(--success-color);
+    font-weight: var(--font-weight-m);
+    font-size: var(--font-size-s);
+}
+
+
+.r-s-o-s-expenses-and-profit {
+    /*    border: 1px solid black;*/
+    display: flex;
+    justify-content: space-between;
+}
+
+.r-s-o-s-expenses {
+}
+
+.r-s-o-s-expenses-text {
+    color: var(--error-color);
+    font-weight: var(--font-weight-m);
+    font-size: var(--font-size-s);
+}
+
+.r-s-o-s-expenses-number {
+}
+
+.r-s-o-s-income-text {
+    font-weight: var(--font-weight-m);
+    font-size: var(--font-size-s);
+}
+
+
+
+.r-s-o-s-expenses {
+    color: var(--error-color);
+}
+
+.r-s-o-s-income-number, .r-s-o-s-expenses-number {
+    background-color: var(--background-color-light);
+    border: 3px, solid, var(--primary-color-light-op);
+    border-radius: 10px;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    margin-bottom: 0.5rem;
+    margin-left: 1rem;
+    margin-right: 1rem;
+    font-size: var(--font-size-m);
+    width: 15vw;
+}
+
+
+.r-s-o-averages {
+    /*    border: red 2px dashed;*/
+    width: 15%;
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+    margin-right: 1vw;
+}
+
+.r-s-o-a-dates {
+    text-align: center;
+    font-size: var(--font-size-s);
+    font-weight: var(--font-weight-l);
+}
+
+
+.r-s-o-a-ul {
+    width: 100%;
+    font-size: var(--font-size-s);
+    list-style: none;
+}
+
+.r-s-o-a-li {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    height: 2vw;
+    border: 2px, dashed, var(--primary-color-light);
+    border-radius: 2px;
+    padding-top: 1.5vw;
+    padding-bottom: 1.5vw;
+}
+
+.li-label {
+    align-self: center;
+    padding-left: 0.5vw;
+}
+
+.li-value {
+    align-self: center;
+    padding-right: 0.5vw;
+    font-weight: var(--font-weight-l);
+}
+
+/* ----------------- SECTION TWO ----------------- */
+
+.r-section-two {
+    margin-top: 1rem;
+}
+
+.r-s-t-header {
+    margin-bottom: 1rem;
+}

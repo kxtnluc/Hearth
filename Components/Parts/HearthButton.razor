@@ -1,0 +1,61 @@
+﻿@namespace Hearth.Parts
+@using Hearth.Icons
+
+<div class="container">
+    <button class="button bg-color-@BgColor txt-color-@TxtColor" @onclick="OnClick">
+        @if (string.IsNullOrEmpty(Icon))
+        {
+            <div>
+                @Label
+            </div>
+        }
+        else
+        {
+            <div class="icon-label-container">
+                @if(IconAfterLabel == true && !string.IsNullOrEmpty(Label))
+                {
+                    <div class="label-after">
+                        @Label
+                    </div>
+                }
+                <div class="icon">
+                    @if (Icon == "plus")
+                    {
+                        <IconPlusLarge Size="20" />
+                    }
+                    else if (Icon == "login")
+                    {
+                        <IconLogin Size="20" />
+                    }
+                    else if (Icon == "logout")
+                    {
+                        <IconLogout Size="20" />
+                    }
+                    else if (Icon == "edit")
+                    {
+                        <IconPencil Size="20" />
+                    }
+                    else if (Icon == "link")
+                    {
+						<IconLink Size="20" />
+                    }
+                </div>
+                @if (IconAfterLabel == false && !string.IsNullOrEmpty(Label))
+                {
+                    <div class="label-before">
+                        @Label
+                    </div>
+                }
+            </div>
+        }
+    </button>
+</div>
+
+@code {
+    [Parameter] public string Label { get; set; } = "";
+    [Parameter] public EventCallback OnClick { get; set; }
+    [Parameter] public string BgColor { get; set; } = "blue";
+    [Parameter] public string TxtColor { get; set; } = "white";
+    [Parameter] public string Icon { get; set; } = "";
+    [Parameter] public bool IconAfterLabel { get; set; } = false;
+}

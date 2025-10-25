@@ -1,0 +1,55 @@
+.container {
+}
+
+.input {
+    font-size: 1.25vw;
+    width: 95%;
+    height: 2.5rem;
+    outline: none;
+    padding-left: 0.5rem;
+    transition: 175ms;
+
+}
+
+.input-border-True {
+    border: 3px solid var(--primary-color-light);
+    border-radius: 10px;
+}
+
+.input-border-False {
+/*    background-color: red;*/
+    border: 3px solid var(--text-color-dim);
+    border-radius: 10px;
+    margin: 0;
+}
+
+
+
+.input-size-primary {
+    font-size: 38px;
+    font-weight: 600;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
+.input-size-secondary {
+    font-weight: 600;
+}
+
+.input:focus {
+    border: 3px solid var(--info-color);
+    transition: 175ms;
+}
+
+.label {
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.txt-black {
+    color: var(--primary-color-light);
+}
+
+.txt-white {
+    color: var(--text-color-dim);
+}

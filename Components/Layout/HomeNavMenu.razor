@@ -1,0 +1,55 @@
+﻿@using Hearth.Icons
+
+<div class="n-body">
+    <a class="n-top-row" href="">
+        <div class="n-brand-icon"><IconFlame Size=30 /></div>
+        <div class="n-brand-text">Hearth</div>
+    </a>
+    <nav class="n-b-column">
+
+        <NavLink class="n-link" href="" @onclick="@(() => HandleSetPage("home"))">
+            <div class="n-li @(currentPage == "home" ? "n-active" : "n-inactive")">
+                <span class="n-icon"><IconHome Size=24 /></span>
+                <span class="n-text">Home</span>
+            </div>
+        </NavLink>
+        <NavLink class="n-link" href="debugroom" @onclick="@(() => HandleSetPage("debugroom"))">
+            <div class="n-li @(currentPage == "debugroom" ? "n-active" : "n-inactive")">
+                <span class="n-icon"><IconBug Size=24 /></span>
+                <span class="n-text">Debug Room</span>
+            </div>
+        </NavLink>
+    </nav>
+
+    <div class="n-bottom-row">
+        <button class="n-sync-button">
+            <div class="btn-text">Reminder</div>
+            <div class="btn-icon"><IconBookmark Size=34 /></div>
+        </button>
+        <NavLink class="n-link" href="settings" @onclick="@(() => HandleSetPage("settings"))">
+            <div class="n-li @(currentPage == "settings" ? "n-active" : "n-inactive")">
+                <span class="n-icon"><IconGear Size=28 /></span>
+                <span class="n-text">Settings</span>
+            </div>
+        </NavLink>
+        <NavLink class="n-link" href="logout" @onclick="@(() => HandleSetPage("logout"))">
+            <div class="n-li @(currentPage == "logout" ? "n-active" : "n-inactive")">
+                <span class="n-icon"><IconLogout Size=28 /></span>
+                <span class="n-text">Logout</span>
+            </div>
+        </NavLink>
+    </div>
+
+</div>
+
+
+@code {
+    string parentTab = "Home";
+
+    private string currentPage = "home";
+
+    private void HandleSetPage(string page)
+    {
+        currentPage = page;
+    }
+}

@@ -1,0 +1,43 @@
+﻿@page "/finances/accounts"
+@namespace Hearth.Components.Pages.Finances.subpages
+@using Hearth.Services
+@using Hearth.Models
+@using Hearth.Data
+@using Microsoft.EntityFrameworkCore
+@using Hearth.Finances.Parts
+@using Hearth.Parts
+@using Hearth.Icons
+@* @inject PlaidService _plaidService NET9 *@
+@inject HearthDbContext _dbContext
+
+@if (initialRenderComplete == false)
+{
+	<IconLoadingCircle AutoCenter="true" />
+}
+
+<div class="a-main" hidden="@(initialRenderComplete ? false : true)">
+	@* --- Header --- *@
+	<div class="a-header">
+		<div class="a-h-header">
+			<div class="h-header header-primary">Accounts</div>
+		</div>
+		<div class="a-h-plaid">
+			<PlaidLinkButton />
+		</div>
+	</div>
+	@* --- Body --- *@
+	<div class="a-body">
+		<div class="a-section-one">
+			<AccountListPart Accounts="accounts" />
+		</div>
+	</div>
+	@* --- Footer --- *@
+	@* <div class="footer">
+         <button @onclick="HandleBankButton">get/update accounts</button>
+     </div> *@
+
+</div>
+
+@code {
+
+}

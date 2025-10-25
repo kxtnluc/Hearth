@@ -1,0 +1,319 @@
+.tlp-ul {
+    list-style: none;
+    padding-left: 0;
+    border: 2px var(--primary-color-light) solid;
+    border-top: 4px var(--primary-color-light) solid;
+    border-radius: 5px;
+}
+
+.tlp-li {
+    display: flex;
+    justify-content: space-between;
+    height: 3.25rem;
+    border-bottom: 2px var(--primary-color-light) solid;
+    transition: 200ms;
+}
+
+    .tlp-li:hover {
+        cursor: pointer;
+        background-color: rgb(245 245 245);
+    }
+
+.tlp-li-item {
+}
+
+.tlp-d-year-positive {
+    border: 1.5px rgb(0, 0, 0, 0.75) solid;
+    border-radius: 5px;
+    border-right: none;
+    border-top: none;
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+    border-top-left-radius: 0px;
+    text-align: center;
+    color: var(--text-color-bright);
+    font-weight: 500;
+    background-color: var(--success-color); /* Emeral-Green */
+    width: 5rem;
+    height: 2rem;
+    padding-top: 0.15rem;
+}
+
+.tlp-d-year-negative {
+    border: 1.5px rgb(0, 0, 0, 0.75) solid;
+    border-radius: 5px;
+    border-right: none;
+    border-top: none;
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+    border-top-left-radius: 0px;
+    text-align: center;
+    color: var(--text-color-bright);
+    font-weight: 500;
+    background-color: var(--error-color); /* fire-red */
+    width: 5rem;
+    height: 2rem;
+    padding-top: 0.15rem;
+}
+
+.tlp-d-month-day-positive {
+    border: 2px var(--primary-color-light) solid;
+    border-radius: 5px;
+    border-left: none;
+    border-top: none;
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+    border-top-right-radius: 0px;
+    text-align: center;
+    color: var(--text-color-bright);
+    font-weight: 700;
+    background-color: var(--success-color);
+    padding-top: 0.15rem;
+    width: 5rem;
+    height: 1.7rem;
+}
+
+.tlp-d-month-day-negative {
+    border: 1.5px var(--primary-color-light) solid;
+    border-radius: 5px;
+    border-left: none;
+    border-top: none;
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+    border-top-right-radius: 0px;
+    text-align: center;
+    color: var(--text-color-bright);
+    font-weight: 700;
+    background-color: var(--primary-color-lighter);
+    padding-top: 0.15rem;
+    width: 5rem;
+    height: 1.7rem;
+}
+
+.tlp-li-body {
+    align-self: center;
+}
+
+.tlp-name {
+    font-size: 18px;
+    align-self: center;
+    width: 55%;
+    margin-left: 1.5%;
+    /*    border: 1px black solid;*/
+}
+
+.tlp-amount {
+    font-size: 22px;
+    font-weight: 700;
+    align-self: center;
+    text-align: right;
+    width: 20%;
+    margin-right: 1%;
+/*        border: 1px black solid;*/
+}
+
+.tlp-amount-positive {
+    color: rgb(125, 206, 130); /* Light Green */
+}
+
+.tlp-amount-negative {
+    color: rgb(255, 131, 96);
+}
+
+.tlp-category {
+    background-color: var(--info-color);
+    color: var(--text-color-bright);
+    font-weight: 700;
+    font-size: 1rem;
+    padding-left: 0.5vw;
+    padding-right: 0.5vw;
+    text-align: center;
+    align-content: center;
+    border-left: 2px var(--primary-color-light) solid;
+    width: 8rem;
+    transition: 300ms;
+}
+
+    .tlp-category:hover {
+        opacity: 75%;
+    }
+
+    .tlp-category:active {
+        opacity: 90%;
+    }
+
+.tlp-category-text {
+}
+
+
+
+/* modal */
+.s1-h-header {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2vw;
+    margin-left: 3vw;
+    margin-right: 3vw;
+}
+
+.amount {
+    align-self: center;
+    font-size: 3vw;
+    font-weight: 700;
+}
+
+.category {
+    font-size: 2.5vw;
+    color: var(--text-color-bright);
+    border-radius: 10px;
+    padding-left: 1vw;
+    padding-right: 1vw;
+    padding-top: 0.5vw;
+    padding-bottom: 0.5vw;
+    align-self: center;
+}
+
+.category-select {
+    color: white;
+    text-align: center;
+    appearance: none; /* Standard */
+    -webkit-appearance: none; /* Safari/Chrome */
+    -moz-appearance: none; /* Firefox */
+    background: none;
+    transition: 200ms;
+}
+
+    .category-select:hover {
+        cursor: pointer;
+        opacity: 0.8;
+    }
+
+.cs-option-container {
+    display: flex;
+    flex-flow: row wrap;
+    border: 3px solid blue;
+}
+
+.cs-option {
+    font-size: 1.5vw;
+}
+
+.s1-h-subheader {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1.5vw;
+    margin-left: 1vw;
+    margin-right: 1vw;
+}
+
+.merchant-name {
+    font-size: 2vw;
+    font-weight: 600;
+    position: relative;
+    margin-bottom: 0.5vw;
+    padding-bottom: 0.5vw;
+}
+
+    .merchant-name::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        height: 2px; /* thickness of underline */
+        width: 100%; /* full-width underline */
+        border-radius: 10px;
+        background-color: var(--primary-color-light);
+    }
+
+.transaction-name {
+    font-style: italic;
+}
+
+.subheader-left, .subheader-right {
+    align-self: center;
+}
+
+.payment-channel {
+    font-size: 1.5vw;
+    font-weight: 600;
+    text-align: right;
+}
+
+
+.date {
+    font-size: 1.5vw;
+    font-weight: 600;
+    padding-top: 0.25vw;
+}
+
+.cat-modal-ul {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-evenly;
+    margin-top: 1vw;
+    margin-bottom: 1vw;
+}
+
+.cat-modal-li {
+    color: white;
+    width: 15vw;
+    text-align: center;
+    margin-top: 0.35vw;
+    margin-bottom: 0.35vw;
+    font-size: 1.5vw;
+    border-radius: 10px;
+    padding-top: 0.25vw;
+    padding-bottom: 0.25vw;
+    opacity: 0.35;
+    transition: 200ms;
+}
+
+    .cat-modal-li:hover {
+        opacity: 0.95;
+        cursor: pointer;
+    }
+
+.cat-li-active {
+    opacity: 1;
+}
+
+.cat-li-inactive {
+}
+
+.cat-modal-footer {
+    display: flex;
+    font-size: 1.25vw;
+}
+
+.f-text {
+    margin-right: 1vw;
+    align-self: center;
+}
+
+.f-checkbox {
+    align-self: center;
+}
+
+.cap-main {
+}
+
+.cap-infobox {
+    margin-top: 1vw;
+    margin-bottom: 1vw;
+    margin-left: 1vw;
+    margin-right: 1vw;
+}
+
+.cap-buttons {
+    display: flex;
+    justify-content: right;
+    font-size: 1vw;
+}
+
+.btn-yes {
+    margin-right: 0.5vw;
+}
+
+.btn-no {
+    margin-left: 0.5vw;
+}

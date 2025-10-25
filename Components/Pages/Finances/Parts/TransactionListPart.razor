@@ -1,0 +1,267 @@
+﻿@namespace Hearth.Finances.Parts
+@using Hearth.Models
+@using Hearth.Icons
+@using Hearth.Parts
+@using Hearth.Data
+@inject HearthDbContext _dbContext
+
+<ul class="tlp-ul">
+    @foreach (Transaction t in Transactions)
+    {
+        @if (t.Amount < 0)
+        {
+            <li class="tlp-li" @onclick="@(() => OpenModal(t))">
+                <div class="tlp-li-item tlp-d-month-day-positive">
+                    @t.Month / @t.Day
+                </div>
+                <div class="tlp-li-item tlp-name">
+                    @t.Name
+                </div>
+                <div class="tlp-li-item tlp-amount">
+                    <span class="tlp-amount-positive">$@Math.Abs(t.Amount)</span>
+                </div>
+                <div @onclick="@(() =>
+                    {
+                        selectedTransaction = t;
+                        OpenCatModal();
+                    }
+                )"
+                     class="tlp-li-item tlp-category"
+                     style="background-color: @t.Category?.Hex_Color"
+                     @onclick:stopPropagation
+                >
+                    <span class="tlp-category-text">@t.Category?.Name</span>
+                </div>
+            </li>
+        }
+        else
+        {
+            <li class="tlp-li" @onclick="@(() => OpenModal(t))">
+                <div class="tlp-li-item tlp-d-month-day-negative">
+                    @t.Month / @t.Day
+                </div>
+                <div class="tlp-li-item tlp-name">
+                    @t.Name
+                </div>
+                <div class="tlp-li-item tlp-amount">
+                    <span class="tlp-amountlp-negative">$@t.Amount</span>
+                </div>
+                <div @onclick="@(() => 
+                    {
+                        selectedTransaction = t;
+                        OpenCatModal();
+                    }
+                )" 
+                    class="tlp-li-item tlp-category" 
+                    style="background-color: @t.Category?.Hex_Color"
+                    @onclick:stopPropagation
+                >
+                    <span class="tlp-category-text unselectable">@t.Category?.Name</span>
+                </div>
+            </li>
+        }
+    }
+</ul>
+
+<!-- Modal is rendered once, outside the loop -->
+<HearthModal Title="Transaction"
+             Width="large"
+             Open="@showModal"
+             OnClose="@CloseModal">
+    @if (selectedTransaction is not null)
+    {
+        <div class="transaction-modal">
+            <div class="tm-section-1">
+                <div class="s1-header">
+                    <div class="s1-h-header">
+                        <div class="amount">
+                            $@selectedTransaction.Amount
+                        </div>
+                        <button class="category" @onclick="OpenCatModal" style="background-color: @selectedTransaction.Category?.Hex_Color">
+                            @selectedTransaction.Category?.Name
+                        </button>
+                    </div>
+                    <div class="s1-h-subheader header-tertiary">
+                        <div class="subheader-left">
+                            <div class="merchant-name">
+                                @selectedTransaction.Merchant_Name
+                            </div>
+                            <div class="transaction-name">
+                                @selectedTransaction.Name
+                            </div>
+                        </div>
+                        <div class="subheader-right">
+                            <div class="payment-channel">
+                                @selectedTransaction.Payment_Channel
+                            </div>
+                            <div class="date">
+                                @selectedTransaction.Date
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="s1-body">
+
+                </div>
+                <div class="s1-footer">
+
+                </div>
+            </div>
+
+        </div>
+    }
+</HearthModal>
+
+<HearthModal 
+    Title="Edit Category"
+    Width="normal"
+    Open="@showCatModal"
+    OnClose="@CloseCatModal"
+>
+    @if(changeAllPopup)
+    {
+        <div class="cap-main">
+            <div class="cap-infobox">
+                <HearthInfoBox>
+                    There are @numberOfSimilarTransactions similar transactions, would you like to update them aswell?
+                </HearthInfoBox>
+            </div>
+            <div class="cap-buttons">
+                <button @onclick="HandleYesUpdateAll" class="button-primary btn-yes">Yes, update all</button>
+                <button @onclick="HandleNoUpdateOne" class="button-secondary btn-no">No, only update this transaction</button>
+            </div>
+        </div>
+    }
+    else
+    {
+        <ul class="cat-modal-ul">
+            @foreach(Category c in categories)
+            {
+                <li @onclick="() => HandleCategoryChange(c.Id)" class="cat-modal-li @(selectedTransaction.CategoryId == c.Id ? "cat-li-active" : "cat-li-inactive")" style="background-color: @c.Hex_Color">
+                    <div class="li-text">
+                        @c.Name
+                    </div>
+                </li>
+            }
+        </ul>
+    }
+
+</HearthModal>
+
+@code {
+    [Parameter] public List<Transaction> Transactions { get; set; }
+
+    private bool showModal = false;
+    private Transaction? selectedTransaction;
+    private List<Category> categories = new List<Category>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        categories = _dbContext.Categories.ToList();
+    }
+
+    private void OpenModal(Transaction t)
+    {
+        selectedTransaction = t;
+        showModal = true;
+    }
+
+    private void CloseModal()
+    {
+        showModal = false;
+        selectedTransaction = null;
+    }
+
+    private bool showCatModal = false;
+    private bool changeAllPopup = false;
+	private List<Transaction> similarTransactions = new List<Transaction>();
+    private int numberOfSimilarTransactions = 0;
+    private int selectedCatId;
+
+    private void OpenCatModal()
+    {
+        showCatModal = true;
+    }
+
+    private void CloseCatModal()
+    {
+        numberOfSimilarTransactions = 0;
+        // Check if user wants to change all the categories under this merchant
+        try
+        {
+            if(selectedTransaction.Merchant_Name != null)
+            {
+                similarTransactions = _dbContext.Transactions
+                    .Where(t => t.Merchant_Name == selectedTransaction.Merchant_Name && t.Category.Id == selectedTransaction.Category.Id)
+					.ToList();
+                numberOfSimilarTransactions = similarTransactions.Count();
+            }
+            else if (selectedTransaction.Name != null)
+            {
+                similarTransactions = _dbContext.Transactions
+                    .Where(t => t.Name == selectedTransaction.Name && t.Category.Id == selectedTransaction.Category.Id)
+                    .ToList();
+                numberOfSimilarTransactions = similarTransactions.Count();
+            }
+            else
+            {
+                numberOfSimilarTransactions = 0;
+			}
+        }
+        catch (Exception ex)
+        {
+			System.Diagnostics.Debug.WriteLine("Some Error Occured when trying to find similar transactions: "+ex.Message);
+            numberOfSimilarTransactions = 0;
+		}
+
+        // If there was no selection change
+        if(selectedCatId == 0)
+        {
+            showCatModal = false;
+
+        }
+        // If there ar more than 3 similar transactions
+        else if (numberOfSimilarTransactions >= 3)
+        {
+            changeAllPopup = true;
+        }
+        // If there was a selection change, but not more than 3 similar
+        else
+        {
+            showCatModal = false;
+            _dbContext.SaveChanges();
+            selectedCatId = 0;
+        }
+    }
+
+    private void HandleCategoryChange(int inputCatId)
+    {
+        selectedCatId = inputCatId;
+        selectedTransaction.CategoryId = selectedCatId;
+        StateHasChanged();
+        CloseCatModal();
+    }
+
+    private void HandleYesUpdateAll()
+    {
+        showCatModal = false;
+        changeAllPopup = false;
+
+        foreach(Transaction t in similarTransactions)
+        {
+            t.CategoryId = selectedCatId;
+        }
+
+        _dbContext.SaveChanges();
+        selectedCatId = 0;
+    }
+
+    private void HandleNoUpdateOne()
+    {
+        showCatModal = false;
+        changeAllPopup = false;
+
+        _dbContext.SaveChanges();
+        selectedCatId = 0;
+    }
+}

@@ -1,0 +1,48 @@
+.section-1 {
+    margin-top: 1rem;
+}
+
+.s1-header {
+    display: flex;
+    justify-content: space-between;
+}
+
+.s1-h-name {
+    width: 85%;
+    /*    max-width: 20rem;*/
+}
+
+.s1-h-color {
+    text-align: center;
+    height: 3.5rem;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: end;
+    align-items: end;
+}
+
+.color-picker {
+    width: 2rem;
+    height: 2rem;
+}
+
+    .color-picker:hover {
+        cursor: pointer;
+    }
+
+.s1-body {
+    margin-top: 1rem;
+}
+
+.s1-footer {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: space-between;
+}
+
+.s1-f-boxes {
+    display: flex;
+}
+
+.s1-f-add {
+}

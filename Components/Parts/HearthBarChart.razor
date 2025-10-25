@@ -1,0 +1,46 @@
+﻿@namespace Hearth.Parts
+@typeparam TItem
+
+<div class="bc-main">
+	<div class="bc-header">
+		@Title
+	</div>
+	<div class="bc-body">
+		<div class="table">
+			@if (Data != null)
+			{
+				@foreach (var d in Data)
+				{
+					var label = LabelSelector(d);
+					var value = ValueSelector(d);
+
+					<div class="row">
+						<span class="bar-label">@label</span>
+						<div class="bar-container" hidden="@(value <= 0 ? true : false)">
+							<div class="bar" style="width:@(GetWidth(value))%">
+								<span class="bar-value">@value</span>
+							</div>
+						</div>
+					</div>
+				}
+			}
+		</div>
+	</div>
+</div>
+
+@code {
+	[Parameter] public IEnumerable<TItem> Data { get; set; } = Enumerable.Empty<TItem>();
+	[Parameter] public Func<TItem, string> LabelSelector { get; set; }
+	[Parameter] public Func<TItem, double> ValueSelector { get; set; }
+	[Parameter] public EventCallback<TItem> OnBarClick { get; set; }
+
+	[Parameter] public string Title { get; set; } = "Bar Chart";
+
+	private int MaxValue => Data.Any() ? (int)Data.Max(ValueSelector) : 1;
+
+	private double GetWidth(double value)
+	{
+		var percent = value / MaxValue * 100;
+		return percent;
+	}
+}

@@ -1,0 +1,91 @@
+.modal-main {
+    position: fixed; /* Ensures it's fixed relative to the viewport */
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.35); /* Optional: semi-transparent backdrop */
+    z-index: 999; /* Ensure it's above other content */
+}
+
+.modal-card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 0 10px var(--primary-color-light);
+    overflow-y: auto;
+    padding-left: 2vw;
+    padding-right: 2vw;
+    padding-top: 1vw;
+    padding-bottom: 1vw;
+    max-height: 90%;
+}
+
+.w-none {
+    max-width: 90%;
+    max-height: 90%;
+}
+
+.w-normal {
+    width: 52%;
+}
+
+
+.w-small {
+    width: 30%;
+}
+
+.w-large {
+    width: 65%;
+}
+
+.section-1 {
+}
+
+.s1-header {
+    display: flex;
+    position: relative;
+    padding-bottom: 4px; /* space for underline */
+    justify-content: space-between;
+}
+
+    .s1-header::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        height: 2px; /* thickness of underline */
+        width: 100%; /* full-width underline */
+        border-radius: 10px;
+        background-color: var(--primary-color-light);
+    }
+
+.s1-h-header {
+    font-size: 1.75vw;
+    font-weight: 700;
+    align-self: center;
+}
+
+.s1-h-close {
+    align-self: center;
+    padding: 0.25rem;
+    color: var(--error-color);
+    transition: 150ms;
+
+}
+
+    .s1-h-close:hover {
+        background: rgb(255, 0, 0, 0.1);
+        border-radius: 100%;
+        color: red;
+    }
+
+.c-btn{
+    all: unset;
+    cursor: pointer;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+}

@@ -1,0 +1,27 @@
+﻿@namespace Hearth.Parts
+
+<label class="hearth-checkbox">
+    <input type="checkbox"
+           checked="@Value"
+           disabled="@(!Editable)"
+           @onchange="HandleCheckboxChange" />
+    <span class="checkmark"></span>
+    @if (!string.IsNullOrEmpty(Label))
+    {
+        <span>@Label</span>
+    }
+</label>
+
+@code {
+    [Parameter] public bool Editable { get; set; } = true;
+    [Parameter] public string Label { get; set; } = "";
+
+    [Parameter] public bool Value { get; set; }
+    [Parameter] public EventCallback<bool> ValueChanged { get; set; }
+
+    private async Task HandleCheckboxChange(ChangeEventArgs e)
+    {
+        Value = (bool)e.Value!;
+        await ValueChanged.InvokeAsync(Value);
+    }
+}

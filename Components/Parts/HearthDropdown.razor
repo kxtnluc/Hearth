@@ -1,0 +1,36 @@
+﻿@namespace Hearth.Parts
+@using Hearth.Icons
+
+<div class="container">
+    @if(!string.IsNullOrEmpty(Label))
+    {
+        <div class="label">@Label</div>
+    }
+    <select class="select" value="@Value" @onchange="HandleChange">
+        @if(IncludeEmptyOption)
+        {
+            <option class="option" value="empty">...</option>
+        }
+        @foreach (var item in Data)
+        {
+            <option class="option" value="@item">
+                @item
+            </option>
+        }
+    </select>
+</div>
+
+@code {
+    [Parameter] public string[] Data { get; set; } = ["None Selectable"];
+    [Parameter] public bool IncludeEmptyOption { get; set; } = false;
+    [Parameter] public string Label { get; set; } = "";
+
+    [Parameter] public string Value { get; set; } = "";
+    [Parameter] public EventCallback<string> ValueChanged { get; set; }
+
+    private async Task HandleChange(ChangeEventArgs e)
+    {
+        Value = e.Value?.ToString() ?? "";
+        await ValueChanged.InvokeAsync(Value);
+    }
+}

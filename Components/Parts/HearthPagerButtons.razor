@@ -1,0 +1,36 @@
+﻿@namespace Hearth.Parts
+@using Hearth.Icons
+
+<div class="hearth-pager-main">
+    <button class="button-arrow-left" @onclick="PreviousPage" disabled="@(Page <= 1)"><IconArrow Size="20" Direction="l"/></button>
+
+    <span class="header-tertiary page-count">@Page / @TotalNumberOfPages</span>
+
+    <button class="button-arrow-right" @onclick="NextPage" disabled="@(Page >= TotalNumberOfPages)"><IconArrow Size="20" Direction="r" /></button>
+</div>
+
+@code {
+    [Parameter] public int TotalNumberOfPages { get; set; } = 2;
+
+    [Parameter] public int Page { get; set; } = 1;
+
+    [Parameter] public EventCallback<int> PageChanged { get; set; }
+
+    private async Task NextPage()
+    {
+        if (Page < TotalNumberOfPages)
+        {
+            Page++;
+            await PageChanged.InvokeAsync(Page);
+        }
+    }
+
+    private async Task PreviousPage()
+    {
+        if (Page > 1)
+        {
+            Page--;
+            await PageChanged.InvokeAsync(Page);
+        }
+    }
+}

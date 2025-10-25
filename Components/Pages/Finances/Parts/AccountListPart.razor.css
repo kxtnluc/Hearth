@@ -1,0 +1,113 @@
+.alp-ul {
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+}
+
+.alp-li {
+    margin-top: 0.5vw;
+    margin-bottom: 0.5vw;
+    margin-left: 2vw;
+    margin-right: 2vw;
+    border: 3px solid var(--primary-color-light);
+    border-radius: 7px;
+}
+
+.alp-li-header {
+    padding-top: 0.25vw;
+    padding-bottom: 0.25vw;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 3px solid var(--primary-color-light);
+    color: var(--background-color-light);
+    background: var(--info-color-dark);
+    opacity: 0.85;
+    transition: 300ms;
+}
+
+    .alp-li-header:hover {
+        cursor: pointer;
+        opacity: 0.7
+    }
+
+.li-h-name {
+    margin-left: 1.5vw;
+    font-size: var(--font-size-m);
+    font-weight: var(--font-weight-l);
+    align-self: center;
+}
+
+.li-h-type {
+    margin-right: 1.5vw;
+    display: flex;
+    flex-flow: row nowrap;
+}
+
+.t-1, t-2 {
+    align-self: center;
+}
+
+.t-2 {
+    border-right: 3px solid var(--background-color-light);
+    align-self: center;
+    padding-right: 0.5vw;
+    font-size: var(--font-size-s);
+    font-weight: var(--font-weight-l);
+}
+
+.t-1 {
+    padding-left: 0.5vw;
+    font-size: var(--font-size-s);
+    font-weight: var(--font-weight-l);
+}
+
+.alp-li-body {
+    display: flex;
+    justify-content: center;
+    font-size: var(--font-size-l);
+    font-weight: var(--font-weight-l);
+    height: 8.5vw;
+}
+
+.b-balance {
+    margin-top: 1vw;
+}
+
+.b-text {
+    font-size: var(--font-size-s);
+    text-align: center;
+}
+
+.b-credit {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: 0.3vw;
+    margin-bottom: 0.3vw;
+}
+
+.c-line-of-credit {
+    margin-left: 8vw;
+    margin-right: 8vw;
+}
+
+.loc-text {
+    font-size: var(--font-size-s);
+    text-align: center;
+}
+
+.loc-number {
+    font-size: var(--font-size-m);
+}
+
+.c-text {
+    font-size: var(--font-size-s);
+}
+
+.t-remaining {
+    text-align: right;
+}
+
+.c-available, .c-current {
+    margin-top: 1.5vw;
+}

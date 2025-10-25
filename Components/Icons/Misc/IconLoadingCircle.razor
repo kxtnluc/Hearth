@@ -1,0 +1,21 @@
+﻿@namespace Hearth.Icons
+
+@if (AutoCenter)
+{
+    <div class="auto-center">
+        <div class="loading-spinner l-center" style="width:@SizePx;height:@SizePx;"></div>
+    </div>
+}
+else
+{
+    <div class="loading-spinner" style="width:@SizePx;height:@SizePx;"></div>
+}
+@code {
+
+    [Parameter] public int Size { get; set; } = 50;
+
+    [Parameter] public bool AutoCenter { get; set; } = false;
+
+
+    private string SizePx => $"{Size}px";
+}

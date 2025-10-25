@@ -1,0 +1,244 @@
+.section-1 {
+    margin-left: 2%;
+    margin-right: 2%;
+}
+
+.s1-body {
+}
+
+/* Wrapper for the table */
+.s1-body {
+    display: grid;
+    grid-template-columns: 1.5fr 1.5fr 1.5fr 0.75fr 0.5fr 1.25fr 0.15fr; /* Adjust for your column layout */
+    border-bottom: 1px solid #ccc;
+    font-size: 16px;
+}
+
+/* Header row */
+.s1-b-headers {
+    display: contents; /* Let the grid define cell alignment */
+    font-weight: bold;
+    background: #f0f0f0;
+    border-bottom: 2px solid #ccc;
+    margin-bottom: 30px;
+}
+
+/* Body rows */
+.s1-b-body {
+    display: contents; /* Same grid columns as header */
+    transition: 200ms;
+}
+
+    .s1-b-body:hover {
+        cursor: pointer;
+        color: var(--info-color-light);
+    }
+
+.s1-b-b-li {
+    padding-top: 10px;
+    padding-left: 2px;
+}
+
+.first-param {
+    text-align: center;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+}
+
+.x-btn {
+    background-color: var(--error-color);
+    border-bottom-right-radius: 8px;
+    border-top-right-radius: 8px;
+    color: black;
+    padding-right: 5px;
+    transition: 200ms;
+}
+
+    .x-btn:hover {
+        background-color: var(--error-color-dark);
+    }
+
+.s1-b-f-btn {
+    all: unset;
+    cursor: pointer;
+}
+
+.plus-btn {
+    background-color: var(--success-color);
+    border-bottom-right-radius: 8px;
+    border-top-right-radius: 8px;
+    color: black;
+    padding-right: 5px;
+    transition: 200ms;
+}
+
+    .plus-btn:hover {
+        background-color: var(--success-color-light);
+    }
+
+.m-section-1 {
+    margin-top: 1vw;
+}
+
+.m-s1-body {
+    display: flex;
+    margin-top: 1vw;
+}
+
+.m-s1-b-if {
+    width: 6%;
+    font-weight: 700;
+    font-size: 24px;
+    align-content: center;
+    height: 2.5vw;
+    text-align: center;
+}
+
+.m-s1-b-generated,
+.m-s1-b-merchant,
+.m-s1-b-amount,
+.m-s1-b-active {
+    text-align: center;
+    align-content: center;
+    border: var(--info-color) 2px solid;
+    border-radius: 8px;
+    margin-right: 4px;
+    margin-left: 4px;
+    width: 25%;
+    height: 2.5rem;
+    transition: 200ms;
+}
+
+    .m-s1-b-generated:hover,
+    .m-s1-b-merchant:hover,
+    .m-s1-b-amount:hover,
+    .m-s1-b-active:hover {
+        background-color: var(--info-color-light);
+        cursor: pointer;
+    }
+
+.m-s1-footer {
+    display: flex;
+    justify-content: center;
+    margin-top: 2vw;
+    font-size: 24px;
+}
+
+.m-s1-f-assign,
+.m-s1-f-category {
+    margin-left: 5%;
+    margin-right: 5%;
+}
+
+.m-s1-f-assign {
+    font-style: italic;
+}
+
+.m-s1-f-category {
+    font-weight: 700;
+    border: var(--error-color) 2px solid;
+    border-radius: 10px;
+    padding-left: 2vw;
+    padding-right: 2vw;
+    transition: 200ms;
+}
+
+    .m-s1-f-category:hover {
+        cursor: pointer;
+        opacity: 0.5;
+    }
+
+
+.a-s1-header {
+    margin-top: 1rem;
+}
+
+.a-s1-b-header {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    position: relative;
+    font-weight: 700;
+}
+
+    .a-s1-b-header::after {
+        content: ""; /* required for pseudo-element */
+        position: absolute; /* position relative to parent */
+        bottom: -0.25rem; /* space below the header */
+        left: 0;
+        width: 100%; /* full width line */
+        height: 2px; /* thickness of divider */
+        background-color: black; /* divider color */
+    }
+
+.a-s1-b-body {
+}
+
+.a-1 {
+    display: flex;
+    justify-content: space-between;
+}
+
+.a-2-merchant-name {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: space-around;
+}
+
+.a-2-transaction-name {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: space-around;
+}
+
+.a-3 {
+    margin-top: 1rem;
+    display: flex;
+}
+
+.a-operator-input {
+    margin-right: 1rem;
+}
+
+.a-tag-input {
+}
+
+.a-merchant-name-input {
+}
+
+.a-amount-input {
+    width: 13%;
+}
+
+.a-s1-footer {
+    margin-top: 1rem;
+}
+
+.a-s1-f-buttons {
+    display: flex;
+    justify-content: end;
+}
+
+.a-assign-to {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.at-active {
+    font-weight: 700;
+    align-content: center;
+}
+
+.d-box {
+    margin-top: 1rem;
+}
+
+.d-buttons {
+    display: flex;
+    justify-content: end;
+    margin-top: 1rem;
+}
+
+.d-btn {
+    margin-left: 1rem;
+}

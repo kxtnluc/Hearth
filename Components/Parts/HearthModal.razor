@@ -1,0 +1,60 @@
+﻿@namespace Hearth.Parts
+@using Hearth.Icons
+
+@if (Open)
+{
+    <div class="modal-main" @onclick="LeaveModal">
+        <div class="modal-card w-@Width" @onclick:stopPropagation>
+            <section class="section-1">
+                <div class="s1-header">
+                    <div class="s1-h-header">
+                        @Title
+                    </div>
+                    <div class="s1-h-close">
+                        @if (Closeable)
+                        {
+                            <button class="c-btn" @onclick="LeaveModal"><IconX Size="35" /></button>
+                        }
+                        else
+                        {
+                            <button hidden></button>
+                        }
+                    </div>
+                </div>
+                <div class="s1-body">
+                    @ChildContent
+                </div>
+                <div class="s1-footer">
+                </div>
+            </section>
+        </div>
+    </div>
+}
+else
+{
+    <div></div>
+}
+
+@code {
+    [Parameter] public bool Open { get; set; } = false;
+
+    [Parameter] public string Title { get; set; } = "title";
+
+    [Parameter] public string Width { get; set; } = "normal";
+
+    [Parameter] public bool Closeable { get; set; } = true;
+
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    [Parameter] public EventCallback OnClose { get; set; }
+
+    private async Task LeaveModal()
+    {
+        if (Closeable == true)
+        {
+            if (OnClose.HasDelegate)
+                await OnClose.InvokeAsync(null);
+        }
+    }
+
+}

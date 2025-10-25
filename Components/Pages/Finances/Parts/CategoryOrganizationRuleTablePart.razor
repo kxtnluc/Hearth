@@ -1,0 +1,394 @@
+﻿@namespace Hearth.Finances.Parts
+@using Hearth.Services
+@using Hearth.Models
+@using Hearth.Parts
+@using Hearth.Data
+@using Hearth.Icons
+@inject QolService _qolService
+@inject HearthDbContext _dbContext
+
+<div class="aarp-main">
+	<section class="section-1">
+		<div class="s1-body">
+			<ul class="s1-b-headers">
+				<li class="s1-b-h-li">Name</li>
+				<li class="s1-b-h-li">Generated Category</li>
+				<li class="s1-b-h-li">Merchant Name</li>
+				<li class="s1-b-h-li">Amount</li>
+				<li class="s1-b-h-li">Active</li>
+				<li class="s1-b-h-li first-param">Assign To</li>
+				<li class="s1-b-h-li plus-btn"><button @onclick="OpenAddModal" class="s1-b-f-btn"><IconPlus /></button></li>
+			</ul>
+
+			@foreach (var cor in rules)
+			{
+				<ul class="s1-b-body" @onclick="() => OpenModal(cor)">
+					<li class="s1-b-b-li">@(cor.Name)</li>
+					<li class="s1-b-b-li">@(cor.Plaid_Category ?? "...")</li>
+					<li class="s1-b-b-li">@(cor.Merchant_Name ?? "...")</li>
+					<li class="s1-b-b-li">@(cor.Amount?.ToString() ?? "...")</li>
+					<li class="s1-b-b-li"><HearthCheckbox Editable=false @bind-Value="@cor.Active" /></li>
+					<li class="s1-b-b-li first-param">@(cor?.Category?.Name ?? "unkown")</li>
+					<li class="s1-b-b-li x-btn"><button class="s1-b-f-btn" @onclick="() => OpenDeleteModal(cor)" @onclick:stopPropagation><IconX /></button></li>
+				</ul>
+			}
+
+			<div class="s1-b-footer">
+			</div>
+
+		</div>
+		<div class="s1-footer">
+		</div>
+	</section>
+</div>
+@* View / Edit Modal *@
+<HearthModal Title="Edit Rule"
+			 Width="normal"
+			 Open="@showModal"
+			 OnClose="@CloseModal">
+	<div class="modal-add-main">
+		<div class="a-section-1">
+			<div class="a-s1-header">
+				<HearthInput Type="text" Placeholder=" > Groceries" Label="Name" @bind-Value="@inputRuleName" />
+			</div>
+			<div class="a-s1-body">
+				<div class="a-s1-b-header header-tertiary">
+					@* -------------------- Criteria -------------------- *@
+					Criteria
+				</div>
+				<div class="a-s1-b-body">
+					<div class="a-1">
+						<div class="a-tag-input">
+							@* ----- Generated Tag <dropdown> ----- *@
+							<HearthDropdown Data="@(CategoryUtils.tags)" IncludeEmptyOption=true Label="Generated Tag" @bind-Value="@inputTagDropdown" />
+						</div>
+					</div>
+					<div class="a-2">
+						<div class="a-2-merchant-name">
+							<div class="mn-operator-input">
+								@* ----- Merchant Name Operator <dropdown> ----- *@
+								<HearthDropdown Data="@(CategoryUtils.stringOperatorSigns)" Label="Operator" @bind-Value="@inputMerchantNameStringOperator" />
+							</div>
+							<div class="mn-input">
+								@* ----- Merchant Name <input> ----- *@
+								<HearthInput Type="text" Label="Merchant Name" @bind-Value="@inputMerchantName" />
+							</div>
+						</div>
+						<div class="a-2-transaction-name">
+							<div class="tn-operator-input">
+								@* ----- Transaction Name Operator <dropdown> ----- *@
+								<HearthDropdown Data="@(CategoryUtils.stringOperatorSigns)" Label="Operator" @bind-Value="@inputTransactionNameStringOperator" />
+							</div>
+							<div class="tn-input">
+								@* ----- Transaction Name <input> ----- *@
+								<HearthInput Type="text" Label="Transaction Name" @bind-Value="@inputTransactionName" />
+							</div>
+						</div>
+					</div>
+					<div class="a-3">
+						<div class="a-operator-input">
+							<HearthDropdown Data="@(CategoryUtils.operatorSigns)" Label="Operator" @bind-Value="@inputOperator" />
+						</div>
+						<div class="a-amount-input">
+							<HearthInput Type="number" Label="Amount" @bind-Value="@inputAmount" />
+						</div>
+					</div>
+				</div>
+				<div class="a-s1-b-header header-tertiary">
+					Assign To
+				</div>
+				<div class="a-s1-b-body">
+					<div class="a-assign-to">
+						<div class="at-category">
+							<HearthDropdown Data="@(categoriesArray)" Label="Category" @bind-Value="@inputCategory" />
+						</div>
+						<div class="at-active">
+							<HearthCheckbox Editable=true @bind-Value="@inputActive" Label="Active" />
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="a-s1-footer">
+				<div class="a-s1-f-buttons">
+					<HearthButton Label="Update" OnClick="UpdateRule" BgColor="green" Icon="plus" />
+				</div>
+			</div>
+		</div>
+	</div>
+</HearthModal>
+
+@* Add Modal *@
+<ErrorBoundary>
+	<ChildContent>
+
+		<HearthModal Title="Add Rule"
+					 Width="normal"
+					 Open="@showAddModal"
+					 OnClose="@CloseAddModal">
+			<div class="modal-add-main">
+				<div class="a-section-1">
+					<div class="a-s1-header">
+						@* -------------------- Name -------------------- *@
+						<HearthInput Type="text" Placeholder=" > Groceries" Label="Name" @bind-Value="@inputRuleName" />
+					</div>
+					<div class="a-s1-body">
+						<div class="a-s1-b-header header-tertiary">
+							@* -------------------- Criteria -------------------- *@
+							Criteria
+						</div>
+						<div class="a-s1-b-body">
+							<div class="a-1">
+								<div class="a-tag-input">
+									@* ----- Generated Tag <dropdown> ----- *@
+									<HearthDropdown Data="@(CategoryUtils.tags)" IncludeEmptyOption=true Label="Generated Tag" @bind-Value="@inputTagDropdown" />
+								</div>
+							</div>
+							<div class="a-2">
+								<div class="a-2-merchant-name">
+									<div class="mn-operator-input">
+										@* ----- Merchant Name Operator <dropdown> ----- *@
+										<HearthDropdown Data="@(CategoryUtils.stringOperatorSigns)" Label="Operator" @bind-Value="@inputMerchantNameStringOperator" />
+									</div>
+									<div class="mn-input">
+										@* ----- Merchant Name <input> ----- *@
+										<HearthInput Type="text" Label="Merchant Name" @bind-Value="@inputMerchantName" />
+									</div>
+								</div>
+								<div class="a-2-transaction-name">
+									<div class="tn-operator-input">
+										@* ----- Transaction Name Operator <dropdown> ----- *@
+										<HearthDropdown Data="@(CategoryUtils.stringOperatorSigns)" Label="Operator" @bind-Value="@inputTransactionNameStringOperator" />
+									</div>
+									<div class="tn-input">
+										@* ----- Transaction Name <input> ----- *@
+										<HearthInput Type="text" Label="Transaction Name" @bind-Value="@inputTransactionName" />
+									</div>
+								</div>
+							</div>
+							<div class="a-3">
+								<div class="a-operator-input">
+									<HearthDropdown Data="@(CategoryUtils.operatorSigns)" Label="Operator" @bind-Value="@inputOperator" />
+								</div>
+								<div class="a-amount-input">
+									<HearthInput Type="number" Label="Amount" @bind-Value="@inputAmount" />
+								</div>
+							</div>
+						</div>
+						<div class="a-s1-b-header header-tertiary">
+							@* -------------------- Assign To -------------------- *@
+							Assign To
+						</div>
+						<div class="a-s1-b-body">
+							<div class="a-assign-to">
+								<div class="at-category">
+									<HearthDropdown Data="@(categoriesArray)" Label="Category" @bind-Value="@inputCategory" />
+								</div>
+								<div class="at-active">
+									<HearthCheckbox Editable=true @bind-Value="@inputActive" Label="Active" />
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="a-s1-footer">
+						<div class="a-s1-f-buttons">
+							<HearthButton Label="Add Rule" OnClick="SaveRule" BgColor="green" Icon="plus" />
+						</div>
+					</div>
+				</div>
+			</div>
+		</HearthModal>
+	</ChildContent>
+	<ErrorContent Context="ex">
+		<!-- UI to display when an error occurs -->
+		<p>An error occurred: @ex.Message</p>
+	</ErrorContent>
+</ErrorBoundary>
+
+@* Delete Modal *@
+<HearthModal Title="Delete Rule?"
+			 Width="small"
+			 Open="showDeleteModal"
+			 OnClose="CloseDeleteModal">
+	<div class="modal-delete-main">
+		<div class="d-box">
+			<HearthInfoBox>
+				Delete "@selectedRule.Name" Rule?
+			</HearthInfoBox>
+		</div>
+		<div class="d-buttons">
+			<div class="d-btn">
+				<HearthButton Label="No" BgColor="blue" OnClick="CloseDeleteModal" />
+			</div>
+			<div class="d-btn">
+				<HearthButton Label="Yes" BgColor="red" OnClick="DeleteRule" />
+			</div>
+		</div>
+	</div>
+</HearthModal>
+
+@code {
+	private List<CategoryOrganizationRule> rules = new List<CategoryOrganizationRule>();
+	private CategoryOrganizationRule selectedRule;
+	private List<Category> categories = new List<Category>();
+	private string[] categoriesArray;
+
+	protected override async Task OnInitializedAsync()
+	{
+		rules = CategoryOrganizationRuleFunctions.GetAll(_dbContext, true);
+		categories = CategoryFunctions.GetAll(_dbContext);
+		categoriesArray = categories.Select(c => c.Name).ToArray();
+	}
+
+	// View/Edit Modal ---------------------------------------------------------------
+
+	private bool showModal = false;
+	private void CloseModal()
+	{
+		showModal = false;
+	}
+	private void OpenModal(CategoryOrganizationRule r)
+	{
+		selectedRule = r;
+		inputRuleName = r.Name;
+		inputTagDropdown = r.Plaid_Category;
+		inputMerchantName = r.Merchant_Name;
+		inputTransactionName = r.Transaction_Name;
+		inputAmount = r.Amount.ToString();
+		inputCategory = r.Category.Name;
+		inputActive = r.Active;
+		inputOperator = CategoryUtils.OperatorToString(r.Amount_Operator, null);
+		inputTransactionNameStringOperator = CategoryUtils.OperatorToString(null, r.Transaction_Name_Operator);
+		inputMerchantNameStringOperator = CategoryUtils.OperatorToString(null, r.Merchant_Name_Operator);
+		showModal = true;
+	}
+
+	private void UpdateRule()
+	{
+		var foundCategoryId = _dbContext.Categories.SingleOrDefault(c => c.Name == inputCategory)?.Id;
+		// Format Amount type
+		decimal? amount = selectedRule.Amount;
+		OPERATOR? amount_operator = CategoryUtils.StringToOperator(inputOperator);
+		if (!string.IsNullOrEmpty(inputAmount)) amount = decimal.Parse(inputAmount);
+
+
+		if (foundCategoryId == null || foundCategoryId == 0)
+		{
+			return;
+		}
+
+		CategoryOrganizationRule ruleToUpdate = new()
+		{
+			Id = selectedRule.Id,
+			Name = inputRuleName,
+			Plaid_Category = inputTagDropdown,
+			Merchant_Name = inputMerchantName,
+			Amount = amount,
+			Amount_Operator = amount_operator,
+			Active = inputActive,
+			CategoryId = (int)foundCategoryId
+		};
+
+		CategoryOrganizationRuleFunctions.Update(_dbContext, ruleToUpdate);
+
+		CloseModal();
+	}
+
+	// Add Modal ---------------------------------------------------------------
+	private bool showAddModal = false;
+	private void CloseAddModal()
+	{
+		showAddModal = false;
+	}
+	private void OpenAddModal()
+	{
+
+		// Reset input vars
+		inputRuleName = string.Empty;
+		inputTagDropdown = string.Empty;
+		inputMerchantName = string.Empty;
+		inputAmount = string.Empty;
+		inputActive = true;
+		inputTransactionNameStringOperator = "Contains";
+		inputMerchantNameStringOperator = "Contains";
+		inputTransactionName = string.Empty;
+
+		inputCategory = categoriesArray?.FirstOrDefault() ?? string.Empty;
+		inputOperator = CategoryUtils.operatorSigns.FirstOrDefault() ?? string.Empty;
+
+		showAddModal = true;
+	}
+
+	public async void SaveRule()
+	{
+		var foundCategoryId = _dbContext.Categories.SingleOrDefault(c => c.Name == inputCategory).Id;
+		// Format Amount type
+		decimal? amount = null;
+		OPERATOR? amount_operator = CategoryUtils.StringToOperator(inputOperator);
+		STRING_OPERATOR? transaction_operator = CategoryUtils.StringToStringOperator(inputTransactionNameStringOperator);
+		STRING_OPERATOR? merchant_operator = CategoryUtils.StringToStringOperator(inputMerchantNameStringOperator);
+
+		if (!string.IsNullOrEmpty(inputAmount)) amount = decimal.Parse(inputAmount);
+
+		if (foundCategoryId == null || foundCategoryId == 0)
+		{
+			return;
+		}
+
+		CategoryOrganizationRule newRule = new()
+		{
+			Name = inputRuleName,
+			Plaid_Category = inputTagDropdown,
+			Merchant_Name = inputMerchantName,
+			Amount = amount,
+			Active = inputActive,
+			CategoryId = foundCategoryId,
+			Amount_Operator = amount_operator,
+			Transaction_Name_Operator = transaction_operator,
+			Merchant_Name_Operator = merchant_operator,
+			Transaction_Name = inputTransactionName
+		};
+
+		if (newRule != null)
+		{
+			_dbContext.CategoryOrganizationRules.Add(newRule);
+			await _dbContext.SaveChangesAsync();
+			CloseAddModal();
+		}
+
+		return;
+	}
+
+	// Delete Modal ---------------------------------------------------------------
+	private bool showDeleteModal = false;
+	private void CloseDeleteModal()
+	{
+		showDeleteModal = false;
+	}
+	private void OpenDeleteModal(CategoryOrganizationRule r)
+	{
+		selectedRule = r;
+		showDeleteModal = true;
+	}
+
+	private async void DeleteRule()
+	{
+		if (selectedRule != null)
+		{
+			_dbContext.CategoryOrganizationRules.Remove(selectedRule);
+			await _dbContext.SaveChangesAsync();
+		}
+		CloseDeleteModal();
+		return;
+	}
+
+	private string inputRuleName = string.Empty;
+	private string inputTagDropdown = string.Empty;
+	private string inputMerchantName = string.Empty;
+	private string inputAmount = string.Empty;
+	private string inputCategory = string.Empty;
+	private bool inputActive = true;
+	private string inputOperator = string.Empty;
+	private string inputTransactionNameStringOperator = string.Empty;
+	private string inputMerchantNameStringOperator = string.Empty;
+	private string inputTransactionName = string.Empty;
+}

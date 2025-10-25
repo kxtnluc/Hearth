@@ -1,0 +1,192 @@
+/* Main */
+.dashboard-main {
+    /* I hate this height variable, but i dont wanna change it rn ): */
+    height: 88dvh;
+    margin: 0;
+    padding: 0;
+}
+
+.d-section-1{
+    height: 100%;
+}
+
+/* Section one Grid */
+.d-s1-grid-container {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(6, 1fr);
+    gap: clamp(0.5rem, 2vw, 1rem);
+    background-color: var(--color-primary-darker);
+    padding: 1rem;
+    border-radius: 1rem;
+    min-height: 300px;
+    height: 100%;
+    grid-template-areas:
+        "nw nw nw nw income expenses"
+        "nw nw nw nw profit profit"
+        "budget budget budget budget daily daily"
+        "budget budget budget budget daily daily"
+        "savings savings debt debt daily daily"
+        "savings savings debt debt daily daily"
+}
+
+/* Small Panel Section */
+
+.small-panel{
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: space-between;
+}
+
+.small-panel-header{
+    background-color: var(--text-color-dim);
+    width: fit-content;
+    padding: 0.5rem 1rem 0.5rem 1rem;
+    border-bottom-right-radius: 8px;
+}
+
+.small-panel-body{
+    display: flex;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+.spb-number {
+    font-weight: 700;
+    font-size: clamp(20px, 2vw, 28px);
+}
+
+.small-panel-footer{
+    align-self: center;
+    background-color: var(--text-color-dim);
+    width: 30%;
+    padding-top: 0.25rem;
+    padding-bottom:0.25rem;
+    text-align: center;
+    border-top-right-radius: 8px;
+    border-top-left-radius: 8px;
+}
+
+.income-panel-header{
+    background-color: var(--success-color-light);
+}
+
+.expenses-panel-header{
+    background-color: var(--error-color);
+}
+
+/* Net Worth Box & Graph*/
+
+.nw-panel{
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: space-between;
+}
+
+.nw-header {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+
+    font-style: italic;
+
+    height: 25%;
+
+/*    background-color: lightgray;*/
+}
+
+.nw-number {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-size: clamp(30px, 4vw, 80px);
+    color: var(--success-color);
+    font-weight: 700;
+
+    height: 50%;
+    
+/*    background-color: gray;*/
+}
+
+/* Line Graph Stuff */
+.nw-line-container{
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    height: 20%;
+
+/*    background-color: black;*/
+}
+
+/* Asset Line */
+.assets-line {
+    margin-left: 1rem;
+    width: 45%;
+    height: 1.5rem;
+    display: flex;
+    flex-flow: row nowrap;
+}
+
+.liquid-line-portion {
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+    height: 100%;
+    background-color: var(--success-color);
+    /* This Value will Change bassed on DB */
+    width: 25%;
+}
+
+.investment-line-portion {
+    height: 100%;
+    background-color: var(--success-color-light);
+    /* This Value will Change bassed on DB */
+    width: 25%;
+}
+
+.fixed-line-portion {
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+    height: 100%;
+    background-color: greenyellow;
+    /* This Value will Change bassed on DB */
+    width: 50%;
+}
+
+/* Liability Line */
+
+.liabilities-line {
+    margin-right: 1rem;
+    width: 45%;
+    height: 1.5rem;
+    display: flex;
+    flex-flow: row nowrap;
+}
+
+.mortgage-line-portion {
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+    height: 100%;
+    background-color: var(--error-color-dark);
+    /* This Value will Change bassed on DB */
+    width: 50%;
+}
+
+.loan-line-portion {
+    height: 100%;
+    background-color: var(--error-color);
+    /* This Value will Change bassed on DB */
+    width: 25%;
+}
+
+.debt-line-portion {
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+    height: 100%;
+    background-color: indianred;
+    /* This Value will Change bassed on DB */
+    width: 25%;
+}

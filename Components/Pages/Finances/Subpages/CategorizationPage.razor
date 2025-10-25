@@ -1,0 +1,101 @@
+﻿@page "/finances/categories"
+@using System.Globalization
+@using Hearth.Data
+@using Hearth.Models
+@using Hearth.Services
+@using Hearth.Icons
+@using Hearth.Finances.Parts
+@using Hearth.Parts
+@using ApexCharts
+@inject HearthDbContext _dbContext
+@inject QolService _qolService
+
+@if (initialRenderComplete == false)
+{
+    <IconLoadingCircle AutoCenter=true />
+}
+
+<div class="category-main" hidden="@(initialRenderComplete ? false : true)">
+    <div class="category-section-1">
+        <div class="s1-header">
+            <div class="header-primary">Categories</div>
+            <div class="s1-h-button"> <HearthButton BgColor="none" Label="Manage Categories" TxtColor="blue" Icon="plus" OnClick="OpenModal"/> </div>
+        </div>
+        <div class="s1-body">
+            <div class="s1-b-graph">
+                <HearthBarChart 
+                    TItem="CategoryBar"
+                    Data="@categoriesBar"
+                    LabelSelector="@(c => c.Label)"
+                    ValueSelector="@(c => c.NumberOfTransactions)"
+                    Title="# Transactions"
+                    />
+            </div>
+        </div>
+        <div class="s1-footer">
+        </div>
+    </div>
+    <div class="category-section-2">
+        <div class="s2-header">
+            <div class="header-primary">Rules</div>
+        </div>
+        <div class="s2-body">
+            <CategoryOrganizationRuleTablePart />
+        </div>
+        <div class="s2-footer">
+        </div>
+    </div>
+</div>
+
+@* Manage Category Modal *@
+<HearthModal
+    Title="Manage Categories"
+    Width="large"
+    Open="showModal"
+    OnClose="CloseModal"
+>
+    <div class="manage-modal-main">
+        <div class="m-section-1">
+            <ul class="m-s1-ul">
+                <li class="add-category-li" @onclick="OpenAddModal">
+                    <div class="ac-text">
+                        Category
+                    </div>
+                    <div class="ac-icon">
+                        <IconPlus Size="24" />
+                    </div>
+                </li>
+                @foreach (var c in categories)
+                {
+                    <li class="m-s1-li" @onclick="@(() => OpenEditModal(c))">
+                        <div class="li-name">
+                            @c.Name
+                        </div>
+                        <div class="li-delete" @onclick:stopPropagation @onclick="() => OpenDeleteModal(c)">
+                            <IconTrash Size="24"/>
+                        </div>
+                    </li>
+                }
+            </ul>
+        </div>
+        <div class="m-section-2">
+
+        </div>
+    </div>
+</HearthModal>
+
+@* Add *@
+<AddEditCategoryModal ShowModal="showAddModal" ShowModalChanged="OnAddModalChanged" /> 
+
+@* Edit *@
+<AddEditCategoryModal ShowModal="showEditModal" ShowModalChanged="OnEditModalChanged" CategoryToEdit="selectedCategory"/>
+
+@* Delete *@
+<HearthGenericDeleteModal @bind-ShowModal="showDeleteModal" Label="Delete Category?" DeleteFunction="() => DeleteCategory(selectedCategory.Id)">
+    Are you sure you want to delete the "@selectedCategory.Name" category?
+</HearthGenericDeleteModal> 
+
+<HearthButton
+    Label="Assign Categories"
+    OnClick="HandleRuleAssignBtn" />
+

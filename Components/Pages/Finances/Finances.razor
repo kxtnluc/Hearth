@@ -1,0 +1,156 @@
+﻿@page "/finances"
+@namespace Pages
+@* @using Hearth.Finances.Parts NET9 *@
+@using Hearth.Services
+@using Hearth.Models
+@using Hearth.Models.CTO
+@using Hearth.Data
+@using Microsoft.EntityFrameworkCore
+@inject IJSRuntime JS
+@inject HearthDbContext _dbContext
+@* @inject PlaidService PlaidService NET9 *@
+
+<div class="dashboard-main">
+	<section class="d-section-1">
+		<div class="d-s1-grid-container">
+			@* Net Worth *@
+			<div class="d-s1-panel panel-hearth nw-panel" style="grid-area: nw">
+				<h2 class="nw-header">Net Worth</h2>
+				<div class="nw-number">@netWorth.NetWorth_C.ToString("C")</div>
+				<div class="nw-line-container">
+					<div class="assets-line">
+						<div class="liquid-line-portion"></div>
+						<div class="investment-line-portion"></div>
+						<div class="fixed-line-portion"></div>
+					</div>
+					<div class="divider-line">
+						<div>
+							-
+						</div>
+					</div>
+					<div class="liabilities-line">
+						<div class="mortgage-line-portion"></div>
+						<div class="loan-line-portion"></div>
+						<div class="debt-line-portion"></div>
+					</div>
+				</div>
+			</div>
+			@* Income *@
+			<div class="d-s1-panel panel-hearth small-panel" style="grid-area: income">
+				<div class="small-panel-header income-panel-header">
+					Income
+				</div>
+				<div class="small-panel-body">
+					<div class="spb-number positive-text">
+						@netWorth.Avg_Monthly_Income_C.ToString("C0")
+					</div>
+				</div>
+				<div class="small-panel-footer">
+					@netWorth.Percent_Income_Change_From_Past_Month_C.ToString("P1")
+				</div>
+			</div>
+			@* Expenses *@
+			<div class="d-s1-panel panel-hearth small-panel" style="grid-area: expenses">
+				<div class="small-panel-header expenses-panel-header">
+					Expenses
+				</div>
+				<div class="small-panel-body">
+					<div class="spb-number negative-text">
+						@netWorth.Avg_Monthly_Expenses_C.ToString("C0")
+					</div>
+				</div>
+				<div class="small-panel-footer">
+					@netWorth.Percent_Expenses_Change_From_Past_Month_C.ToString("P1")
+				</div>
+			</div>
+			@* Profit *@
+			<div class="d-s1-panel panel-hearth small-panel" style="grid-area: profit">
+				<div class="small-panel-header">
+					Profits
+				</div>
+				<div class="small-panel-body">
+					<div class="spb-number">
+						@netWorth.Avg_Monthly_Profit_C.ToString("C")
+					</div>
+				</div>
+				<div class="small-panel-footer">
+					@netWorth.Percent_Profit_Change_From_Past_Month_C.ToString("P1")
+				</div>
+			</div>
+			@* Budget *@
+			<div class="d-s2-panel" style="grid-area: budget">
+				bar grph 
+			</div>
+			@* Daily Transactions *@
+			<div class="d-s2-panel" style="grid-area: daily">
+				<div class="daily-panel-header">
+					October 20th
+				</div>
+				<div class="daily-panel-body">
+					@foreach(Transaction t in dailyTransactions)
+					{
+						<div>
+							googoogaagaa
+						</div>
+					}
+				</div>
+			</div>
+			@* Savings *@
+			<div class="d-s1-panel panel-hearth small-panel" style="grid-area: savings">
+				<div class="small-panel-header expenses-panel-header">
+					savings
+				</div>
+				<div class="small-panel-body">
+					<div class="spb-number negative-text">
+						$sav
+					</div>
+				</div>
+			</div>
+			@* Debt *@
+			<div class="d-s1-panel panel-hearth small-panel" style="grid-area: debt">
+				<div class="small-panel-header">
+					debt
+				</div>
+				<div class="small-panel-body">
+					<div class="spb-number">
+						$debts
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+</div>
+
+@code {
+
+	// Variables
+	public User activeUser = new User { };
+	private bool isLoggedIn = false;
+	private List<Transaction> dailyTransactions = new List<Transaction>();
+
+	// Net Worth CTO
+	private NetWorthCTO netWorth = new NetWorthCTO { };
+	private List<Account> accounts = new List<Account> { };
+	private List<Transaction> transactions = new List<Transaction> { };
+
+	// Services
+	// QolService qolService = new QolService();
+
+	// On Load
+	protected override async Task OnInitializedAsync()
+	{
+		// Fetch Active User Data
+		activeUser = await UserFunctions.GetActiveUserData();
+		accounts = AccountFunctions.GetUserAccounts(_dbContext, activeUser.Id);
+		// sort this by user later
+		transactions = TransactionFunctions.GetAllUnignoredTransactions(_dbContext);
+
+		netWorth = new NetWorthCTO
+		{
+			Accounts = accounts,
+			Transactions = transactions
+		};
+
+		// dailyTransactions = TransactionFunctions.GetAllUnignoredTransactions(_dbContext);
+	}
+}

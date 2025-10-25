@@ -1,0 +1,43 @@
+﻿@namespace Hearth.Parts
+@using Hearth.Icons
+
+<div class="container">
+    @if(string.IsNullOrEmpty(Label))
+    {
+        <input class="input input-border-@BoldBorder input-size-@Size"
+            type="@Type"
+            placeholder="@Placeholder"
+            value="@Value"
+            @oninput="HandleInputChange" 
+        />
+    }
+    else
+    {
+        <div class="label txt-@TxtColor">@Label</div>
+        <input class="input input-border-@BoldBorder input-size-@Size"
+               type="@Type"
+               placeholder="@Placeholder"
+               value="@Value"
+               @oninput="HandleInputChange"
+        />
+    }
+</div>
+
+@code {
+    [Parameter] public string Type { get; set; } = "text";
+    [Parameter] public string Placeholder { get; set; } = "";
+    [Parameter] public string Label { get; set; } = "";
+    [Parameter] public string Value { get; set; } = "";
+    [Parameter] public EventCallback<string> ValueChanged { get; set; }
+	[Parameter] public string TxtColor { get; set; } = "black";
+    [Parameter] public bool BoldBorder { get; set; } = true;
+    [Parameter] public string Size { get; set; } = "normal";
+
+
+
+    private async Task HandleInputChange(ChangeEventArgs e)
+    {
+        Value = e.Value?.ToString() ?? "";
+        await ValueChanged.InvokeAsync(Value);
+    }
+}

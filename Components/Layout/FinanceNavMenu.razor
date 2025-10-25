@@ -1,0 +1,140 @@
+﻿@using Hearth.Icons
+@using Hearth.Services
+@using Hearth.Parts
+@inject PlaidService _plaidService
+
+<div class="n-body">
+    <a class="n-top-row" href="">
+        <div class="n-brand-icon"><IconFlame Size=30 /></div>
+        <div class="n-brand-text">Hearth</div>
+    </a>
+    <nav class="n-b-column">
+
+		@*  Home Page (Disabled for now)
+        <NavLink class="n-link" href="" @onclick="@(() => HandleSetPage("home"))">
+            <div class="n-li @(currentPage == "home" ? "n-active" : "n-inactive")">
+                <span class="n-icon"><IconHome Size=28 /></span>
+                <span class="n-text">Home</span>
+            </div>
+        </NavLink> 
+        *@
+
+        <NavLink class="n-link" href="finances" @onclick="@(() => HandleSetPage("dashboard"))">
+            <div class="n-li @(currentPage == "dashboard" ? "n-active" : "n-inactive")">
+                <span class="n-icon"><IconDashboard Size=28 /></span>
+                <span class="n-text">Dashboard</span>
+            </div>
+        </NavLink>
+
+        <NavLink class="n-link" href="finances/accounts" @onclick="@(() => HandleSetPage("accounts"))">
+            <div class="n-li @(currentPage == "accounts" ? "n-active" : "n-inactive")">
+                <span class="n-icon"><IconBank Size=28 /></span>
+                <span class="n-text">Accounts</span>
+            </div>
+        </NavLink>
+        <NavLink class="n-link" href="finances/reports" @onclick="@(() => HandleSetPage("reports"))">
+            <div class="n-li @(currentPage == "reports" ? "n-active" : "n-inactive")">
+                <span class="n-icon"><IconClipboard Size=28 /></span>
+                <span class="n-text">Reports</span>
+            </div>
+        </NavLink>
+        <NavLink class="n-link" href="finances/categories" @onclick="@(() => HandleSetPage("categories"))">
+            <div class="n-li @(currentPage == "categories" ? "n-active" : "n-inactive")">
+                <span class="n-icon"><IconBlockGroup Size=28 /></span>
+                <span class="n-text">Categories</span>
+            </div>
+        </NavLink>
+        <NavLink class="n-link" href="finances/transactions" @onclick="@(() => HandleSetPage("transactions"))">
+            <div class="n-li @(currentPage == "transactions" ? "n-active" : "n-inactive")">
+                <span class="n-icon"><IconCreditCard Size=28 /></span>
+                <span class="n-text">Transactions</span>
+            </div>
+        </NavLink>
+
+
+    </nav>
+    <div class="n-bottom-row">
+        <button class="n-sync-button" @onclick="@(async () => await HandleSync(true))">
+            <div class="btn-text">Sync</div>
+            <div class="btn-icon"><IconSync Size=34 /></div>
+        </button>
+        <NavLink class="n-link" href="settings" @onclick="@(() => HandleSetPage("settings"))">
+            <div class="n-li @(currentPage == "settings" ? "n-active" : "n-inactive")">
+                <span class="n-icon"><IconGear Size=28 /></span>
+                <span class="n-text">Settings</span>
+            </div>
+        </NavLink>
+        <NavLink class="n-link" href="logout" @onclick="@(() => HandleSetPage("logout"))">
+            <div class="n-li @(currentPage == "logout" ? "n-active" : "n-inactive")">
+                <span class="n-icon"><IconLogout Size=28 /></span>
+                <span class="n-text">Logout</span>
+            </div>
+        </NavLink>
+    </div>
+
+</div>
+
+
+<HearthModal 
+    Width="s"
+    Title="Syncing..."
+    Open="@isSyncing"
+    OnClose="@CloseModal"
+    Closeable="@isCloseable"
+>
+<div class="sync-main">
+    Fetching Data
+</div>
+</HearthModal>
+
+
+
+@code {
+    string parentTab = "Finances";
+    bool isSyncing = false;
+    bool isCloseable = false;
+
+    private string currentPage = "dashboard";
+
+    private void HandleSetPage(string page)
+    {
+        currentPage = page;
+    }
+
+    private async Task HandleSync(bool major)
+    {
+
+        OpenModal();
+
+        if (major)
+        {
+            try
+            {
+                await _plaidService.MajorSync();
+            }
+            finally
+            {
+                isCloseable = true;
+                CloseModal();
+            }
+        }
+        else
+        {
+
+        }
+
+
+
+        return;
+    }
+
+    private void CloseModal()
+    {
+        isSyncing = false;
+    }
+
+    private void OpenModal()
+    {
+        isSyncing = true;
+    }
+}

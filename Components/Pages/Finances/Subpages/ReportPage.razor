@@ -1,0 +1,288 @@
+﻿@page "/finances/reports"
+@using System.Globalization
+@using Hearth.Data
+@using Hearth.Models
+@using Hearth.Models.CTO
+@using Hearth.Services
+@using Hearth.Icons
+@using Hearth.Finances.Parts
+@using ApexCharts
+@inject HearthDbContext _dbContext
+@inject QolService _qolService
+
+@if (initialRenderComplete == false)
+{
+	<IconLoadingCircle AutoCenter=true />
+}
+
+<div class="r-main" hidden="@(initialRenderComplete ? false : true)">
+	<div class="r-header">
+		<div class="r-h-header header-primary">Report</div>
+		<div class="r-h-time-filters">
+			<div class="r-pf-footer">
+
+				<button class="r-pf-btn" @onclick="PreviousMonth" disabled="@(inputFromMonth <= 1)" style="opacity:@(inputFromMonth <= 1 ? "0.3" : "") ; cursor:@(inputFromMonth <= 1 ? "default" : "")">
+					<IconArrow Size="20" Direction="l" />
+				</button>
+
+				<select class="r-h-tf-select-month select-primary select-medium" @bind="inputFromMonth" @bind:after="GenerateReport">
+					@foreach (int month in months)
+					{
+						<option value="@month">@CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month)</option>
+					}
+				</select>
+
+				<button class="r-pf-btn button-arrow-right" @onclick="NextMonth" disabled="@(inputFromMonth >= 12)"
+						style="opacity:@(inputFromMonth >= 12 ? "0.3" : "") ; cursor:@(inputFromMonth >= 12 ? "default" : "")">
+					<IconArrow Size="20" Direction="r" />
+				</button>
+
+
+
+				<select class="r-h-tf-select-year select-primary select-small" @bind="inputFromYear">
+					@foreach (int year in years)
+					{
+						<option value="@year">@year</option>
+					}
+				</select>
+
+			</div>
+
+		</div>
+	</div>
+
+	<div class="r-body">
+		<section class="r-section-one data-section">
+			<div class="r-s-o-summary">
+				<div class="r-s-o-s-text-net" style="color:@(report.Profit_C < 0 ? "var(--error-color)" : "");)">
+					@if (report.Profit_C >= 0)
+					{
+						<span>Profit</span>
+					}
+					else
+					{
+						<span>Loss</span>
+					}
+				</div>
+				<div class="r-s-o-s-profit tooltip-container" style="color:@(report.Profit_C < 0 ? "var(--error-color)" : "");)">
+					$@Math.Abs(report.Profit_C)
+					@if (report.Profit_C < 0)
+					{
+						<div class="tooltip-text">
+							How much was spent over your income
+						</div>
+					}
+					else
+					{
+						<div class="tooltip-text">
+							How much was not spent of your income
+						</div>
+					}
+				</div>
+				<div class="r-s-o-s-expenses-and-profit">
+					<div class="r-s-o-s-expenses">
+						<div class="r-s-o-s-expenses-text" style="font-weight@(report.Profit_C < 0 ? "800" : "");)">
+							Expenses
+						</div>
+						<div class="r-s-o-s-expenses-number" style="font-weight@(report.Profit_C < 0 ? "800" : "");)">
+							$@report.Expenses_C
+						</div>
+					</div>
+					<div class="r-s-o-s-income">
+						<div class="r-s-o-s-income-text" style="font-weight@(report.Profit_C >= 0 ? "800" : "");)">
+							Income
+						</div>
+						<div class="r-s-o-s-income-number" style="font-weight@(report.Profit_C >= 0 ? "800" : "");)">
+							$@report.Income_C
+						</div>
+					</div>
+
+				</div>
+				<div class="r-s-o-s-percents">
+					<div class="r-s-o-s-expenses comp-container">
+						@if (report.Comp_Expenses_Percent_C > 0)
+						{
+							<div class="icon-container-bad">
+								<IconArrow Direction="ur" Size="40" />
+							</div>
+							<div class="value-container">
+								<div class="percent-value" style="color:var(--error-color)">
+									@Math.Abs(report.Comp_Expenses_Percent_C)%
+								</div>
+								<div class="num-value" style="color:var(--error-color)">
+									$@Math.Abs(report.Comp_Expenses_Num_C)
+								</div>
+							</div>
+						}
+						else
+						{
+							<div class="icon-container-good">
+								<IconArrow Direction="dr" Size="40" />
+							</div>
+							<div class="value-container">
+								<div class="percent-value" style="color:var(--success-color)">
+									@Math.Abs(report.Comp_Expenses_Percent_C)%
+								</div>
+								<div class="num-value" style="color:var(--success-color)">
+									$@Math.Abs(report.Comp_Expenses_Num_C)
+								</div>
+							</div>
+						}
+					</div>
+					<div class="r-s-o-s-income comp-container">
+						@if (report.Comp_Income_Percent_C < 0)
+						{
+							<div class="icon-container-bad">
+								<IconArrow Direction="dr" Size="40" />
+							</div>
+							<div class="value-container">
+								<div class="percent-value" style="color:var(--error-color)">
+									@Math.Abs(report.Comp_Income_Percent_C)%
+								</div>
+								<div class="num-value" style="color:var(--error-color)">
+									$@Math.Abs(report.Comp_Income_Num_C)
+								</div>
+							</div>
+						}
+						else
+						{
+							<div class="icon-container-good">
+								<IconArrow Direction="ur" Size="40" />
+							</div>
+							<div class="value-container">
+								<div class="percent-value" style="color:var(--success-color)">
+									@Math.Abs(report.Comp_Income_Percent_C)%
+								</div>
+								<div class="num-value" style="color:var(--success-color)">
+									$@Math.Abs(report.Comp_Income_Num_C)
+								</div>
+							</div>
+						}
+					</div>
+				</div>
+			</div>
+
+			<div class="r-s-o-graph">
+
+				<ApexChart TItem="ReportSlice"
+						   @ref="reportChart"
+						   Options="options">
+
+					<ApexPointSeries TItem="ReportSlice"
+									 Items=@(chartType == "profit" ? (reportData):(reportDataCategories))
+									 Name="labels"
+									 SeriesType="SeriesType.Pie"
+									 XValue="@(e => e.Label)"
+									 YValue="@(e => e.Value)"
+									 ShowDataLabels />
+
+				</ApexChart>
+
+			</div>
+
+
+			<div class="r-s-o-averages">
+				<div class="r-s-o-a-dates">
+					@report.Real_From.ToString("MM/dd") - @report.Real_To.ToString("MM/dd")
+				</div>
+				<ul class="r-s-o-a-ul">
+					<li class="r-s-o-a-li">
+
+						<div class="li-label tooltip-container">
+							Mean
+							<div class="tooltip-text">The Mean is the average</div>
+						</div>
+						<div class="li-value">
+							$@report?.Average_Spending_Per_Day_C
+						</div>
+					</li>
+
+					<li class="r-s-o-a-li">
+						<div class="li-label tooltip-container">
+							Median
+							<div class="tooltip-text">The Median is the middle number</div>
+						</div>
+						<div class="li-value">
+							$@report?.Median_C
+						</div>
+					</li>
+
+					<li class="r-s-o-a-li">
+						<div class="li-label tooltip-container">
+							Mode
+							<div class="tooltip-text">The Mode is the most frequently occuring entry</div>
+						</div>
+						<div class="li-value">
+							$@report?.Mode_C
+						</div>
+					</li>
+
+
+					<li class="r-s-o-a-li">
+						<div class="li-label tooltip-container">
+							Range
+							<div class="tooltip-text">
+								The Range is the numerical distance between the largest and
+								smallest entries
+							</div>
+						</div>
+						<div class="li-value">
+							$@report?.Range_C
+						</div>
+					</li>
+
+					<li class="r-s-o-a-li">
+						<div class="li-label tooltip-container">
+							s
+							<div class="tooltip-text">
+								Sample SD is a measure that describes how much individual entries
+								in a dataset vary from the mean
+							</div>
+						</div>
+						<div class="li-value">
+							$@report?.Standard_Deviation_Sample_C
+						</div>
+					</li>
+
+					<li class="r-s-o-a-li">
+						<div class="li-label tooltip-container">
+							σ
+							<div class="tooltip-text">
+								Population SD is a more data inclusive measure that describes how
+								much individual entries in a dataset vary from the mean
+							</div>
+						</div>
+						<div class="li-value">
+							$@report?.Standard_Deviation_Population_C
+						</div>
+					</li>
+				</ul>
+			</div>
+		</section>
+		<section class="r-section-two">
+			<div class="r-s-t-header header-primary">
+				Income
+			</div>
+			<div class="r-s-t-body">
+				<TransactionListPart Transactions="@(report?.Transactions
+					.OrderByDescending(t => t.Date)
+					.Where(t => t.Amount < 0)
+					.ToList()
+                )" />
+			</div>
+		</section>
+		<section class="r-section-three">
+			<div class="r-s-t-header header-primary">
+				Expenses
+			</div>
+			<div class="r-s-t-body">
+				<TransactionListPart Transactions="@(report?.Transactions
+					.OrderByDescending(t => t.Date)
+					.Where(t => t.Amount >= 0)
+					.ToList()
+				)" />
+			</div>
+		</section>
+	</div>
+</div>
+

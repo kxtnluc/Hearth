@@ -1,0 +1,44 @@
+﻿@namespace Hearth.Parts
+@using Hearth.Icons
+
+<div>
+    <HearthModal Title="@Label"
+                 Open="@ShowModal"
+                 OnClose="@CloseModal"
+                 Width="normal">
+        <div class="modal-delete-main">
+            <div class="d-box">
+                <HearthInfoBox>
+                    @ChildContent
+                </HearthInfoBox>
+            </div>
+            <div class="d-buttons">
+                <div class="d-btn">
+                    <HearthButton Label="No" BgColor="blue" OnClick="CloseModal" />
+                </div>
+                <div class="d-btn">
+                    <HearthButton Label="Yes" BgColor="red" OnClick="DeleteFunction" />
+                </div>
+            </div>
+        </div>
+    </HearthModal>
+</div>
+
+@code {
+    [Parameter] public string Label { get; set; } = "Delete";
+    [Parameter] public EventCallback DeleteFunction { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    // bound value
+    [Parameter] public bool ShowModal { get; set; }
+    // event for two-way binding
+    [Parameter] public EventCallback<bool> ShowModalChanged { get; set; }
+
+    private async Task CloseModal()
+    {
+        // update our state
+        ShowModal = false;
+
+        // notify parent (triggers @bind-ShowModal)
+        await ShowModalChanged.InvokeAsync(ShowModal);
+    }
+}

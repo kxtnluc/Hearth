@@ -1,0 +1,100 @@
+.na-main {
+}
+
+.na-header {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+}
+
+.h-info {
+    display: flex;
+    flex-flow: column nowrap;
+}
+
+.h-name {
+}
+
+.h-bank {
+}
+
+.h-account-number {
+    font-style: italic;
+}
+
+.h-tools-and-status {
+/*    background-color: red;*/
+    display: flex;
+    flex-flow: column nowrap;
+    width: 8rem;
+}
+
+.h-status {
+    margin-top: 1rem;
+    align-self: end;
+}
+
+.h-tools {
+    margin-top: 1rem;
+    align-self: end;
+}
+
+
+.s-balance {
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+}
+
+.b-type {
+    align-self: center;
+    font-size: var(--font-size-ms);
+}
+
+.b-amount {
+    align-self: center;
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-l);
+}
+
+.b-header-2 {
+    font-weight: var(--font-weight-l);
+}
+
+.edit-modal-main{
+
+}
+
+.em-header{
+    margin-top: 1rem;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+}
+
+.em-body {
+    margin-top: 1rem;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+}
+
+.em-footer{
+    margin-top: 2rem;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: right;
+}
+
+.em-b-bank-name{
+    width: 45%;
+}
+
+.em-b-account-number{
+    width: 45%;
+}
+
+.em-h-account-status{
+    margin-top: 1rem;
+    align-self: center;
+}

@@ -1,0 +1,45 @@
+.login-container {
+    /*  Alignment  */
+    margin-top: 13%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /*  Coloring  */
+    background-color: var(--primary-color-light);
+    opacity: 0.9;
+    border: 3px, black, solid;
+    border-radius: 10px;
+    /*  Border Positioning  */
+    margin-left: 30%;
+    margin-right: 30%;
+    padding-top: 2%;
+    padding-bottom: 2%;
+}
+
+.l-c-header {
+    color: black;
+}
+
+.btn-container {
+    /*  Alignment  */
+    display: flex;
+    flex-flow: row nowrap;
+    margin-top: 5%;
+    justify-content: right;
+    align-items: baseline;
+}
+
+.login-btn {
+}
+
+.l-c{
+}
+
+.create-account-link:hover {
+    color: rgb(103, 178, 244);
+
+}
+
+.l-c-password-container{
+    margin-top: 1rem;
+}

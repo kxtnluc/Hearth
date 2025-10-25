@@ -1,0 +1,13 @@
+.d-box {
+    margin-top: 1rem;
+}
+
+.d-buttons {
+    display: flex;
+    justify-content: end;
+    margin-top: 1rem;
+}
+
+.d-btn {
+    margin-left: 1rem;
+}

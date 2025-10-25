@@ -1,0 +1,21 @@
+﻿@namespace Hearth.Parts
+@using Hearth.Icons
+
+<div class="hearth-infobox">
+    <div class="h-icon">
+        <IconFlame Size="28" />
+    </div>
+    <div class="h-body">
+        @ChildContent
+    </div>
+</div>
+
+
+
+@code {
+    [Parameter] public string Type { get; set; } = "info";
+
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    [Parameter] public EventCallback OnClose { get; set; }
+}

@@ -1,0 +1,44 @@
+/* Label container */
+.hearth-checkbox {
+    display: inline-flex;
+    align-items: center;
+    /*    border: 1px solid blue; */
+    padding: 4px;
+    gap: 8px;
+    cursor: pointer;
+}
+
+    /* Hide native checkbox */
+    .hearth-checkbox input[type="checkbox"] {
+        display: none;
+    }
+
+    /* Style the custom checkbox */
+    .hearth-checkbox .checkmark {
+        display: inline-block;
+        width: 25px;
+        height: 25px;
+        border: 2px solid #555;
+        border-radius: 4px;
+        position: relative;
+        background-color: white;
+        flex-shrink: 0;
+    }
+
+    /* Add checkmark when checked */
+    .hearth-checkbox input[type="checkbox"]:checked + .checkmark::after {
+        content: '';
+        position: absolute;
+        left: 8px;
+        top: 4px;
+        width: 6px;
+        height: 12px;
+        border: solid white;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+    }
+
+    .hearth-checkbox input[type="checkbox"]:checked + .checkmark {
+        background-color: #007bff;
+        border-color: #007bff;
+    }

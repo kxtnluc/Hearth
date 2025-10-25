@@ -1,0 +1,20 @@
+.hearth-infobox {
+    display: flex;
+    background-color: var(--text-color-dim);
+    border-radius: 10px;
+    padding-left: 1vw;
+    padding-top: 1vw;
+    padding-bottom: 1vw;
+    padding-right: 1vw;
+}
+
+.h-icon {
+    align-self: center;
+    color: var(--error-color);
+}
+
+.h-body {
+    font-size: 1.25vw;
+    margin-left: 1.5vw;
+    align-self: center;
+}

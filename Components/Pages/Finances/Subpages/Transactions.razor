@@ -1,0 +1,164 @@
+﻿@page "/finances/transactions"
+@namespace Finances.Subpages
+@using Hearth.Services
+@using Hearth.Models
+@using Hearth.Models.Joins
+@using Hearth.Data
+@using Hearth.Finances.Parts
+@using Hearth.Parts
+@using Hearth.Icons
+@inject HearthDbContext _dbContext
+
+<div class="t-main">
+    @* --- Header --- *@
+    <div class="t-header">
+        <div class="t-h-header header-primary">Transactions</div>
+        <div class="t-h-account">
+
+            <select class="t-h-account-select select-primary select-large" @onchange="UpdateSelectedAccount">
+                <option value="">Select an Account</option>
+                @foreach (BankAccount b in bankAccounts)
+                {
+                    <option value="@b.AccountId">@b.Account_Name</option>
+                }
+            </select>
+
+        </div>
+
+    </div>
+    <div class="t-footer">
+        @if (accountTransactions.Count >= 1)
+        {
+            <HearthPagerButtons
+                TotalNumberOfPages="TotalPages" 
+                Page="@currentPage" 
+                PageChanged="@((int newPage) => currentPage = newPage)" />
+        }
+    </div>
+    @* --- Body --- *@
+    <div class="t-body">
+        <TransactionListPart 
+            Transactions="@(PagedTransactions.ToList())" />
+    </div>
+
+    @* --- Footer --- *@
+    <div class="t-footer">
+        @if (accountTransactions.Count >= 1)
+        {
+            <HearthPagerButtons
+                TotalNumberOfPages="TotalPages" 
+                Page="@currentPage" 
+                PageChanged="@((int newPage) => currentPage = newPage)" />
+        }
+    </div>
+</div>
+
+
+
+@code {
+    // ================================================================ Variables ================================================================
+
+    // ---- Active User
+
+    public User? activeUser { get; set; }                                           // the active user
+
+    // ---- Banks, Accounts, and BankAccount (joins)
+
+    List<BankAccount> bankAccounts = new List<BankAccount> { };
+    BankAccount? selectedBankAccount = null;
+    string selectedAccountId = string.Empty;                                        // selected account id from dropdown
+
+    // ---- Transaction Lists
+    List<Transaction>? accountTransactions = new List<Transaction> { };             // one account's transactions from db
+    List<Transaction>? addedOrUpdatedTransactions = new List<Transaction> { };      // after sync, all that account's added or updated transactions from db
+
+    // ---- Pages
+    int currentPage = 1;
+    int entriesPerPage = 50;
+
+    private int TotalPages => (int)Math.Ceiling(accountTransactions.Count / (double)entriesPerPage);
+
+    private IEnumerable<Transaction> PagedTransactions => accountTransactions
+        .Skip((currentPage - 1) * entriesPerPage)
+        .Take(entriesPerPage);
+
+    // ================================================================ Functions ================================================================
+    // On Load
+    protected override async Task OnInitializedAsync()
+    {
+        activeUser = await QolService.GetActiveUserData();
+        GetAndSetAccounts();
+    }
+
+    private void GetAndSetAccounts()
+    {
+        try
+        {
+            // If there is a logged in user
+            if (activeUser != null)
+            {
+                bankAccounts = _dbContext.Accounts
+                    .Where(a => a.UserId == activeUser.Id)
+                    .Join(_dbContext.Banks,
+                        account => account.BankId,
+                        bank => bank.Id,
+                        (a, b) => new BankAccount
+                            {
+                                AccountId = a.Id,
+                                Bank_Name = a.Institution_Name,
+                                BankId = b.Id,
+                                Account_Name = a.Name,
+                                Access_Token = b.Access_Token
+                            })
+                    .ToList();
+
+                return;
+            }
+        }
+        catch (Microsoft.Data.Sqlite.SqliteException ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"SQLite Error: {ex.Message}");
+        }
+        catch (System.InvalidOperationException ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Invalid Operation Error: {ex.Message}");
+        }
+        return;
+    }
+
+    private void UpdateSelectedAccount(ChangeEventArgs e)
+    {
+        if (e.Value != null && bankAccounts != null && e.Value.ToString() != selectedAccountId)
+        {
+            selectedAccountId = e.Value.ToString();
+            selectedBankAccount = bankAccounts.SingleOrDefault(ba => ba.AccountId == selectedAccountId);
+
+            if (selectedBankAccount != null) GetAndSetTransactions(selectedBankAccount.AccountId);
+        }
+    }
+
+    private void GetAndSetTransactions(string accountId)
+    {
+        try
+        {
+            accountTransactions = TransactionFunctions.GetAccountTransactions(_dbContext, accountId);
+        }
+        catch (InvalidOperationException ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"An error occurred while fetching transactions: {ex.Message}");
+        }
+        return;
+    }
+
+    private void NextPage()
+    {
+        if (currentPage < TotalPages) currentPage++;
+
+        return;
+    }
+
+    private void PreviousPage()
+    {
+        if (currentPage > 1) currentPage--;
+    }
+}

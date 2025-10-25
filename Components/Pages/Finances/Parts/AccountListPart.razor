@@ -1,0 +1,78 @@
+﻿@namespace Hearth.Finances.Parts
+@using Hearth.Models
+@inject NavigationManager _navigation
+
+
+<ul class="alp-ul">
+    @foreach (Account a in Accounts)
+    {
+        <li class="alp-li" @onclick="@(() => HandleOnClick(a.Id))">
+            <div class="alp-li-header" style="background-color: @(a.Bank.Generated_Color)">
+                <div class="li-h-name">
+                    @a.Name
+                </div>
+                <div class="li-h-type">
+                    <div class="t-2" hidden>
+                        @a.Type
+                    </div>
+                    <div class="t-1">
+                        @a.Subtype
+                    </div>
+                </div>
+            </div>
+            @if (a.Type == "credit")
+            {
+                <div class="alp-li-body">
+                    <div class="b-credit">
+                        <div class="c-current">
+                            <div class="c-text">
+                                Spent
+                            </div>
+                            <div class="c-number">
+                                @(a.Balance_Current?.ToString("C"))
+                            </div>
+                        </div>
+                        <div class="c-line-of-credit">
+                            <div class="loc-text">
+                                Line
+                            </div>
+                            <div class="loc-number">
+                                @((a.Balance_Current + a.Balance_Available is decimal sum ? Math.Round(sum / 100) * 100 : (decimal?)null)?.ToString("C"))
+                            </div>
+                        </div>
+                        <div class="c-available">
+                            <div class="c-text t-remaining">
+                                Credit Remaining
+                            </div>
+                            <div class="c-number">
+                                @(a.Balance_Available?.ToString("C"))
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="alp-li-body">
+                    <div class="b-balance">
+                        <div class="b-text">
+                            Balance
+                        </div>
+                        <div class="b-number">
+                            @(a.Balance_Current?.ToString("C") ?? "- Unkown -")
+                        </div>
+                    </div>
+                </div>
+            }
+        </li>
+    }
+</ul>
+
+@code {
+    [Parameter] public List<Account> Accounts { get; set; }
+
+    private void HandleOnClick(string id)
+    {
+        _navigation.NavigateTo($"/finances/accounts/{id}");
+    }
+}

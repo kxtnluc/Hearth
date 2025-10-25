@@ -1,0 +1,70 @@
+﻿@namespace Hearth.Finances.Parts
+@using Hearth.Services
+@using Hearth.Models
+@using Hearth.Parts
+@using Microsoft.EntityFrameworkCore
+@inject IJSRuntime JS
+@inject PlaidService PlaidService
+@inject QolService _qolService
+
+
+
+
+<HearthButton OnClick="OpenPlaidLink" Label="Add Account" Icon="link" IconAfterLabel=false BgColor="green" />
+
+
+
+
+@code {
+    // Variables
+    private User activeUser = new User { };
+    private bool isLoggedIn = false;
+
+    // Services
+
+    // On Load
+    protected override async Task OnInitializedAsync()
+    {
+        // Fetch Active User Data
+        activeUser = await QolService.GetActiveUserData();
+    }
+
+    // Open the Plaid Link Popover Client
+    private async Task OpenPlaidLink()
+    {
+        // Step 1: Request a link_token
+        string linkToken = await PlaidService.CreateLinkTokenAsync(activeUser.Id);
+
+        // Step 2b: Invoke JS
+        await JS.InvokeVoidAsync("openPlaidLink", linkToken);
+    }
+
+    // Use the link token
+    // private async Task LinkBankAccount()
+    // {
+    //     string linkToken = await PlaidService.CreateLinkTokenAsync(activeUser.Id);
+    // }
+
+    // Exchange the Link Token generated with a Public Token once a bank account is found
+    [JSInvokable]
+    public static async Task ExchangePublicToken(string publicToken)
+    {
+        // I HAD TO COMMENT THIS OUT TO CHANGE QOL SERVICE AROUND TO BE AN ACTUAL SERVICE, FIX LATER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // Get User Data
+        var activeUser = await QolService.GetActiveUserData();
+
+        // Access the service provider to resolve dependencies
+        using var scope = MauiProgram.ServiceProvider.CreateScope();
+        var plaidService = scope.ServiceProvider.GetRequiredService<PlaidService>();
+
+        // Call the method to store the access token
+        await plaidService.StoreAccessTokenAsync(publicToken, activeUser.Id);
+    }
+
+    // Log any errors that occur during the link proccess
+    [JSInvokable]
+    public static void LogTheBadError(string errorJson)
+    {
+        System.Diagnostics.Debug.WriteLine($"JavaScript Error: {errorJson}");
+    }
+}

@@ -1,0 +1,74 @@
+.button {
+    all: unset;
+    font-weight: 600;
+    font-size: 16px;
+    border: 2px solid;
+    border-radius: 9px;
+    padding: 0.4rem 0.75rem 0.4rem 0.75rem;
+    transition: 300ms;
+}
+
+    .button:hover {
+        cursor: pointer;
+    }
+
+.bg-color-blue {
+    background-color: var(--info-color);
+    border-color: transparent;
+}
+
+    .bg-color-blue:hover {
+        background-color: var(--info-color-light);
+    }
+
+.bg-color-green {
+    background-color: var(--success-color);
+    border-color: var(--primary-color-light);
+}
+
+.bg-color-red {
+    background-color: var(--error-color);
+    border-color: var(--primary-color-light);
+}
+
+.bg-color-none {
+    background-color: transparent;
+    border-color: transparent;
+}
+
+.txt-color-white {
+    color: var(--text-color-bright);
+}
+
+.txt-color-black {
+    color: var(--primary-color-light);
+}
+
+.txt-color-blue {
+    color: var(--info-color);
+}
+
+.txt-color-green {
+    color: var(--success-color);
+}
+
+/* icons */
+
+.icon-label-container {
+    display: flex;
+    justify-content: space-between;
+    /*    border: solid 2px red;*/
+}
+
+.icon {
+    align-content: center;
+    /*    border: solid 2px green;*/
+}
+
+.label-before {
+    padding-left: 6px;
+}
+
+.label-after{
+    padding-right: 6px;
+}
