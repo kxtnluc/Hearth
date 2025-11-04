@@ -1,0 +1,51 @@
+.debt-main {
+    /* I hate this height variable, but i dont wanna change it rn ): */
+    height: 88dvh;
+    margin: 0;
+    padding: 0;
+}
+
+.debt-section-1 {
+    height: 100%;
+}
+
+/* Section one Grid */
+.d-s1-grid-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(6, 1fr);
+    gap: clamp(0.5rem, 2vw, 1rem);
+    background-color: var(--color-primary-darker);
+    padding: 1rem;
+    border-radius: 1rem;
+    min-height: 300px;
+    height: 100%;
+    grid-template-areas:
+        "mt mt cl cl"
+        "mt mt cl cl"
+        "grph grph o1 o2"
+        "grph grph o1 o2"
+        "grph grph pm pm"
+        "grph grph pm pm";
+
+    @media(max-width: 1500px) {
+        grid-template-rows: repeat(8, 150px);
+        grid-template-areas:
+            "mt mt cl cl"
+            "mt mt cl cl"
+            "o1 o1 o2 o2"
+            "o1 o1 o2 o2"
+            "pm pm pm pm"
+            "pm pm pm pm"
+            "grph grph grph grph"
+            "grph grph grph grph";
+    }
+}
+
+/* Small Panel Section */
+
+.small-panel {
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: space-between;
+}

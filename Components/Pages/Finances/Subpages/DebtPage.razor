@@ -1,0 +1,86 @@
+﻿@page "/finances/debts"
+@using Hearth.Data
+@using Hearth.Models
+@using Hearth.Models.CTO
+@using Hearth.Services
+@using Hearth.Icons
+@using Hearth.Finances.Parts
+@using ApexCharts
+@inject HearthDbContext _dbContext
+
+<main class="debt-main">
+	<section class="debt-section-1">
+		<div class="d-s1-grid-container">
+			@* Mortgage *@
+			<div class="d-s1-panel panel-hearth" style="grid-area: mt">
+				<div class="loan-panel">
+					@* Loan Type and Toast *@
+					<div class="lp-header">
+						<div class="lp-h-header">
+							<span class="lp-h-icon">H</span> Mortgage
+						</div>
+						<div class="lp-h-toast">
+							!: payment due in 2 days
+						</div>
+					</div>
+					@* Loan Name and Payment *@
+					<div class="lp-body">
+						<div> <IconArrow Direction="l" /> </div>
+
+						<div class="lp-b-body">
+							<div class="lp-b-b-header">
+								name
+							</div>
+							<div class="lp-b-b-payment">
+								payment_c
+							</div>
+						</div>
+
+						<div> <IconArrow Direction="r" /> </div>
+					</div>
+					@* Progress Bar *@
+					<div class="lp-footer">
+						@* The Num container rests exactly above the bar container *@
+						<div class="lp-f-num-container">
+							<div class="green-num">$75,000</div>
+							<div class="red-num">$324,000</div>
+						</div>
+						<div class="lp-f-bar-container">
+							<div class="green-bar"></div>
+							<div class="red-bar"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+			@* Car Loan *@
+			<div class="d-s1-panel panel-hearth" style="grid-area: cl">
+				cl
+			</div>
+			@* Other Loan 1 *@
+			<div class="d-s1-panel panel-hearth" style="grid-area: o1">
+				o1
+			</div>
+			<div class="d-s1-panel panel-hearth" style="grid-area: o2">
+				o2
+			</div>
+			@* Payments *@
+			<div class="d-s1-panel" style="grid-area: pm">
+				pm
+			</div>
+			@* Loan Graph *@
+			<div class="d-s2-panel" style="grid-area: grph">
+				grph
+			</div>
+		</div>
+	</section>
+</main>
+
+@code {
+	private List<Loan> loans = new List<Loan>();
+
+	protected override async Task OnInitializedAsync()
+	{
+		loans = _dbContext.Loans.ToList();
+	}
+}
+
