@@ -1,0 +1,119 @@
+.n-body {
+    background-color: var(--primary-color-light);
+    height: 100%;
+    position: fixed;
+    width: 17rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+}
+
+.n-top-row {
+    display: flex;
+    justify-content: left;
+    background-color: rgb(21, 27, 31);
+    height: 4rem;
+    /*    border: 1px, solid, var(--error-color);*/
+}
+
+.n-brand-icon {
+    /*    border: 1px, solid, red;*/
+    color: var(--error-color);
+    align-self: center;
+    margin-left: 0.5rem;
+}
+
+.n-brand-text {
+    /*    border: 1px, solid, blue;*/
+    align-self: center;
+    margin-left: 1rem;
+    color: var(--background-color-light);
+    font-size: 2rem;
+    font-weight: 600;
+    transition: 300ms
+}
+
+
+.n-b-column {
+    border-top: var(--error-color) solid 3px;
+    padding-top: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* default */
+}
+
+.n-active {
+    opacity: 1;
+    margin-left: 0.25rem;
+    font-weight: 700;
+}
+
+.n-inactive {
+    opacity: 0.5;
+    transition: 200ms;
+}
+
+    .n-inactive:hover {
+        opacity: 0.8;
+    }
+
+    .n-inactive:active {
+        opacity: 1;
+    }
+
+
+
+.n-li {
+    /*        border: var(--error-color) solid 1px;*/
+    display: flex;
+    justify-content: left;
+    padding-top: 0.3rem;
+    padding-bottom: 0.3rem;
+    padding-left: 0.75rem;
+}
+
+.n-bottom-row {
+    margin-top: auto;
+}
+
+
+.n-icon {
+/*    border: var(--error-color) solid 1px;*/
+    width: 1.85rem;
+    color: var(--background-color-light);
+}
+
+.n-text {
+/*        border: var(--error-color) solid 1px;*/
+    color: var(--background-color-light);
+    font-size: 1.8rem;
+    margin-left: 0.75rem;
+}
+
+.n-sync-button{
+    all: unset;
+    color: rgb(255, 255, 255, 0.5);
+    background-color: var(--primary-color-dark);
+    width: 100%;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    display: flex;
+    justify-content: space-around;
+    transition: 200ms;
+}
+
+    .n-sync-button:hover {
+        color: white;
+    }
+
+.btn-text{
+    font-weight: 700;
+    font-size: 1.75rem;
+    align-self: center;
+}
+
+.btn-icon {
+/*    background-color: blue;*/
+    align-self: center;
+    margin-right: 1rem;
+}
