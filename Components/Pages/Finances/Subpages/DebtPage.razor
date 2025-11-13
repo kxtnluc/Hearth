@@ -21,10 +21,10 @@
 			</div>
 			@* Other Loan 1 *@
 			<div class="d-s1-panel panel-hearth" style="grid-area: o1">
-				o1
+				<LoanPanel IsSmall=true />
 			</div>
 			<div class="d-s1-panel panel-hearth" style="grid-area: o2">
-				o2
+				<LoanPanel IsSmall=true />
 			</div>
 			@* Payments *@
 			<div class="d-s1-panel" style="grid-area: pm">
@@ -50,6 +50,13 @@
 			.Where(m => m.Loan_Type == LOAN_TYPE.Mortgage)
 			.ToList();
 
+		carLoans = _dbContext.Loans
+			.Where(c => c.Loan_Type == LOAN_TYPE.Car_Loan)
+			.ToList();
+
+		otherLoans = _dbContext.Loans
+			.Where(o => o.Loan_Type != LOAN_TYPE.Mortgage && o.Loan_Type != LOAN_TYPE.Car_Loan)
+			.ToList();
 	}
 }
 

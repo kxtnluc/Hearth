@@ -109,7 +109,7 @@
 
 .green-num {
     position: absolute;
-    left: 30%; /* Match the green bar width */
+    left: 60%; /* This Value will change dynamically */
     transform: translateX(-50%); /* Center it on the intersection point */
     white-space: nowrap;
     font-size: 0.875rem;
@@ -124,21 +124,22 @@
     display: flex;
     flex-flow: row nowrap;
     width: 100%;
-    height: 1.25rem;
+    height: 1.5rem;
 }
 
 .green-bar {
-    height: 1.25rem;
-    width: 30%; /* This Value will change dynamically */
+    height: 100%;
+    width: 60%; /* This Value will change dynamically */
     background-color: var(--success-color);
-    border-radius: 1rem 0 0 1rem;
+    border-radius: 8px 0 0 8px;
 }
 
 .red-bar {
-    height: 1.25rem;
-    width: 70%; /* This Value will change dynamically */
+    height: 100%;
+    width: 40%; /* This Value will change dynamically */
     background-color: var(--error-color);
-    border-radius: 0 1rem 1rem 0;
+    border-radius: 0 8px 8px 0;
+    opacity: 0.35;
 }
 
 /* Red number styling */
@@ -166,4 +167,24 @@
     padding-left: 0.5rem;
     align-self: center;
     letter-spacing: 1.5px;
+}
+
+.arrow-btn{
+    background-color: transparent;
+    border: none;
+    margin-right: 1rem;
+    margin-left: 1rem;
+    height: 3rem;
+    aspect-ratio: 1;
+    border-radius: 100%;
+    transition: 300ms;
+}
+
+.arrow-btn:enabled:hover{
+    cursor: pointer;
+    background-color: var(--text-color-dim);
+}
+
+.arrow-btn:disabled{
+    opacity: 0;
 }
