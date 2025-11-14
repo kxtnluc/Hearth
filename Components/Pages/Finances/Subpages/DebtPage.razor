@@ -17,14 +17,14 @@
 			</div>
 			@* Car Loan *@
 			<div class="d-s1-panel panel-hearth" style="grid-area: cl">
-				<LoanPanel />
+				<LoanPanel Loans="@carLoans" />
 			</div>
 			@* Other Loan 1 *@
 			<div class="d-s1-panel panel-hearth" style="grid-area: o1">
-				<LoanPanel IsSmall=true />
+				<LoanPanel IsSmall=true Loans="@studentLoans" />
 			</div>
 			<div class="d-s1-panel panel-hearth" style="grid-area: o2">
-				<LoanPanel IsSmall=true />
+				<LoanPanel IsSmall=true Loans="@otherLoans" />
 			</div>
 			@* Payments *@
 			<div class="d-s1-panel" style="grid-area: pm">
@@ -41,8 +41,8 @@
 @code {
 	private List<Loan> mortgages = new List<Loan>();
 	private List<Loan> carLoans = new List<Loan>();
+	private List<Loan> studentLoans = new List<Loan>();
 	private List<Loan> otherLoans = new List<Loan>();
-
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -52,6 +52,10 @@
 
 		carLoans = _dbContext.Loans
 			.Where(c => c.Loan_Type == LOAN_TYPE.Car_Loan)
+			.ToList();
+
+		studentLoans = _dbContext.Loans
+			.Where(sl => sl.Loan_Type == LOAN_TYPE.Student_Loan)
 			.ToList();
 
 		otherLoans = _dbContext.Loans

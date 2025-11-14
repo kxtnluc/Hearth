@@ -185,6 +185,32 @@
     background-color: var(--text-color-dim);
 }
 
+/* The Arrow Tab Buttons */
 .arrow-btn:disabled{
     opacity: 0;
+}
+
+/* No Loan Panel */
+
+.no-loan {
+    display: flex;
+    flex-flow: column;
+    height: 100%;
+    justify-content: center;
+}
+
+.nl-check{
+/*    background-color: lightblue;*/
+    width: 100%;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--success-color);
+
+}
+
+.nl-text{
+    align-self: center;
+    margin-top: 0.5rem;
+/*    background-color: lightcoral;*/
+    font-style: italic;
 }
