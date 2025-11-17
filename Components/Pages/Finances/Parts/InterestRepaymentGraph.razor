@@ -1,0 +1,85 @@
+﻿@* InterestGraph.razor *@
+@namespace Hearth.Finances.Parts
+@using Hearth.Icons
+@using Hearth.Models
+
+<div class="interest-graph-main">
+	<div class="ig-header">
+		<button class="ig-arrow-btn" @onclick="PreviousLoan" disabled="@(Loans.Count <= 1 || currentIndex == 0)">
+			<IconCaret Direction="l" Size="25" />
+		</button>
+		<h2 class="ig-loan-name">@CurrentLoan.Name</h2>
+		<button class="ig-arrow-btn" @onclick="NextLoan" disabled="@(Loans.Count <= 1 || currentIndex == (Loans.Count - 1))">
+			<IconCaret Direction="r" Size="25" />
+		</button>
+	</div>
+
+	<div class="ig-bars-container">
+		@* Top label *@
+		<div class="ig-bar-row">
+			<div class="ig-row-label"></div>
+			<div class="ig-bar-wrapper">
+				<div class="ig-bar-label-top">Principle Paid Monthly</div>
+			</div>
+		</div>
+
+		@* Generate bars for each period *@
+		@for (int i = 0; i < numberOfBars; i++)
+		{
+			<div class="ig-bar-row">
+				<div class="ig-row-label">@(
+					(i+1) * (CurrentLoan.Term / numberOfBars)
+				)</div>
+				<div class="ig-bar-wrapper">
+					<div class="ig-bar-full">
+						<div class="ig-bar-principle" style="width: @(LoanFunctions.EstimatePaymentPrincipleOrInterestByPeriodOfTerms(CurrentLoan, numberOfBars, (i + 1), false, true).ToString("P0"))">
+							<span class="ig-bar-amount">@(
+								LoanFunctions.EstimatePaymentPrincipleOrInterestByPeriodOfTerms(CurrentLoan, numberOfBars, (i + 1)).ToString("C0")
+							)</span>
+						</div>
+						<div class="ig-bar-interest" style="width: @(LoanFunctions.EstimatePaymentPrincipleOrInterestByPeriodOfTerms(CurrentLoan, numberOfBars, (i + 1), true, true).ToString("P0"))">
+							<span class="ig-bar-amount">@(
+								LoanFunctions.EstimatePaymentPrincipleOrInterestByPeriodOfTerms(CurrentLoan, numberOfBars, (i + 1), true).ToString("C0")
+							)</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		}
+
+		@* Bottom label *@
+		<div class="ig-bar-row">
+			<div class="ig-row-label"></div>
+			<div class="ig-bar-wrapper">
+				<div class="ig-bar-label-bottom">Interest Paid Monthly</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+@code {
+	[Parameter] public List<Loan> Loans { get; set; } = new();
+
+	private int numberOfBars = 10;
+
+	private int currentIndex = 0;
+
+	private Loan CurrentLoan => Loans[currentIndex]; // If something goes wrong here it could literally be anything with the loan table, dont trust the message.
+
+
+	private void NextLoan()
+	{
+		if (Loans.Count > 0)
+		{
+			currentIndex = (currentIndex + 1) % Loans.Count;
+		}
+	}
+
+	private void PreviousLoan()
+	{
+		if (Loans.Count > 0)
+		{
+			currentIndex = (currentIndex - 1 + Loans.Count) % Loans.Count;
+		}
+	}
+}

@@ -26,7 +26,7 @@ else if (Loans.Count() >= 1)
 						case LOAN_TYPE.Mortgage:
 							<span class="lp-h-h-icon">
 								<IconHome Size=30 />
-							</span> 
+							</span>
 							<span>Mortgage</span>
 							break;
 						case LOAN_TYPE.Car_Loan:
@@ -37,16 +37,16 @@ else if (Loans.Count() >= 1)
 							break;
 						case LOAN_TYPE.Student_Loan:
 							<span class="lp-h-h-icon">
-								<IconBlockGroup Size=30 />
+								<IconUniCap Size=30 />
 							</span>
 							<span>Student Loan</span>
 							break;
 						default:
 							<span class="lp-h-h-icon">
-								<IconCreditCard Size=30 />
+								<IconBox Size=30 />
 							</span>
 							<span>Other</span>
-						break;
+							break;
 					}
 				</div>
 				@if (CurrentLoan.Loan_Status_C == LOAN_STATUS.Delinquent)
@@ -60,11 +60,17 @@ else if (Loans.Count() >= 1)
 			<div class="lp-body">
 				<button disabled=@(Loans.Count <= 1 || currentIndex == 0) class="arrow-btn" @onclick="PreviousLoan"> <IconCaret Direction="l" Size="30" /> </button>
 				<div class="lp-b-body">
-					<h2 class="lp-b-b-header">
+					<h2 class="lp-b-b-header loan-name-small">
 						@CurrentLoan.Name
 					</h2>
-					<div class="lp-b-b-payment">
-						@CurrentLoan.Payment_C.ToString("C0") <span class="per-tag">/mo</span>
+					<div class="lp-b-b-payment payment-small">
+
+						@CurrentLoan.Payment_C.ToString("C0")
+
+						@if (CurrentLoan.Amortized)
+						{
+							<span class="per-tag">/mo</span>
+						}
 					</div>
 				</div>
 				<button disabled=@(Loans.Count <= 1 || currentIndex == (Loans.Count - 1)) class="arrow-btn" @onclick="NextLoan"> <IconCaret Direction="r" Size="30" /> </button>
@@ -72,7 +78,7 @@ else if (Loans.Count() >= 1)
 			@* Progress Bar *@
 			<div class="lp-footer">
 				@* The Num container rests exactly above the bar container *@
-				<div class="lp-f-bar-container">
+				<div class="lp-f-bar-container bar-container-small">
 					<div class="green-bar" style="width: @CurrentLoan.Percent_Of_Loan_Paid_C.ToString("P0")"></div>
 					<div class="red-bar" style="width: @CurrentLoan.Percent_Of_Loan_Remaining_C.ToString("P0")"></div>
 				</div>
@@ -137,7 +143,7 @@ else if (Loans.Count() >= 1)
 			<div class="lp-footer">
 				@* The Num container rests exactly above the bar container *@
 				<div class="lp-f-green-num-container">
-					<div class="green-num" style="left: @CurrentLoan.Percent_Of_Loan_Paid_C.ToString("P0")">@CurrentLoan.Total_Paid.ToString("C0")</div>
+					<div class="green-num" style="left: @CurrentLoan.Percent_Of_Loan_Paid_C.ToString("P0")">@CurrentLoan.Total_Paid_C.ToString("C0")</div>
 				</div>
 				<div class="lp-f-bar-container">
 					<div class="green-bar" style="width: @CurrentLoan.Percent_Of_Loan_Paid_C.ToString("P0")"></div>

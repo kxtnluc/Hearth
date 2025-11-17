@@ -1,0 +1,164 @@
+/* InterestGraph.razor.css */
+
+.interest-graph-main {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+/*    border-radius: 12px;
+    box-shadow: inset 4px 4px 8px rgba(0,0,0,0.2), inset -4px -4px 8px rgba(255,255,255,0.8);*/
+}
+
+/* Header with navigation */
+.ig-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    margin-top: 0.5rem;
+}
+
+.ig-loan-name {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin: 0;
+    text-align: center;
+}
+
+.ig-arrow-btn {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 200ms;
+}
+
+    .ig-arrow-btn:enabled:hover {
+        background-color: var(--text-color-dim);
+    }
+
+    .ig-arrow-btn:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+    }
+
+/* Bars container */
+.ig-bars-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 95%;
+}
+
+/* Each bar row */
+.ig-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+/* Row label (period number on left) */
+.ig-row-label {
+    min-width: 2rem;
+    text-align: right;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+/* Bar wrapper */
+.ig-bar-wrapper {
+    flex: 1;
+    display: flex;
+}
+
+/* Full bar container */
+.ig-bar-full {
+    display: flex;
+    width: 100%;
+    height: 2rem;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Principle section (blue) */
+.ig-bar-principle {
+    background-color: #4169E1;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 0.5rem;
+    position: relative;
+}
+
+/* Interest section (light purple) */
+.ig-bar-interest {
+    background-color: #D8D8F0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding-left: 0.5rem;
+    position: relative;
+}
+
+/* Amount labels inside bars */
+.ig-bar-amount {
+    font-size: 0.875rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.ig-bar-principle .ig-bar-amount {
+    color: white;
+}
+
+.ig-bar-interest .ig-bar-amount {
+    color: #333;
+}
+
+/* Top and bottom labels */
+.ig-bar-label-top,
+.ig-bar-label-bottom {
+    width: 100%;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.ig-bar-label-top {
+    background-color: #4169E1;
+    color: white;
+}
+
+.ig-bar-label-bottom {
+    background-color: #D8D8F0;
+    color: #333;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .ig-loan-name {
+        font-size: 1.25rem;
+    }
+
+    .ig-bar-amount {
+        font-size: 0.75rem;
+    }
+
+    .ig-bar-full {
+        height: 1.75rem;
+    }
+
+    .ig-row-label {
+        min-width: 1.5rem;
+        font-size: 0.75rem;
+    }
+}
