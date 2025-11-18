@@ -1,0 +1,23 @@
+﻿@namespace Hearth.Parts
+@using Hearth.Icons
+
+<div class="toolbar-main">
+    @if(ManageBtn)
+    {
+        <button class="manage-btn t-btn" @onclick="OnManage"><IconPencil BoxArrow=true Size=30 /></button>
+    }
+    @if(SettingsBtn)
+    {
+        <button class="settings-btn t-btn" @onclick="OnSettings"><IconGear Size=30 /></button>
+    }
+</div>
+
+@code {
+    [Parameter] public bool ManageBtn { get; set; } = true;
+    [Parameter] public bool SettingsBtn { get; set; } = true;
+    [Parameter] public bool ViewBtn { get; set; } = false;
+
+    [Parameter] public EventCallback OnManage { get; set; }
+    [Parameter] public EventCallback OnEdit { get; set; }
+    [Parameter] public EventCallback OnSettings { get; set; }
+}

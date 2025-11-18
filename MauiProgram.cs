@@ -35,7 +35,6 @@ namespace Hearth
             // Register QOL Service
             builder.Services.AddScoped<QolService>();
 
-
             // Initialize the database
             InitializeDatabase(dbPath);
 

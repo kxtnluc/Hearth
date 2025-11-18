@@ -18,7 +18,8 @@ namespace Hearth.Models
         #region Loan Foundational Props
         public LOAN_TYPE Loan_Type { get; set; }
         public bool Amortized { get; set; } = true;
-        public decimal Principal { get; set; }
+        public decimal Inital_Principal { get; set; }
+        public decimal Principal { get; set; } // The Current Principal
         public int Term { get; set; }
         public decimal Interest_Rate { get; set; }
         public CALENDAR_RATE Compound { get; set; }
@@ -35,7 +36,7 @@ namespace Hearth.Models
 
         #region Calculated Props
         [NotMapped]
-        public decimal Remaining_Principal_C
+        public decimal Remaining_Principal_C // TODO get rid of this because now I have "Current Prinicpal"
         {
             get
             {

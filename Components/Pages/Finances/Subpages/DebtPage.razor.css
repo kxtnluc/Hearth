@@ -49,3 +49,146 @@
     flex-flow: column nowrap;
     justify-content: space-between;
 }
+
+/* Manage Modal */
+
+.mm-body {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.mm-b-ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.mm-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 16px;
+    padding: 16px 24px;
+    align-items: center;
+}
+
+.mm-table-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-weight: 600;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: none;
+}
+
+.row-header {
+    font-weight: 600;
+}
+
+.mm-b-li {
+    border-bottom: 1px solid #e5e7eb;
+    transition: all 0.2s ease;
+    background: white;
+}
+
+    .mm-b-li:hover {
+        background: #f9fafb;
+        transform: translateX(4px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .mm-b-li:last-child {
+        border-bottom: none;
+    }
+
+.li-name {
+    font-weight: 500;
+    color: #1f2937;
+    font-size: 15px;
+}
+
+.li-paid {
+    color: #059669;
+    font-weight: 600;
+}
+
+.li-remaining {
+    color: #dc2626;
+    font-weight: 600;
+}
+
+.li-type {
+    color: #6b7280;
+    font-size: 14px;
+    text-transform: capitalize;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .mm-row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .mm-table-header {
+        display: none;
+    }
+
+    .mm-b-li > div::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: #6b7280;
+        margin-right: 8px;
+        display: inline-block;
+        min-width: 100px;
+    }
+}
+
+/* Alternative minimalist style - uncomment to use */
+/*
+.mm-table-header {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.mm-b-ul {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+*/
+
+/* Alternative dark theme - uncomment to use */
+/*
+.mm-body {
+    background: #1f2937;
+}
+
+.mm-b-ul {
+    background: #374151;
+}
+
+.mm-table-header {
+    background: #1f2937;
+}
+
+.mm-b-li {
+    background: #374151;
+    border-bottom-color: #4b5563;
+}
+
+.mm-b-li:hover {
+    background: #4b5563;
+}
+
+.li-name {
+    color: #f9fafb;
+}
+
+.li-type {
+    color: #9ca3af;
+}
+*/

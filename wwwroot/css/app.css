@@ -8,7 +8,8 @@
     --error-color: rgb(255, 131, 96); /* fire-red #FF8360 */
     --error-color-faint: rgb(255, 131, 96, 0.5); /* fire-red #FF8360 */
     --warning-color: rgb(232 226 136);
-    
+    --warning-color-light: rgb(252 246 156);
+    --warning-color-dark: rgb(202 196 106);
     --info-color-light: rgb(0, 201, 255);
     --info-color: rgb(0, 171, 255); /* cool blue #00ABFF */
     --info-color-dark: rgb(0, 72, 143);

@@ -5,6 +5,7 @@
 @using Hearth.Models.CTO
 @using Hearth.Services
 @using Hearth.Icons
+@using Hearth.Parts
 @using Hearth.Finances.Parts
 @using ApexCharts
 @inject HearthDbContext _dbContext
@@ -14,6 +15,8 @@
 {
 	<IconLoadingCircle AutoCenter=true />
 }
+
+<HearthToolbar />
 
 <div class="r-main" hidden="@(initialRenderComplete ? false : true)">
 	<div class="r-header">

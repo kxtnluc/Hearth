@@ -5,9 +5,12 @@
 @using Hearth.Services
 @using Hearth.Icons
 @using Hearth.Finances.Parts
-@using ApexCharts
+@using Hearth.Parts
 @inject HearthDbContext _dbContext
 
+@* Debt Page's Toolbar *@
+<HearthToolbar SettingsBtn="false" OnManage="OpenManageLoanModal" />
+@* Page Main *@
 <main class="debt-main">
 	<section class="debt-section-1">
 		<div class="d-s1-grid-container">
@@ -39,6 +42,64 @@
 	</section>
 </main>
 
+@* Modals *@
+<HearthModal
+	Title="Manage Loans"
+	Width="large"
+	Open="showManageLoanModal"
+	OnClose="CloseManageLoanModal"
+
+>
+	<div class="manage-modal-main">
+		<div class="mm-body">
+			<ul class="mm-b-ul">
+				<li class="mm-table-header mm-row">
+					<div class="row-header">
+						Name
+					</div>
+					<div class="row-header">
+						Paid
+					</div>
+					<div class="row-header">
+						Remaining
+					</div>
+					<div class="row-header">
+						Type
+					</div>
+					<div class="row-header">
+						Actions
+					</div>
+				</li>
+				@foreach (Loan l in allLoans)
+				{
+					<li class="mm-b-li mm-row">
+						<div class="li-name">
+							@l.Name
+						</div>
+						<div class="li-paid">
+							@l.Total_Paid_C
+						</div>
+						<div class="li-remaining">
+							@l.Remaining_Principal_C
+						</div>
+						<div class="li-type">
+							@l.Loan_Type.ToString()
+						</div>
+						<div class="li-actions">
+							<button class="mm-edit-btn t-btn">
+								<IconPencil Size="16" />
+							</button>
+							<button>
+								<IconTrash Size="16" />
+							</button>
+						</div>
+					</li>
+				}
+			</ul>
+		</div>
+	</div>
+</HearthModal>
+
 @code {
 	private List<Loan> allLoans = new List<Loan>();
 	private List<Loan> mortgages = new List<Loan>();
@@ -65,6 +126,22 @@
 		otherLoans = allLoans
 			.Where(o => o.Loan_Type != LOAN_TYPE.Mortgage && o.Loan_Type != LOAN_TYPE.Car_Loan && o.Loan_Type != LOAN_TYPE.Student_Loan)
 			.ToList();
+
+
 	}
+
+	// Modals
+	private bool showManageLoanModal = false;
+
+	private void OpenManageLoanModal()
+	{
+		showManageLoanModal = true;
+	}
+
+	private void CloseManageLoanModal()
+	{
+		showManageLoanModal = false;
+	}
+
 }
 

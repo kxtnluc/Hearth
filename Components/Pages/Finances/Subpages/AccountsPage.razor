@@ -10,10 +10,13 @@
 @* @inject PlaidService _plaidService NET9 *@
 @inject HearthDbContext _dbContext
 
+
 @if (initialRenderComplete == false)
 {
 	<IconLoadingCircle AutoCenter="true" />
 }
+
+<HearthToolbar />
 
 <div class="a-main" hidden="@(initialRenderComplete ? false : true)">
 	@* --- Header --- *@

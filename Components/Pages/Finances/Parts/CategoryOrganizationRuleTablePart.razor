@@ -320,6 +320,7 @@
 
 	public async void SaveRule()
 	{
+		if (string.IsNullOrEmpty(inputCategory)) return;
 		var foundCategoryId = _dbContext.Categories.SingleOrDefault(c => c.Name == inputCategory).Id;
 		// Format Amount type
 		decimal? amount = null;

@@ -1,0 +1,39 @@
+.toolbar-main{
+    display: flex;
+    flex-flow: row-reverse nowrap;
+    justify-content: center;
+    height: 2.5rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    background-color: var(--primary-color-light);
+    padding-left: 1rem;
+    padding-right: 1rem;
+    border-radius: 20px;
+    gap: 1rem;
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    margin-right: 1rem;
+    margin-bottom: 1rem;
+    z-index: 10;
+/*    opacity: 0.5;
+    transition: 200ms;*/
+}
+
+.toolbar-main:hover{
+    opacity: 1;
+}
+
+.t-btn {
+    background-color: transparent;
+    border: none;
+    color: var(--text-color-dim);
+    transition: 300ms;
+}
+
+    .t-btn:hover {
+        cursor: pointer;
+        color: white;
+/*        background-color: var(--primary-color-dark);*/
+/*        border-radius: 100%;*/
+    }
