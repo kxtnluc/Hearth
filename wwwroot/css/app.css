@@ -6,14 +6,17 @@
     --success-color-light: rgb(0, 216, 85);
     --error-color-dark: rgb(255, 111, 76); /* fire-red #FF8360 */
     --error-color: rgb(255, 131, 96); /* fire-red #FF8360 */
-    --error-color-faint: rgb(255, 131, 96, 0.5); /* fire-red #FF8360 */
+    --error-color-light: rgb(255, 131, 96, 0.5); /* fire-red #FF8360 */
     --warning-color: rgb(232 226 136);
     --warning-color-light: rgb(252 246 156);
     --warning-color-dark: rgb(202 196 106);
+    --info-color-lighter: rgb(0, 231, 255);
     --info-color-light: rgb(0, 201, 255);
     --info-color: rgb(0, 171, 255); /* cool blue #00ABFF */
-    --info-color-dark: rgb(0, 72, 143);
+    --info-color-dark: rgb(0, 92, 155);
+    --info-color-darker: rgb(0, 72, 133);
     --text-color-dim: rgb(235, 235, 235); /* off-white #EBEBEB */
+    --text-color-dark: rgb(215, 215, 215); /* off-white #EBEBEB */
     --text-color-bright: rgb(255, 255, 255); /* white */
 
     --font-size-xl: 4.0vw;
@@ -73,6 +76,23 @@ h2 {
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
+
+.hearth-modal-section-header {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    position: relative;
+    font-weight: 700;
+}
+
+    .hearth-modal-section-header::after {
+        content: ""; /* required for pseudo-element */
+        position: absolute; /* position relative to parent */
+        bottom: -0.25rem; /* space below the header */
+        left: 0;
+        width: 100%; /* full width line */
+        height: 2px; /* thickness of divider */
+        background-color: var(--primary-color-light); /* divider color */
+    }
 
 .data-section {
     border: 2px var(--primary-color-light) solid;

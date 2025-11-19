@@ -2,6 +2,10 @@
 @using Hearth.Icons
 
 <div class="toolbar-main">
+    @if (AddBtn)
+    {
+        <button class="manage-btn t-btn" @onclick="OnAdd"><IconPlusLarge Size=30 /></button>
+    }
     @if(ManageBtn)
     {
         <button class="manage-btn t-btn" @onclick="OnManage"><IconPencil BoxArrow=true Size=30 /></button>
@@ -13,10 +17,12 @@
 </div>
 
 @code {
+    [Parameter] public bool AddBtn { get; set; } = true;
     [Parameter] public bool ManageBtn { get; set; } = true;
     [Parameter] public bool SettingsBtn { get; set; } = true;
     [Parameter] public bool ViewBtn { get; set; } = false;
 
+    [Parameter] public EventCallback OnAdd { get; set; }
     [Parameter] public EventCallback OnManage { get; set; }
     [Parameter] public EventCallback OnEdit { get; set; }
     [Parameter] public EventCallback OnSettings { get; set; }

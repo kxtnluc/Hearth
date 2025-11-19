@@ -1,0 +1,151 @@
+﻿@namespace Hearth.Finances.Parts
+@using Hearth.Services
+@using Hearth.Models
+@using Hearth.Parts
+@using Hearth.Data
+@using Hearth.Icons
+@inject HearthDbContext _dbContext
+
+@* AddEditLoanModal *@
+
+<div>
+    <HearthModal Title="@(Edit ? ("Edit Loan") : ("Add Loan"))"
+                 Open="@ShowModal"
+                 OnClose="@CloseModal"
+                 Width="normal">
+        <div class="main">
+            <div class="section-1">
+                <div class="s1-header">
+                    <div class="s1-h-name-and-type">
+                        <div class="s1-input-name">
+                            <HearthInput Type="text" Label="Name" @bind-Value="inputName" />
+                        </div>
+                        <div class="s1-input-type">
+                            <HearthDropdown Label="Type"  />
+                        </div>
+                    </div>
+                    <div class="s1-input-description">
+                        <HearthInput Type="text" Label="Description" @bind-Value="inputDescription" />
+                    </div>
+                </div>
+                @* -------------------- Loan -------------------- *@
+                <div class="hearth-modal-section-header header-tertiary">
+                    Loan
+                </div>
+                <div class="s1-body">
+                    <div class="s1-input-principal">
+					    <HearthInput Placeholder="340000" Type="number" Label="Principal" Border=false Panels=true />
+                    </div>
+                    <div class="s1-at">at</div>
+                    <div class="s1-input-interest">
+                        <HearthInput Placeholder="4.89" Type="number" Label="Interest" Border=false Panels=true />
+                    </div>
+                    <div class="s1-for">for</div>
+					<div class="s1-input-term">
+                        <HearthInput Placeholder="360" Type="number" Label="Term (months)" Border=false Panels=true />
+                    </div>
+                </div>
+                <div class="s1-advanced-options">
+                    Advanced options
+                </div>
+                <div class="s1-footer">
+                    <div class="s1-f-due">
+                        <div class="s1-due">
+						    <HearthInput Type="date" Label="Due Date" />
+                        </div>
+                    </div>
+                    <div class="s1-f-add-and-due">
+                        <div class="s1-input-active">
+						    <HearthCheckbox Label="Active" Editable=true />
+                        </div>
+                        @if (Edit)
+                        {
+                            <HearthButton Label="Update" BgColor="green" OnClick="HandleUpdate" />
+                        }
+                        else
+                        {
+                            <HearthButton Label="Add" BgColor="blue" OnClick="HandleAdd" />
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="section-2">
+            </div>
+        </div>
+    </HearthModal>
+</div>
+
+@code {
+    // bound value
+    [Parameter] public bool ShowModal { get; set; }
+
+    // event for two-way binding
+    [Parameter] public EventCallback<bool> ShowModalChanged { get; set; }
+    // If null, the modal goes into "Add" mode
+    [Parameter] public Loan? LoanToEdit { get; set; }
+    public bool Edit
+    {
+        get
+        {
+            if (LoanToEdit != null) return true;
+            else return false;
+        }
+    }
+
+    private string inputName = string.Empty;
+    private string inputDescription = string.Empty;
+
+    // This needs to be changed at somepoint for optimization
+    protected override void OnParametersSet()
+    {
+        if (LoanToEdit != null)
+        {
+            inputName = LoanToEdit.Name ?? string.Empty;
+            inputDescription = LoanToEdit.Description ?? string.Empty;
+        }
+    }
+
+    private async Task CloseModal()
+    {
+        // update our state
+        ShowModal = false;
+
+        // notify parent (triggers @bind-ShowModal)
+        await ShowModalChanged.InvokeAsync(ShowModal);
+    }
+
+    private async void HandleAdd()
+    {
+
+        Loan loan = new()
+        {
+            Name = inputName,
+            Description = inputDescription,
+        };
+
+		// TODO add loan function
+        // LoanFunctions.Add(_dbContext, loan);
+
+        await CloseModal();
+        return;
+    }
+
+    private async void HandleUpdate()
+    {
+        if (LoanToEdit != null)
+        {
+            Loan updates = new()
+            {
+                Name = inputName,
+                Description = inputDescription,
+            };
+			// TODO update loan function
+            // LoanFunctions.Update(_dbContext, LoanToEdit.Id, updates);
+
+            await CloseModal();
+        }
+
+        return;
+    }
+
+}
