@@ -1,4 +1,6 @@
-﻿@inherits LayoutComponentBase
+﻿@using Hearth.Services
+@inherits LayoutComponentBase
+
 <div class="ml-app">
     @* Side Bar *@
     <div class="ml-sidebar">
@@ -13,19 +15,6 @@
     </div>
     @* Top Bar & App Body *@
     <main class="ml-main">
-        <div class="m-nav">
-            <div class="n-home-text">
-                <NavLink @onclick='() => HandleSideMenuChange("home")' class="n-link" href="" Match="NavLinkMatch.All">
-                    <span class="@(activeMenu == "home" ? "h-text-active": "h-text-inactive")">Home</span>
-                </NavLink>
-            </div>
-            <div class="n-finances-text">
-                <NavLink @onclick='() => HandleSideMenuChange("finances")' class="n-link" href="finances" Match="NavLinkMatch.All">
-                    <span class="@(activeMenu == "finances" ? "f-text-active": "f-text-inactive")">Finances</span>
-                </NavLink>
-            </div>
-        </div>
-
         <article class="m-body">
             @Body
         </article>
@@ -33,7 +22,7 @@
 </div>
 
 @code {
-    string activeMenu = "home";
+    string activeMenu = "finances";
 
     private void HandleSideMenuChange(string subMenu)
     {

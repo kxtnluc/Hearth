@@ -5,9 +5,12 @@
 @using Hearth.Services
 @using Hearth.Icons
 @using Hearth.Finances.Parts
-@using ApexCharts
+@using Hearth.Parts
 @inject HearthDbContext _dbContext
 
+@* Debt Page's Toolbar *@
+<HearthToolbar SettingsBtn="false" OnManage="OpenManageLoanModal" OnAdd="OpenAddLoanModal" />
+@* Page Main *@
 <main class="debt-main">
 	<section class="debt-section-1">
 		<div class="d-s1-grid-container">
@@ -39,6 +42,79 @@
 	</section>
 </main>
 
+@* Add *@
+<AddEditLoanModal ShowModal="showAddLoanModal" ShowModalChanged="OnAddLoanModalChanged" />
+
+@* Edit 
+<AddEditCategoryModal ShowModal="showEditModal" ShowModalChanged="OnEditModalChanged"/> *@
+
+@* Delete 
+<HearthGenericDeleteModal @bind-ShowModal="showDeleteModal" Label="Delete Category?" DeleteFunction="() => DeleteCategory(selectedCategory.Id)">
+	Are you sure you want to delete the "@selectedCategory.Name" category?
+</HearthGenericDeleteModal> *@
+		 
+@* Modal Manage *@
+<HearthModal
+	Title="Manage Loans"
+	Width="large"
+	Open="showManageLoanModal"
+	OnClose="CloseManageLoanModal"
+
+>
+	<div class="manage-modal-main">
+		<div class="mm-body">
+			<table class="mm-b-table panel-hearth">
+				<thead class="mm-thead">
+					<tr class="mm-trow">
+						<th class="th-header">
+							Name
+						</th>
+						<th class="th-header">
+							Paid
+						</th>
+						<th class="th-header">
+							Remaining
+						</th>
+						<th class="th-header">
+							Type
+						</th>
+						<th class="th-header th-h-actions">
+							Actions
+						</th>
+					</tr>
+				</thead>
+				@foreach (Loan l in allLoans)
+				{
+					<tbody class="mm-b-tbody">
+						<tr class="mm-row">
+							<td class="tb-name tb-value">
+								@l.Name
+							</td>
+							<td class="tb-paid tb-value">
+								@l.Total_Paid_C.ToString("C2")
+							</td>
+							<td class="tb-remaining tb-value">
+								@l.Remaining_Principal_C.ToString("C2")
+							</td>
+							<td class="tb-type tb-value">
+								@l.Loan_Type.ToString().Replace("_", " ")
+							</td>
+							<td class="tb-actions">
+								<button class="tb-a-btn edit-btn">
+									<IconPencil Size="22" />
+								</button>
+								<button class="tb-a-btn trash-btn">
+									<IconTrash Size="22" />
+								</button>
+							</td>
+						</tr>
+					</tbody>
+				}
+			</table>
+		</div>
+	</div>
+</HearthModal>
+
 @code {
 	private List<Loan> allLoans = new List<Loan>();
 	private List<Loan> mortgages = new List<Loan>();
@@ -65,6 +141,57 @@
 		otherLoans = allLoans
 			.Where(o => o.Loan_Type != LOAN_TYPE.Mortgage && o.Loan_Type != LOAN_TYPE.Car_Loan && o.Loan_Type != LOAN_TYPE.Student_Loan)
 			.ToList();
+
+
 	}
+
+	// --- Modals
+	// Manage
+	private bool showManageLoanModal = false;
+
+	private void OpenManageLoanModal()
+	{
+		showManageLoanModal = true;
+	}
+
+	private void CloseManageLoanModal()
+	{
+		showManageLoanModal = false;
+	}
+
+	// Add
+	private bool showAddLoanModal = false;
+
+	private void OpenAddLoanModal()
+	{
+		showAddLoanModal = true;
+	}
+
+	private void CloseAddLoanModal()
+	{
+		showAddLoanModal = false;
+	}
+
+	private async void OnAddLoanModalChanged(bool value)
+	{
+		showAddLoanModal = value;
+		if (showAddLoanModal == false)
+		{
+			// await RefreshData(); TODO possibly
+		}
+		return;
+	}
+
+	// Refresh ---
+	// private async Task RefreshData()
+	// {
+	// 	allLo = CategoryFunctions.GetAll(_dbContext, true);
+	// 	organizationRules = CategoryOrganizationRuleFunctions.GetAll(_dbContext);
+
+	// 	categoriesBar.Clear();
+	// 	await UpdateBarGraph();
+
+	// 	StateHasChanged();
+	// }
 }
 

@@ -4,7 +4,7 @@
 <div class="container">
     @if(string.IsNullOrEmpty(Label))
     {
-        <input class="input input-border-@BoldBorder input-size-@Size"
+        <input class="input input-panel-@Panels input-border-@Border input-size-@Size"
             type="@Type"
             placeholder="@Placeholder"
             value="@Value"
@@ -14,7 +14,7 @@
     else
     {
         <div class="label txt-@TxtColor">@Label</div>
-        <input class="input input-border-@BoldBorder input-size-@Size"
+        <input class="input input-panel-@Panels input-border-@Border input-size-@Size"
                type="@Type"
                placeholder="@Placeholder"
                value="@Value"
@@ -29,9 +29,10 @@
     [Parameter] public string Label { get; set; } = "";
     [Parameter] public string Value { get; set; } = "";
     [Parameter] public EventCallback<string> ValueChanged { get; set; }
-	[Parameter] public string TxtColor { get; set; } = "black";
-    [Parameter] public bool BoldBorder { get; set; } = true;
+    [Parameter] public string TxtColor { get; set; } = "black";
+    [Parameter] public bool Border { get; set; } = true;
     [Parameter] public string Size { get; set; } = "normal";
+    [Parameter] public bool Panels { get; set; } = false;
 
 
 

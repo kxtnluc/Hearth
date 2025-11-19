@@ -49,3 +49,94 @@
     flex-flow: column nowrap;
     justify-content: space-between;
 }
+
+/* Manage Modal */
+
+.mm-body {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.mm-b-table {
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    border-collapse: collapse; /* removes all gaps */
+    border-spacing: 0; /* backup for border-collapse */
+}
+
+.mm-thead {
+    background: linear-gradient(to right, var(--info-color-dark), var(--info-color-darker));
+    font-size: 18px;
+}
+
+.mm-trow {
+}
+
+.mm-row {
+    transition: all 0.2s ease;
+}
+
+    .mm-row:hover {
+        background-color: rgba(0, 0, 0, 0.025); /* Subtle blue tint */
+    }
+
+.th-header {
+    padding: 0.5rem;
+    text-align: left;
+    color: white;
+}
+
+.tb-value {
+    padding: 0.5rem;
+}
+
+
+.tb-actions {
+    all: unset;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-left: 3px solid var(--text-color-dim);
+    text-align: center;
+    display: flex;
+    justify-content: space-around;
+}
+
+.tb-a-btn {
+    all: unset;
+    width: 100%;
+    background-color: transparent;
+    border: none;
+    color: var(--primary-color-light);
+    transition: 300ms;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
+.edit-btn {
+    color: var(--success-color-light);
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+    .edit-btn:hover{
+        cursor: pointer;
+        background-color: var(--text-color-dim);
+    }
+
+.trash-btn {
+    color: var(--error-color);
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+}
+
+.trash-btn:hover {
+    cursor: pointer;
+    background-color: var(--text-color-dim);
+}
+
+.th-h-actions {
+    text-align: center;
+}
+

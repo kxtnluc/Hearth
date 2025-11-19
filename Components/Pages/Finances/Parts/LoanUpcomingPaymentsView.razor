@@ -5,24 +5,24 @@
 
 <div class="upcoming-payments-main">
 	<div class="up-header">
-		@(DateTime.Now.Month)'s Payments
+		@(DateTime.Now.ToString("MMMM"))'s Payments
 	</div>
 	<div class="up-body">
 		<ul>
 			@foreach (var loan in Loans)
 			{
-				<li class="up-loan-item">
+				<li class="up-loan-item panel-hearth">
 					<div class="up-l-date">
 						@if(loan.Due_Date != null)
 						{
-							loan.Due_Date.Value.ToString("MMMM", CultureInfo.InvariantCulture);
+							@loan.Due_Date.Value.Day;
 						}
+					</div>
+					<div class="up-l-name">
+						@loan.Name
 					</div>
 					<div class="up-l-payment">
 						@loan.Payment_C.ToString("C2")
-					</div>
-					<div class="up-l-name">
-						<IconBox Size="16" /> @loan.Name
 					</div>
 				</li>
 			}

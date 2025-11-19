@@ -1,0 +1,62 @@
+.section-1 {
+    margin-top: 1rem;
+}
+
+.s1-h-name-and-type {
+    display: flex;
+    justify-content: space-between;
+}
+
+.s1-input-name{
+    width: 50%;
+}
+
+.s1-input-description {
+    margin-top: 1rem;
+    width: 100%;
+}
+
+.s1-body {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.s1-at, .s1-for{
+    margin-left: 1rem;
+    margin-right: 1rem;
+    align-self: end;
+    font-style: italic;
+}
+
+.s1-advanced-options{
+    margin-top: 0.5rem;
+    color: var(--info-color);
+    font-style: italic;
+    cursor: pointer;
+}
+
+.s1-footer {
+    margin-top: 1rem;
+}
+
+.s1-f-due{
+    display: flex;
+    justify-content: end;
+    align-items: center;
+}
+
+.s1-f-add-and-due{
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    margin-top: 1rem;
+}
+
+.s1-f-boxes {
+    display: flex;
+}
+
+.s1-f-add {
+}
