@@ -2,43 +2,81 @@
 @using Hearth.Icons
 
 <div class="container">
-    @if(string.IsNullOrEmpty(Label))
-    {
-        <input class="input input-panel-@Panels input-border-@Border input-size-@Size"
-            type="@Type"
-            placeholder="@Placeholder"
-            value="@Value"
-            @oninput="HandleInputChange" 
-        />
-    }
-    else
-    {
-        <div class="label txt-@TxtColor">@Label</div>
-        <input class="input input-panel-@Panels input-border-@Border input-size-@Size"
-               type="@Type"
-               placeholder="@Placeholder"
-               value="@Value"
-               @oninput="HandleInputChange"
-        />
-    }
+	@* Icon is assigned *@
+	@if (!string.IsNullOrEmpty(Icon))
+	{
+		<div class="money-container">
+			<div class="label txt-@TxtColor">@Label</div>
+			<div class="m-icon-and-input panel-hearth mc-icon-at-end-@IconAtEnd">
+				<div class="money-symbol ms-icon-at-end-@IconAtEnd">
+					@switch (Icon)
+					{
+						case "USD":
+							<IconUSD Size="28" />
+						break;
+						case "%":
+							<IconPercent Size="28" />
+						break;
+						default:
+							<IconBox Size="28" />
+						break;
+					}
+				
+				</div>
+				<input class="m-input mi-icon-at-end-@IconAtEnd"
+					   type="@Type"
+					   placeholder="@Placeholder"
+					   value="@Value"
+					   @oninput="HandleInputChange" 
+					   step="0.01"
+					   />
+			</div>
+	</div>
+	}
+	@* NO Icon is assigned *@
+	else
+	{
+		@* NO Label is Assigned *@
+		@if (string.IsNullOrEmpty(Label))
+		{
+
+			<input class="input input-panel-@Panels input-border-@Border input-size-@Size"
+				   type="@Type"
+				   placeholder="@Placeholder"
+				   value="@Value"
+				   @oninput="HandleInputChange" />
+		}
+		@* Label is Assigned *@
+		else
+		{
+			<div class="label txt-@TxtColor">@Label</div>
+			<input class="input input-panel-@Panels input-border-@Border input-size-@Size"
+				   type="@Type"
+				   placeholder="@Placeholder"
+				   value="@Value"
+				   @oninput="HandleInputChange" />
+		}
+	}
 </div>
 
 @code {
-    [Parameter] public string Type { get; set; } = "text";
-    [Parameter] public string Placeholder { get; set; } = "";
-    [Parameter] public string Label { get; set; } = "";
-    [Parameter] public string Value { get; set; } = "";
-    [Parameter] public EventCallback<string> ValueChanged { get; set; }
-    [Parameter] public string TxtColor { get; set; } = "black";
-    [Parameter] public bool Border { get; set; } = true;
-    [Parameter] public string Size { get; set; } = "normal";
-    [Parameter] public bool Panels { get; set; } = false;
+	[Parameter] public string Type { get; set; } = "text";
+	[Parameter] public string Placeholder { get; set; } = "";
+	[Parameter] public string Label { get; set; } = "";
+	[Parameter] public string Value { get; set; } = "";
+	[Parameter] public EventCallback<string> ValueChanged { get; set; }
+	[Parameter] public string TxtColor { get; set; } = "black";
+	[Parameter] public bool Border { get; set; } = true;
+	[Parameter] public string Size { get; set; } = "normal";
+	[Parameter] public bool Panels { get; set; } = false;
+	[Parameter] public string Icon { get; set; } = string.Empty;
+	[Parameter] public bool IconAtEnd { get; set; } = false;
 
 
 
-    private async Task HandleInputChange(ChangeEventArgs e)
-    {
-        Value = e.Value?.ToString() ?? "";
-        await ValueChanged.InvokeAsync(Value);
-    }
+	private async Task HandleInputChange(ChangeEventArgs e)
+	{
+		Value = e.Value?.ToString() ?? "";
+		await ValueChanged.InvokeAsync(Value);
+	}
 }

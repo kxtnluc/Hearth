@@ -1,4 +1,4 @@
-﻿@page "/finances/debts"
+﻿@page "/finances/assets"
 @using Hearth.Data
 @using Hearth.Models
 @using Hearth.Models.CTO
@@ -16,7 +16,7 @@
 		<div class="d-s1-grid-container">
 			@* Mortgage *@
 			<div class="d-s1-panel panel-hearth" style="grid-area: mt">
-				<LoanPanel Loans="@mortgages"/>
+				<LoanPanel Loans="@mortgages" />
 			</div>
 			@* Car Loan *@
 			<div class="d-s1-panel panel-hearth" style="grid-area: cl">
@@ -41,15 +41,12 @@
 		</div>
 	</section>
 </main>
-		 
-@* Modal Manage *@
-<HearthModal
-	Title="Manage Loans"
-	Width="large"
-	Open="showManageLoanModal"
-	OnClose="CloseManageLoanModal"
 
->
+@* Modal Manage *@
+<HearthModal Title="Manage Loans"
+			 Width="large"
+			 Open="showManageLoanModal"
+			 OnClose="CloseManageLoanModal">
 	<div class="manage-modal-main">
 		<div class="mm-body">
 			<table class="mm-b-table panel-hearth">
@@ -113,7 +110,7 @@
 @* Delete *@
 <HearthGenericDeleteModal @bind-ShowModal="showDeleteModal" Label="Delete Loan?" DeleteFunction="() => DeleteLoan(selectedLoan.Id)">
 	Are you sure you want to delete the "@selectedLoan?.Name" Loan?
-</HearthGenericDeleteModal> 
+</HearthGenericDeleteModal>
 
 @code {
 	private List<Loan> allLoans = new List<Loan>();
@@ -231,7 +228,7 @@
 		otherLoans = allLoans
 			.Where(o => o.Loan_Type != LOAN_TYPE.Mortgage && o.Loan_Type != LOAN_TYPE.Car_Loan && o.Loan_Type != LOAN_TYPE.Student_Loan)
 			.ToList();
-		@if(stateHasChanged)
+		@if (stateHasChanged)
 		{
 			StateHasChanged();
 		}
