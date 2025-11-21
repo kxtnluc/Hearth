@@ -21,7 +21,7 @@
                             <HearthInput Type="text" Label="Name" @bind-Value="inputName" />
                         </div>
                         <div class="s1-input-type">
-                            <HearthDropdown Label="Type"  />
+                            <HearthDropdown Data="@(LoanUtils.loanTypes)" Label="Type" @bind-Value="@inputLoanType" />
                         </div>
                     </div>
                     <div class="s1-input-description">
@@ -34,29 +34,29 @@
                 </div>
                 <div class="s1-body">
                     <div class="s1-input-principal">
-					    <HearthInput Placeholder="340000" Type="number" Label="Principal" Border=false Panels=true />
+                        <HearthInput Placeholder="340000" Type="number" Label="Principal" Border=false Panels=true @bind-Value="inputPrincipal" Icon="USD" />
                     </div>
                     <div class="s1-at">at</div>
                     <div class="s1-input-interest">
-                        <HearthInput Placeholder="4.89" Type="number" Label="Interest" Border=false Panels=true />
+                        <HearthInput Placeholder="4.89" Type="number" Label="Interest" Border=false Panels=true @bind-Value="inputInterest" Icon="%" IconAtEnd=true />
                     </div>
                     <div class="s1-for">for</div>
 					<div class="s1-input-term">
-                        <HearthInput Placeholder="360" Type="number" Label="Term (months)" Border=false Panels=true />
+                        <HearthInput Placeholder="360" Type="number" Label="Term (months)" Border=false Panels=true @bind-Value="inputTerm" />
                     </div>
                 </div>
-                <div class="s1-advanced-options">
+                <div class="s1-advanced-options" hidden> @* TODO Unhide and Implement *@
                     Advanced options
                 </div>
                 <div class="s1-footer">
                     <div class="s1-f-due">
                         <div class="s1-due">
-						    <HearthInput Type="date" Label="Due Date" />
+						    <HearthInput Type="date" Label="Due Date" @bind-Value="inputDueDate" />
                         </div>
                     </div>
                     <div class="s1-f-add-and-due">
                         <div class="s1-input-active">
-						    <HearthCheckbox Label="Active" Editable=true />
+						    <HearthCheckbox Label="Active" Editable=true @bind-Value="inputActive" />
                         </div>
                         @if (Edit)
                         {
@@ -91,9 +91,16 @@
             else return false;
         }
     }
-
+    // -------------- < Input Variables > --------------
     private string inputName = string.Empty;
     private string inputDescription = string.Empty;
+    private string inputLoanType = string.Empty;
+    private string inputPrincipal = string.Empty;
+    private string inputInterest = string.Empty;
+    private string inputTerm = string.Empty;
+    private string inputDueDate = DateTime.Now.ToString();
+    private bool inputActive = true;
+    // -------------- < Input Variables /> --------------
 
     // This needs to be changed at somepoint for optimization
     protected override void OnParametersSet()
@@ -102,6 +109,12 @@
         {
             inputName = LoanToEdit.Name ?? string.Empty;
             inputDescription = LoanToEdit.Description ?? string.Empty;
+            inputLoanType = LoanUtils.LoanTypeToString(LoanToEdit.Loan_Type);
+            inputPrincipal = LoanToEdit.Principal.ToString();
+            inputInterest = (LoanToEdit.Interest_Rate * 100).ToString();
+            inputTerm = LoanToEdit.Term.ToString();
+            inputDueDate = LoanToEdit.Due_Date.Value.Date.ToString("yyyy-MM-dd");
+            inputActive = LoanToEdit.Active;
         }
     }
 
@@ -117,14 +130,21 @@
     private async void HandleAdd()
     {
 
+        LOAN_TYPE loan_type = LoanUtils.StringToLoanType(inputLoanType);
+
         Loan loan = new()
         {
             Name = inputName,
             Description = inputDescription,
+			Loan_Type = loan_type,
+            Principal = decimal.TryParse(inputPrincipal, out decimal principal) ? principal : 0,
+            Interest_Rate = decimal.TryParse(inputInterest, out decimal interest) ? (interest / 100) : 0,
+			Term = int.TryParse(inputTerm, out int term) ? term : 0,
+			Due_Date = DateTime.TryParse(inputDueDate, out DateTime dueDate) ? dueDate : DateTime.Now,
+			Active = inputActive
         };
 
-		// TODO add loan function
-        // LoanFunctions.Add(_dbContext, loan);
+        LoanFunctions.Add(_dbContext, loan);
 
         await CloseModal();
         return;
@@ -132,15 +152,22 @@
 
     private async void HandleUpdate()
     {
+        LOAN_TYPE loan_type = LoanUtils.StringToLoanType(inputLoanType);
+
         if (LoanToEdit != null)
         {
             Loan updates = new()
             {
-                Name = inputName,
-                Description = inputDescription,
+            Name = inputName,
+            Description = inputDescription,
+			Loan_Type = loan_type,
+            Principal = decimal.TryParse(inputPrincipal, out decimal principal) ? principal : 0,
+            Interest_Rate = decimal.TryParse(inputInterest, out decimal interest) ? (interest / 100) : 0,
+			Term = int.TryParse(inputTerm, out int term) ? term : 0,
+			Due_Date = DateTime.TryParse(inputDueDate, out DateTime dueDate) ? dueDate : DateTime.Now,
+			Active = inputActive
             };
-			// TODO update loan function
-            // LoanFunctions.Update(_dbContext, LoanToEdit.Id, updates);
+            LoanFunctions.Update(_dbContext, LoanToEdit.Id, updates);
 
             await CloseModal();
         }

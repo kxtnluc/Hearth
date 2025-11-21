@@ -1,4 +1,5 @@
 .container {
+/*    background-color: red;*/
 }
 
 .input {
@@ -46,6 +47,7 @@
 }
 
 .label {
+/*    background-color: blue;*/
     font-weight: 700;
     font-size: 1rem;
 }
@@ -56,4 +58,46 @@
 
 .txt-white {
     color: var(--text-color-dim);
+}
+
+
+/* Money Input */
+
+.money-container {
+/*    background-color: antiquewhite;*/
+    font-size: 1.25vw;
+    height: 3.5rem;
+    outline: none;
+    transition: 175ms;
+    width: 100%;
+}
+
+.m-icon-and-input {
+    display: flex;
+    justify-content: start;
+/*    background-color: orange;*/
+}
+.money-symbol{
+    background-color: var(--text-color-dark);
+    width: 3rem;
+}
+
+.m-input{
+    padding-left: 0.75rem;
+    width: 90%;
+}
+
+/* Icon At End */
+.mc-icon-at-end-True{
+    flex-flow: row-reverse nowrap;
+}
+
+.ms-icon-at-end-False {
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+}
+
+.ms-icon-at-end-True {
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
 }

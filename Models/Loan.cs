@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Hearth.Data;
+using Sprache;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -16,14 +18,14 @@ namespace Hearth.Models
         public string? Description { get; set; }
         #endregion
         #region Loan Foundational Props
-        public LOAN_TYPE Loan_Type { get; set; }
+        public LOAN_TYPE Loan_Type { get; set; } = LOAN_TYPE.Regular;
         public bool Amortized { get; set; } = true;
         public decimal Inital_Principal { get; set; }
         public decimal Principal { get; set; } // The Current Principal
         public int Term { get; set; }
         public decimal Interest_Rate { get; set; }
-        public CALENDAR_RATE Compound { get; set; }
-        public CALENDAR_RATE Payment_Frequency { get; set; }
+        public CALENDAR_RATE Compound { get; set; } = CALENDAR_RATE.Monthly;
+        public CALENDAR_RATE Payment_Frequency { get; set; } = CALENDAR_RATE.Monthly;
         public DateTime? Due_Date { get; set; } = null;
         public DateTime? Start_Date { get; set; }
         #endregion
@@ -273,6 +275,68 @@ namespace Hearth.Models
     #region Loan Functions
     public class LoanFunctions
     {
+        public static List<Loan> GetAll(HearthDbContext _dbContext)
+        {
+            var result = new List<Loan>();
+            result = _dbContext.Loans.ToList();
+            return result;
+        }
+
+        public static void Add(HearthDbContext _dbContext, Loan loanToAdd)
+        {
+
+            var foundIdenticalLoan = _dbContext.Loans.FirstOrDefault(c => c.Name == loanToAdd.Name) ?? null;
+
+            if (
+                    loanToAdd != null &&
+                    !string.IsNullOrEmpty(loanToAdd.Name) &&
+                    foundIdenticalLoan == null
+            )
+            {
+                _dbContext.Loans.Add(loanToAdd);
+                _dbContext.SaveChanges();
+            }
+
+            return;
+        }
+
+        public static bool Remove(HearthDbContext _dbContext, int id)
+        {
+            bool success = false;
+            var loanToRemove = _dbContext.Loans.SingleOrDefault(c => c.Id == id);
+
+            if (loanToRemove != null)
+            {
+                _dbContext.Loans.Remove(loanToRemove);
+                _dbContext.SaveChanges();
+                success = true;
+            }
+
+            return success;
+        }
+
+        public static void Update(HearthDbContext _dbContext, int id, Loan updates)
+        {
+
+            var loanToUpdate = _dbContext.Loans.SingleOrDefault(c => c.Id == id);
+
+            if (loanToUpdate != null)
+            {
+                loanToUpdate.Name = updates.Name;
+                loanToUpdate.Description = updates.Description;
+                loanToUpdate.Principal = updates.Principal;
+                loanToUpdate.Interest_Rate = updates.Interest_Rate;
+                loanToUpdate.Active = updates.Active;
+                loanToUpdate.Due_Date = updates.Due_Date;
+                loanToUpdate.Loan_Type = updates.Loan_Type;
+                loanToUpdate.Term = updates.Term;
+
+                _dbContext.SaveChanges();
+            }
+
+            return;
+        }
+
         public static decimal EstimatePaymentPrincipleOrInterestByPeriodOfTerms(
             Loan loan,
             int totalPeriods, // (10)
@@ -287,9 +351,9 @@ namespace Hearth.Models
             var monthsInAPeriod = loan.Term / totalPeriods; // (36)
             var startIndex = (period - 1) * monthsInAPeriod; // (72)
             // Find the theoretical average principal/interest paid for this period
-            if(isInterest)
+            if (isInterest)
             {
-                if(isPercentage)
+                if (isPercentage)
                 {
                     result = loan.Portions_C
                         .Skip(startIndex)
@@ -306,7 +370,7 @@ namespace Hearth.Models
             }
             else
             {
-                if(isPercentage)
+                if (isPercentage)
                 {
                     result = loan.Portions_C
                         .Skip(startIndex)
@@ -355,7 +419,7 @@ namespace Hearth.Models
         }
         #endregion
     }
-
+    // Helper class that represents the principal and interest portions of a loan payment
     public class PrincipalToInterestPortion
     {
         public decimal Principal_Portion { get; set; }
@@ -385,5 +449,60 @@ namespace Hearth.Models
             }
         }
 
+    }
+
+    public class LoanUtils
+    {
+        public static string[] loanTypes =
+        [
+            "Normal",
+            "Mortgage",
+            "Car Loan",
+            "Student Loan",
+            "Family or Friend",
+            "Business",
+        ];
+
+        public static LOAN_TYPE StringToLoanType(string input)
+        {
+            switch (input)
+            {
+                case "Normal":
+                    return LOAN_TYPE.Regular;
+                case "Mortgage":
+                    return LOAN_TYPE.Mortgage;
+                case "Car Loan":
+                    return LOAN_TYPE.Car_Loan;
+                case "Student Loan":
+                    return LOAN_TYPE.Student_Loan;
+                case "Family or Friend":
+                    return LOAN_TYPE.Family_Or_Friend_Loan;
+                case "Business":
+                    return LOAN_TYPE.Business_Loan;
+                default:
+                    return LOAN_TYPE.Regular;
+            }
+        }
+
+        public static string LoanTypeToString(LOAN_TYPE input)
+        {
+            switch (input)
+            {
+                case LOAN_TYPE.Regular:
+                    return "Normal";
+                case LOAN_TYPE.Mortgage:
+                    return "Mortgage";
+                case LOAN_TYPE.Car_Loan:
+                    return "Car Loan";
+                case LOAN_TYPE.Student_Loan:
+                    return "Student Loan";
+                case LOAN_TYPE.Family_Or_Friend_Loan:
+                    return "Family or Friend";
+                case LOAN_TYPE.Business_Loan:
+                    return "Business";
+                default:
+                    return "Normal";    
+            }
+        }
     }
 }

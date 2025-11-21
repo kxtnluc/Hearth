@@ -5,10 +5,13 @@
 @using Hearth.Models
 @using Hearth.Models.CTO
 @using Hearth.Data
+@using Hearth.Parts
 @using Microsoft.EntityFrameworkCore
 @inject IJSRuntime JS
 @inject HearthDbContext _dbContext
 @* @inject PlaidService PlaidService NET9 *@
+
+<HearthToolbar AddBtn=false ManageBtn=false />
 
 <div class="dashboard-main">
 	<section class="d-section-1">

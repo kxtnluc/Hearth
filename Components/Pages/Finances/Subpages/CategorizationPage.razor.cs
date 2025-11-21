@@ -129,6 +129,8 @@ namespace Hearth.Components.Pages.Finances.Subpages
             return;
         }
 
+
+        // Edit Modal -----------------------------------------------------------
         private async void OnEditModalChanged(bool value)
         {
             showEditModal = value;
@@ -138,8 +140,6 @@ namespace Hearth.Components.Pages.Finances.Subpages
             }
             return;
         }
-
-        // Edit Modal -----------------------------------------------------------
 
         private bool showEditModal;
 
@@ -174,7 +174,6 @@ namespace Hearth.Components.Pages.Finances.Subpages
             CategoryFunctions.Remove(_dbContext, categoryId);
             CloseDeleteModal();
             await RefreshData();
-            
         }
 
         private async void HandleRuleAssignBtn()
