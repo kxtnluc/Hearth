@@ -44,6 +44,12 @@
                 <span class="n-text">Debts</span>
             </div>
         </NavLink>
+        <NavLink class="n-link" href="finances/assets" @onclick="@(() => HandleSetPage("assets"))">
+            <div class="n-li @(currentPage == "assets" ? "n-active" : "n-inactive")">
+                <span class="n-icon"><IconPiggyBank Size=28 /></span>
+                <span class="n-text">Assets</span>
+            </div>
+        </NavLink>
         <NavLink class="n-link" href="finances/categories" @onclick="@(() => HandleSetPage("categories"))">
             <div class="n-li @(currentPage == "categories" ? "n-active" : "n-inactive")">
                 <span class="n-icon"><IconBlockGroup Size=28 /></span>

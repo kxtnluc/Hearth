@@ -136,12 +136,12 @@
         {
             Name = inputName,
             Description = inputDescription,
-			Loan_Type = loan_type,
+            Loan_Type = loan_type,
             Principal = decimal.TryParse(inputPrincipal, out decimal principal) ? principal : 0,
             Interest_Rate = decimal.TryParse(inputInterest, out decimal interest) ? (interest / 100) : 0,
-			Term = int.TryParse(inputTerm, out int term) ? term : 0,
-			Due_Date = DateTime.TryParse(inputDueDate, out DateTime dueDate) ? dueDate : DateTime.Now,
-			Active = inputActive
+            Term = int.TryParse(inputTerm, out int term) ? term : 0,
+            Due_Date = DateTime.TryParse(inputDueDate, out DateTime dueDate) ? dueDate : DateTime.Now,
+            Active = inputActive
         };
 
         LoanFunctions.Add(_dbContext, loan);
