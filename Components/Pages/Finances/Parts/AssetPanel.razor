@@ -1,0 +1,227 @@
+﻿@namespace Hearth.Finances.Parts
+@using Hearth.Icons
+@using Hearth.Models
+
+@* AssetPage.razor *@
+
+@if (Assets.Count() == 0)
+{
+	<div class="no-loan">
+		<div class="nl-check">
+			<IconCheckCircle Size="80" />
+		</div>
+		<div class="nl-text">
+			No Assets...
+		</div>
+	</div>
+}
+else if (Assets.Count() >= 1)
+{
+	@if (IsSmall == true)
+	{
+		<div class="loan-panel">
+			@* Loan Type and Toast *@
+			<div class="lp-header">
+				<div class="lp-h-header">
+					@switch (CurrentAsset.Asset_Type)
+					{
+						case ASSET_TYPE.Property:
+							<span class="lp-h-h-icon">
+								<IconHome Size=30 />
+							</span>
+							<span>Property</span>
+							break;
+						case ASSET_TYPE.Vehicle:
+							<span class="lp-h-h-icon">
+								<IconCar Size=30 />
+							</span>
+							<span>Vehicle</span>
+							break;
+						case ASSET_TYPE.Stock:
+							<span class="lp-h-h-icon">
+								<IconStock Size=30 />
+							</span>
+							<span>Stock</span>
+							break;
+						case ASSET_TYPE.Bond:
+							<span class="lp-h-h-icon">
+								<IconBond Size=30 />
+							</span>
+							<span>Bond</span>
+							break;
+						case ASSET_TYPE.Cryptocurrency:
+							<span class="lp-h-h-icon">
+								<IconBitcoin Size=30 />
+							</span>
+							<span>Crypto</span>
+							break;
+						case ASSET_TYPE.Collectible:
+							<span class="lp-h-h-icon">
+								<IconCollectable Size=30 />
+							</span>
+							<span>Student Loan</span>
+							break;
+						case ASSET_TYPE.Other:
+							<span class="lp-h-h-icon">
+								<IconBox Size=30 />
+							</span>
+							<span>Other</span>
+							break;
+						default:
+							<span class="lp-h-h-icon">
+								<IconBox Size=30 />
+							</span>
+							<span>Other</span>
+							break;
+					}
+				</div>
+				@* TODO Add Asset Status
+				@if (CurrentAsset.Loan_Status_C == LOAN_STATUS.Delinquent)
+				{
+					<div class="lp-h-toast">
+						<span class="lp-h-t-icon"><IconExlemation /></span> <span class="lp-h-t-text">payment due in 2 days</span>
+					</div>
+				} 
+				*@
+			</div>
+			@* Asset Name and Value *@
+			<div class="lp-body">
+				<button disabled=@(Assets.Count <= 1 || currentIndex == 0) class="arrow-btn" @onclick="PreviousLoan"> <IconCaret Direction="l" Size="30" /> </button>
+				<div class="lp-b-body">
+					<h2 class="lp-b-b-header loan-name-small">
+						@CurrentAsset.Name
+					</h2>
+					<div class="lp-b-b-payment payment-small">
+
+						@CurrentAsset.Evaluated_Current_Price_C.ToString("C0")
+
+					</div>
+				</div>
+				<button disabled=@(Assets.Count <= 1 || currentIndex == (Assets.Count - 1)) class="arrow-btn" @onclick="NextLoan"> <IconCaret Direction="r" Size="30" /> </button>
+			</div>
+			@* pog bar ??? *@
+			<div class="lp-footer">
+				@* TODO figure out what to put here*@
+			</div>
+		</div>
+	}
+	else
+	{
+		<div class="loan-panel">
+			@* Loan Type and Toast *@
+			<div class="lp-header">
+				<div class="lp-h-header">
+					@switch (CurrentAsset.Asset_Type)
+					{
+						case ASSET_TYPE.Property:
+							<span class="lp-h-h-icon">
+								<IconHome Size=30 />
+							</span>
+							<span>Mortgage</span>
+							break;
+						case ASSET_TYPE.Vehicle:
+							<span class="lp-h-h-icon">
+								<IconCar Size=30 />
+							</span>
+							<span>Car Loan</span>
+							break;
+						case ASSET_TYPE.Stock:
+							<span class="lp-h-h-icon">
+								<IconStock Size=30 />
+							</span>
+							<span>Student Loan</span>
+							break;
+						case ASSET_TYPE.Bond:
+							<span class="lp-h-h-icon">
+								<IconBond Size=30 />
+							</span>
+							<span>Student Loan</span>
+							break;
+						case ASSET_TYPE.Cryptocurrency:
+							<span class="lp-h-h-icon">
+								<IconBitcoin Size=30 />
+							</span>
+							<span>Student Loan</span>
+							break;
+						case ASSET_TYPE.Collectible:
+							<span class="lp-h-h-icon">
+								<IconCollectable Size=30 />
+							</span>
+							<span>Student Loan</span>
+							break;
+						case ASSET_TYPE.Other:
+							<span class="lp-h-h-icon">
+								<IconBox Size=30 />
+							</span>
+							<span>Student Loan</span>
+							break;
+						default:
+							<span class="lp-h-h-icon">
+								<IconBox Size=30 />
+							</span>
+							<span>Other</span>
+							break;
+					}
+				</div>
+			</div>
+			@* Asset Name and Value (I changed the classes for these divs because the design is very different) *@
+			<div class="a-body">
+				<button disabled=@(Assets.Count <= 1 || currentIndex == 0) class="arrow-btn" @onclick="PreviousLoan"> <IconCaret Direction="l" Size="30" /> </button>
+				<div class="a-b-body-left">
+					<h2 class="a-b-b-header">
+						@CurrentAsset.Name
+					</h2>
+					<div class="a-b-b-payment">
+						@CurrentAsset.Evaluated_Current_Price_C.ToString("C0")
+					</div>
+				</div>
+				<div class="a-b-body-right">
+					<div class="purchase-price-and-expected">
+						<div class="a-b-b-purchase-price">
+							@CurrentAsset.Purchase_Price.ToString("C0")
+						</div>
+						<div class="a-b-b-expected-rate">
+							@if(CurrentAsset.Is_Appreciating_C)
+							{
+								@CurrentAsset.Expected_Growth
+							}
+							else
+							{
+								@CurrentAsset.Expected_Decay
+							}
+						</div>
+					</div>
+					<div class="5-year-estimate-container">
+						@CurrentAsset.Evaluated_Five_Year_Price_C
+					</div>
+				</div>
+				<button disabled=@(Assets.Count <= 1 || currentIndex == (Assets.Count - 1)) class="arrow-btn" @onclick="NextLoan"> <IconCaret Direction="r" Size="30" /> </button>
+			</div>
+		</div>
+	}
+}
+
+@code {
+	[Parameter] public List<Asset> Assets { get; set; } = new();
+	[Parameter] public bool IsSmall { get; set; } = false;
+
+	private int currentIndex = 0;
+
+	private Asset CurrentAsset => Assets[currentIndex];
+
+	private void NextLoan()
+	{
+		if (Assets.Count > 0)
+		{
+			currentIndex = (currentIndex + 1) % Assets.Count;
+		}
+	}
+
+	private void PreviousLoan()
+	{
+		if (Assets.Count > 0)
+		{
+			currentIndex = (currentIndex - 1 + Assets.Count) % Assets.Count;
+		}
+	}
+}

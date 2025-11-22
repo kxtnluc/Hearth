@@ -21,6 +21,7 @@ public class HearthDbContext : DbContext
     public DbSet<User> Users { get; set; }
     public DbSet<Bank> Banks { get; set; }
     public DbSet<Loan> Loans { get; set; }
+    public DbSet<Asset> Assets { get; set; }
     public DbSet<Category> Categories { get; set; }
     public DbSet<CategoryOrganizationRule> CategoryOrganizationRules { get; set; }
 

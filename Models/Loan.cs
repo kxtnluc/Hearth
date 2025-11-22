@@ -20,8 +20,7 @@ namespace Hearth.Models
         #region Loan Foundational Props
         public LOAN_TYPE Loan_Type { get; set; } = LOAN_TYPE.Regular;
         public bool Amortized { get; set; } = true;
-        public decimal Inital_Principal { get; set; }
-        public decimal Principal { get; set; } // The Current Principal
+        public decimal Principal { get; set; } // The Inital Principal (Principal_Current_C is the Current Principal)
         public int Term { get; set; }
         public decimal Interest_Rate { get; set; }
         public CALENDAR_RATE Compound { get; set; } = CALENDAR_RATE.Monthly;
@@ -37,6 +36,16 @@ namespace Hearth.Models
         #endregion
 
         #region Calculated Props
+        [NotMapped]
+        public decimal Principal_Current_C
+        {
+            get
+            {
+                var result = 0.00M;
+                // TODO calcualte the number of payments and OVERpayments made to get this value, then plug it in various places
+                return result;
+            }
+        }
         [NotMapped]
         public decimal Remaining_Principal_C // TODO get rid of this because now I have "Current Prinicpal"
         {
