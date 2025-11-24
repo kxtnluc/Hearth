@@ -1,0 +1,48 @@
+﻿@namespace Hearth.Finances.Parts
+@using ApexCharts
+@using Hearth.Models
+
+<div class="liquid-asset-graph-main">
+
+	<ApexChart TItem="LiquidAssetSlice"
+			   @ref="assetChart"
+			   Options="options">
+
+		<ApexPointSeries TItem="LiquidAssetSlice"
+						 Items=@(assetData)
+						 Name="labels"
+						 SeriesType="SeriesType.Pie"
+						 XValue="@(e => e.Label)"
+						 YValue="@(e => e.Value)"
+						 ShowDataLabels />
+
+	</ApexChart>
+
+</div>
+
+@code {
+	[Parameter] public List<Asset> LiquidAssets { get; set; } = new();
+	
+	// < Graph Variables >
+	private class LiquidAssetSlice
+	{
+		public string Label { get; set; }
+		public decimal Value { get; set; }
+	}
+
+	private ApexChartOptions<LiquidAssetSlice> options { get; set; } = new();
+	private ApexChart<LiquidAssetSlice> assetChart;
+
+	private List<LiquidAssetSlice> assetData => LiquidAssets
+		.SelectMany(a => new[]
+		{
+			new LiquidAssetSlice { Label = a.Name, Value = a.Purchase_Price },
+		})
+		.ToList();
+
+	private List<LiquidAssetSlice> reportDataCategories = new()
+	{
+
+	};
+	// < Graph Variables />
+}

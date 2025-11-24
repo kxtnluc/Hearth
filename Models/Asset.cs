@@ -17,12 +17,12 @@ namespace Hearth.Models
         #endregion
         #region Asset Specific Props
         public decimal Purchase_Price { get; set; } // the value the asset was purchased at
-        public decimal? Expected_Growth { get; set; } // The percent anually of Value growth.
-        public decimal? Expected_Decay { get; set; } // The percent anually of the Value decay.
+        public decimal Expected_Growth_Or_Decay { get; set; } // The percent anually of Value growth or decay.
         public ASSET_TYPE Asset_Type {get ; set; } = ASSET_TYPE.Other;
         public CALENDAR_RATE Compound_Rate { get; set; } = CALENDAR_RATE.Annually;
         public DateTime Purchase_Date { get; set; }
         public int? LoanId { get; set; }
+        // Should prob att an AccountId prop too.
         #endregion
         #region Calculated Props
         [NotMapped]
@@ -30,7 +30,7 @@ namespace Hearth.Models
         {
             get
             {
-                if (Expected_Growth.HasValue && Expected_Growth.Value > 0)
+                if (Expected_Growth_Or_Decay > 0)
                 {
                     return true;
                 }
@@ -64,14 +64,17 @@ namespace Hearth.Models
             get
             {
                 var result = 0.00M;
-                if (Is_Appreciating_C)
-                {
-                    result = Expected_Growth_Per_Month_C * Purchase_Price;
-                }
-                else
-                {
-                    result = -1 * (Expected_Decay_Per_Month_C * Purchase_Price);
-                }
+                result = Expected_Growth_Or_Decay_Per_Month_C * Purchase_Price;
+                return result;
+            }
+        }
+        [NotMapped]
+        public decimal Value_Change_Per_Year_C
+        {
+            get
+            {
+                var result = 0.00M;
+                result = Expected_Growth_Or_Decay * Purchase_Price;
                 return result;
             }
         }
@@ -86,27 +89,11 @@ namespace Hearth.Models
             }
         }
         [NotMapped]
-        public decimal Expected_Growth_Per_Month_C
+        public decimal Expected_Growth_Or_Decay_Per_Month_C
         {
             get
             {
-                if (Expected_Growth.HasValue)
-                {
-                    return Expected_Growth.Value / 12;
-                }
-                return 0.00M;
-            }
-        }
-        [NotMapped]
-        public decimal Expected_Decay_Per_Month_C
-        {
-            get
-            {
-                if (Expected_Decay.HasValue)
-                {
-                    return Expected_Decay.Value / 12;
-                }
-                return 0.00M;
+                return Expected_Growth_Or_Decay / 12;
             }
         }
         [NotMapped]
@@ -130,6 +117,7 @@ namespace Hearth.Models
         Stock,
         Bond,
         Cryptocurrency,
+        Account,
         Other
     }
 
