@@ -21,10 +21,25 @@ namespace Hearth.Models
         public ASSET_TYPE Asset_Type {get ; set; } = ASSET_TYPE.Other;
         public CALENDAR_RATE Compound_Rate { get; set; } = CALENDAR_RATE.Annually;
         public DateTime Purchase_Date { get; set; }
-        public int? LoanId { get; set; }
-        // Should prob att an AccountId prop too.
         #endregion
+        #region Joined Props
+        public int? LoanId { get; set; }
+        //public Loan? Loan_J { get; set; }
+        #endregion
+        // Should prob att an AccountId prop too.
         #region Calculated Props
+        [NotMapped]
+        public bool Attached_To_Loan_C
+        {
+            get
+            {
+                if (LoanId != null)
+                {
+                    return true;
+                }
+                return false;
+            }
+        }
         [NotMapped]
         public bool Is_Appreciating_C
         {

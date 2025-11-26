@@ -33,12 +33,24 @@
 			</div>
 			@* Liquid Assets Graph *@
 			<div class="d-s1-panel" style="grid-area: pm">
-				<div class="liquid-asset-graph">
-					<LiquidAssetGraph LiquidAssets="liquidAssets" />
-				</div>
 			</div>
 			@* Loan Graph *@
 			<div class="d-s2-panel" style="grid-area: grph">
+				<div class="la-header">
+					<button class="la-arrow-btn" style="opacity: 0">
+						@*TODO Add other graphs a switch between them via these buttons*@
+						<IconCaret Direction="l" Size="25" />
+					</button>
+
+					<h2 class="la-graph-name">Liquid Assets</h2>
+
+					<button class="la-arrow-btn" style="opacity: 0">
+						<IconCaret Direction="r" Size="25" />
+					</button>
+				</div>
+				<div class="liquid-asset-graph">
+					<LiquidAssetGraph LiquidAccounts="liquidAccounts" />
+				</div>
 			</div>
 		</div>
 	</section>
@@ -50,11 +62,13 @@
 	private List<Asset> vehicle = new List<Asset>();
 	private List<Asset> stock = new List<Asset>();
 	private List<Asset> otherAssets = new List<Asset>();
-	private List<Asset> liquidAssets = new List<Asset>();
+	private List<Account> liquidAccounts = new List<Account>();
 
+	private User? activeUser;                                         // the active user
 
 	protected override async Task OnInitializedAsync()
 	{
+		activeUser = await UserFunctions.GetActiveUserData();
 		await RefreshData(false);
 	}
 
@@ -167,12 +181,8 @@
 				o.Asset_Type != ASSET_TYPE.Cryptocurrency)
 			.ToList();
 
-		liquidAssets = allAssets
-			.Where(l =>
-				l.Asset_Type == ASSET_TYPE.Stock ||
-				l.Asset_Type == ASSET_TYPE.Account
-			)
-			.ToList();
+		liquidAccounts = AccountFunctions.GetUserAccounts(_dbContext, activeUser.Id);
+
 		@if (stateHasChanged)
 		{
 			StateHasChanged();

@@ -4,11 +4,11 @@
 
 <div class="liquid-asset-graph-main">
 
-	<ApexChart TItem="LiquidAssetSlice"
-			   @ref="assetChart"
+	<ApexChart TItem="LiquidAccountSlice"
+			   @ref="accountChart"
 			   Options="options">
 
-		<ApexPointSeries TItem="LiquidAssetSlice"
+		<ApexPointSeries TItem="LiquidAccountSlice"
 						 Items=@(assetData)
 						 Name="labels"
 						 SeriesType="SeriesType.Pie"
@@ -21,26 +21,43 @@
 </div>
 
 @code {
-	[Parameter] public List<Asset> LiquidAssets { get; set; } = new();
+	[Parameter] public List<Account> LiquidAccounts { get; set; } = new();
 	
 	// < Graph Variables >
-	private class LiquidAssetSlice
+	private class LiquidAccountSlice
 	{
 		public string Label { get; set; }
 		public decimal Value { get; set; }
 	}
 
-	private ApexChartOptions<LiquidAssetSlice> options { get; set; } = new();
-	private ApexChart<LiquidAssetSlice> assetChart;
-
-	private List<LiquidAssetSlice> assetData => LiquidAssets
-		.SelectMany(a => new[]
+	private ApexChartOptions<LiquidAccountSlice> options = new()
+	{
+		DataLabels = new DataLabels
 		{
-			new LiquidAssetSlice { Label = a.Name, Value = a.Purchase_Price },
+			Enabled = true,
+			Formatter = "function (val) { return '$' + val.toLocaleString(); }"
+		},
+		Tooltip = new Tooltip
+		{
+			Y = new ()
+			{
+				Formatter = "function (val) { return '$' + val.toLocaleString(); }"
+			}
+		}
+	};
+	private ApexChart<LiquidAccountSlice> accountChart;
+
+	private List<LiquidAccountSlice> assetData => LiquidAccounts
+		.Select(a => new LiquidAccountSlice
+		{
+			Label = a.Name,
+			Value = a.Is_Credit_C 
+				? (a.Balance_Available ?? 0m) 
+				: (a.Balance_Current ?? 0m)
 		})
 		.ToList();
 
-	private List<LiquidAssetSlice> reportDataCategories = new()
+	private List<LiquidAccountSlice> reportDataCategories = new()
 	{
 
 	};
