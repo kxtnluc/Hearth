@@ -25,8 +25,20 @@ namespace Hearth.Models
         public DateTime? Inital_Date_Requested { get; set; }
         public DateTime? Last_Date_Requested { get; set; }
         public DateTime? Last_Modified { get; set; }
-        public decimal? Balance_Available { get; set; }
-        public decimal? Balance_Current { get; set; }
+        public decimal? Balance_Available { get; set; } // The Remainig credit on Credit accounts
+        public decimal? Balance_Current { get; set; } // The Balance on Debit accounts & The amount spent on Credit accounts.
+        [NotMapped]
+        public bool Is_Credit_C
+        {
+            get
+            {
+                if (Type != null && Type.ToLower() == "credit")
+                {
+                    return true;
+                }
+                return false;
+            }
+        }
 
         [NotMapped]
         public ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();

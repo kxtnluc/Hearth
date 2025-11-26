@@ -4,6 +4,7 @@
     justify-content: space-between;
     /*    background-color: lightcoral;*/
     height: 100%;
+    position: relative;
 }
 
 .lp-header {
@@ -14,6 +15,9 @@
 }
 
 .lp-h-header {
+    position: absolute;
+    left: 0;
+    z-index: 10;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -63,37 +67,110 @@
 /* ASSET Body */
 
 .a-body {
-    background-color: lightblue;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     width: 100%;
     height: 100%;
-}
-
-.arrow-btn {
+    position: relative; /* Add this - creates positioning context for absolute children */
 }
 
 .a-b-body-left {
+    width: 55%;
+    text-align: center;
+
 }
 
 .a-b-b-header {
 }
 
 .a-b-b-payment {
+    font-size: clamp(20px, 2.5vw, 70px);
+    text-align: center;
+    color: var(--success-color);
+    font-weight: 700;
 }
 
 .a-b-body-right {
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 45%;
+    border-top-left-radius: 5rem;
+    border: var(--text-color-dark) 2px solid;
+    border-radius: 8px;
+    background-color: antiquewhite;
 }
 
 .purchase-price-and-expected {
+
 }
 
 .a-b-b-purchase-price {
+    font-style: italic;
 }
 
 .a-b-b-expected-rate {
+    font-size: clamp(25px, 2.5vw, 70px);
+    text-align: center;
+    color: var(--success-color);
+    font-weight: 700;
 }
 
-.5-year-estimate-container {
+.a-b-b-expected-rate-small {
+    font-size: clamp(25px, 1.5vw, 50px);
+    text-align: center;
+    color: var(--success-color);
+    font-weight: 700;
 }
+
+.a-b-b-header-small {
+    font-size: clamp(20px, 1.25vw, 70px);
+
+}
+
+.value-change-per-month{
+    font-style: italic;
+    color: var(--success-color);
+}
+
+.a-body-small {
+    display: flex;
+    margin-top: 25%;
+    flex-flow: column nowrap;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    position: relative; /* Add this - creates positioning context for absolute children */
+}
+
+.a-b-body-top {
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+    align-items: center;
+    height: 50%;
+    width: 100%;
+}
+
+
+.a-b-body-bottom {
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+    align-items: center;
+    height: 50%;
+    width: 100%;
+    border-top-left-radius: 5rem;
+    border: var(--text-color-dark) 2px solid;
+    border-radius: 8px;
+    background-color: antiquewhite;
+}
+
+/* Arrow s */
 
 .arrow-btn {
     position: absolute; /* Add this - takes button out of flow */

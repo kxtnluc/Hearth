@@ -59,7 +59,7 @@ else if (Assets.Count() >= 1)
 							<span class="lp-h-h-icon">
 								<IconCollectable Size=30 />
 							</span>
-							<span>Student Loan</span>
+							<span>Collectible</span>
 							break;
 						case ASSET_TYPE.Other:
 							<span class="lp-h-h-icon">
@@ -75,33 +75,48 @@ else if (Assets.Count() >= 1)
 							break;
 					}
 				</div>
-				@* TODO Add Asset Status
-				@if (CurrentAsset.Loan_Status_C == LOAN_STATUS.Delinquent)
-				{
-					<div class="lp-h-toast">
-						<span class="lp-h-t-icon"><IconExlemation /></span> <span class="lp-h-t-text">payment due in 2 days</span>
-					</div>
-				} 
-				*@
 			</div>
-			@* Asset Name and Value *@
-			<div class="lp-body">
+			@* Asset Name and Value (I changed the classes for these divs because the design is very different) *@
+			<div class="a-body-small">
 				<button disabled=@(Assets.Count <= 1 || currentIndex == 0) class="arrow-btn" @onclick="PreviousLoan"> <IconCaret Direction="l" Size="30" /> </button>
-				<div class="lp-b-body">
-					<h2 class="lp-b-b-header loan-name-small">
+				<div class="a-b-body-top">
+					<h2 class="a-b-b-header">
 						@CurrentAsset.Name
 					</h2>
-					<div class="lp-b-b-payment payment-small">
-
+					<div class="a-b-b-payment">
 						@CurrentAsset.Evaluated_Current_Price_C.ToString("C0")
-
+					</div>
+					<div class="a-b-b-purchase-price">
+						@CurrentAsset.Purchase_Price.ToString("C0")
 					</div>
 				</div>
+				<div class="a-b-body-bottom">
+					@if (CurrentAsset.Is_Appreciating_C)
+					{
+						<h2 class="a-b-b-header-small">
+							Appreciating
+						</h2>
+						<div class="a-b-b-expected-rate-small">
+							@CurrentAsset.Expected_Growth_Or_Decay.ToString("P2")
+						</div>
+						<div class="value-change-per-month">
+							@CurrentAsset.Value_Change_Per_Year_C.ToString("C0")
+						</div>
+					}
+					else
+					{
+						<h2 class="a-b-b-header">
+							Depreciating
+						</h2>
+						<div class="a-b-b-expected-rate" style="color: var(--error-color)">
+							@Math.Abs(CurrentAsset.Expected_Growth_Or_Decay).ToString("P2")
+						</div>
+						<div class="value-change-per-month" style="color: var(--error-color)">
+							@Math.Abs(CurrentAsset.Value_Change_Per_Year_C).ToString("C0")
+						</div>
+					}
+				</div>
 				<button disabled=@(Assets.Count <= 1 || currentIndex == (Assets.Count - 1)) class="arrow-btn" @onclick="NextLoan"> <IconCaret Direction="r" Size="30" /> </button>
-			</div>
-			@* pog bar ??? *@
-			<div class="lp-footer">
-				@* TODO figure out what to put here*@
 			</div>
 		</div>
 	}
@@ -117,43 +132,43 @@ else if (Assets.Count() >= 1)
 							<span class="lp-h-h-icon">
 								<IconHome Size=30 />
 							</span>
-							<span>Mortgage</span>
+							<span>Property</span>
 							break;
 						case ASSET_TYPE.Vehicle:
 							<span class="lp-h-h-icon">
 								<IconCar Size=30 />
 							</span>
-							<span>Car Loan</span>
+							<span>Vehicle</span>
 							break;
 						case ASSET_TYPE.Stock:
 							<span class="lp-h-h-icon">
 								<IconStock Size=30 />
 							</span>
-							<span>Student Loan</span>
+							<span>Stock</span>
 							break;
 						case ASSET_TYPE.Bond:
 							<span class="lp-h-h-icon">
 								<IconBond Size=30 />
 							</span>
-							<span>Student Loan</span>
+							<span>Bond</span>
 							break;
 						case ASSET_TYPE.Cryptocurrency:
 							<span class="lp-h-h-icon">
 								<IconBitcoin Size=30 />
 							</span>
-							<span>Student Loan</span>
+							<span>Crypto</span>
 							break;
 						case ASSET_TYPE.Collectible:
 							<span class="lp-h-h-icon">
 								<IconCollectable Size=30 />
 							</span>
-							<span>Student Loan</span>
+							<span>Collectible</span>
 							break;
 						case ASSET_TYPE.Other:
 							<span class="lp-h-h-icon">
 								<IconBox Size=30 />
 							</span>
-							<span>Student Loan</span>
+							<span>Other</span>
 							break;
 						default:
 							<span class="lp-h-h-icon">
@@ -174,26 +189,35 @@ else if (Assets.Count() >= 1)
 					<div class="a-b-b-payment">
 						@CurrentAsset.Evaluated_Current_Price_C.ToString("C0")
 					</div>
+					<div class="a-b-b-purchase-price">
+						@CurrentAsset.Purchase_Price.ToString("C0")
+					</div>
 				</div>
 				<div class="a-b-body-right">
-					<div class="purchase-price-and-expected">
-						<div class="a-b-b-purchase-price">
-							@CurrentAsset.Purchase_Price.ToString("C0")
-						</div>
+					@if(CurrentAsset.Is_Appreciating_C)
+					{
+						<h2 class="a-b-b-header">
+							Appreciating
+						</h2>
 						<div class="a-b-b-expected-rate">
-							@if(CurrentAsset.Is_Appreciating_C)
-							{
-								@CurrentAsset.Expected_Growth
-							}
-							else
-							{
-								@CurrentAsset.Expected_Decay
-							}
+							@CurrentAsset.Expected_Growth_Or_Decay.ToString("P2")
 						</div>
-					</div>
-					<div class="5-year-estimate-container">
-						@CurrentAsset.Evaluated_Five_Year_Price_C
-					</div>
+						<div class="value-change-per-month">
+							@CurrentAsset.Value_Change_Per_Year_C.ToString("C0")
+						</div>
+					}
+					else
+					{
+						<h2 class="a-b-b-header">
+							Depreciating
+						</h2>
+						<div class="a-b-b-expected-rate" style="color: var(--error-color)">
+							@Math.Abs(CurrentAsset.Expected_Growth_Or_Decay).ToString("P2")
+						</div>
+						<div class="value-change-per-month" style="color: var(--error-color)">
+							@Math.Abs(CurrentAsset.Value_Change_Per_Year_C).ToString("C0")
+						</div>
+					}
 				</div>
 				<button disabled=@(Assets.Count <= 1 || currentIndex == (Assets.Count - 1)) class="arrow-btn" @onclick="NextLoan"> <IconCaret Direction="r" Size="30" /> </button>
 			</div>

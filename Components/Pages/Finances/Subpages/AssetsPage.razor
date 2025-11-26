@@ -6,6 +6,7 @@
 @using Hearth.Icons
 @using Hearth.Finances.Parts
 @using Hearth.Parts
+@using ApexCharts
 @inject HearthDbContext _dbContext
 
 @* Debt Page's Toolbar *@
@@ -22,17 +23,34 @@
 			<div class="d-s1-panel panel-hearth" style="grid-area: cl">
 				<AssetPanel Assets="@vehicle" />
 			</div>
-			@* Other Loan 1 (Student) *@
+			@* Other Loan 1 (Stock & Crypto) *@
 			<div class="d-s1-panel panel-hearth" style="grid-area: o1">
+				<AssetPanel Assets="@stock" IsSmall=true />
 			</div>
 			@* Other Loan 2 *@
 			<div class="d-s1-panel panel-hearth" style="grid-area: o2">
+				<AssetPanel Assets="@otherAssets" IsSmall=true />
 			</div>
-			@* Payments *@
+			@* Liquid Assets Graph *@
 			<div class="d-s1-panel" style="grid-area: pm">
 			</div>
 			@* Loan Graph *@
 			<div class="d-s2-panel" style="grid-area: grph">
+				<div class="la-header">
+					<button class="la-arrow-btn" style="opacity: 0">
+						@*TODO Add other graphs a switch between them via these buttons*@
+						<IconCaret Direction="l" Size="25" />
+					</button>
+
+					<h2 class="la-graph-name">Liquid Assets</h2>
+
+					<button class="la-arrow-btn" style="opacity: 0">
+						<IconCaret Direction="r" Size="25" />
+					</button>
+				</div>
+				<div class="liquid-asset-graph">
+					<LiquidAssetGraph LiquidAccounts="liquidAccounts" />
+				</div>
 			</div>
 		</div>
 	</section>
@@ -42,12 +60,15 @@
 	private List<Asset> allAssets = new List<Asset>();
 	private List<Asset> property = new List<Asset>();
 	private List<Asset> vehicle = new List<Asset>();
+	private List<Asset> stock = new List<Asset>();
+	private List<Asset> otherAssets = new List<Asset>();
+	private List<Account> liquidAccounts = new List<Account>();
 
-	// private List<Loan> studentLoans = new List<Loan>();
-	// private List<Loan> otherLoans = new List<Loan>();
+	private User? activeUser;                                         // the active user
 
 	protected override async Task OnInitializedAsync()
 	{
+		activeUser = await UserFunctions.GetActiveUserData();
 		await RefreshData(false);
 	}
 
@@ -148,13 +169,20 @@
 			.Where(c => c.Asset_Type == ASSET_TYPE.Vehicle)
 			.ToList();
 
-		// studentLoans = allLoans
-		// 	.Where(sl => sl.Loan_Type == LOAN_TYPE.Student_Loan)
-		// 	.ToList();
+		stock = allAssets
+			.Where(s => s.Asset_Type == ASSET_TYPE.Stock || s.Asset_Type == ASSET_TYPE.Cryptocurrency)
+			.ToList();
 
-		// otherLoans = allLoans
-		// 	.Where(o => o.Loan_Type != LOAN_TYPE.Mortgage && o.Loan_Type != LOAN_TYPE.Car_Loan && o.Loan_Type != LOAN_TYPE.Student_Loan)
-		// 	.ToList();
+		otherAssets = allAssets
+			.Where(o => 
+				o.Asset_Type != ASSET_TYPE.Property && 
+				o.Asset_Type != ASSET_TYPE.Vehicle && 
+				o.Asset_Type != ASSET_TYPE.Stock && 
+				o.Asset_Type != ASSET_TYPE.Cryptocurrency)
+			.ToList();
+
+		liquidAccounts = AccountFunctions.GetUserAccounts(_dbContext, activeUser.Id);
+
 		@if (stateHasChanged)
 		{
 			StateHasChanged();
