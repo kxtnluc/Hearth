@@ -1,0 +1,233 @@
+﻿@using Hearth.Parts
+@using Hearth.Icons
+@using Hearth.Models
+@using Hearth.Data
+@using Hearth.Finances.Parts
+@inject HearthDbContext _dbContext
+@typeparam TItem
+@namespace Hearth.Parts
+
+
+<div class="manage-modal-main">
+	<div class="mm-body">
+		<table class="mm-b-table panel-hearth">
+			<thead class="mm-thead">
+				<tr class="mm-trow">
+					<th class="th-header">
+						@table.TH1
+					</th>
+					<th class="th-header">
+						@table.TH2
+					</th>
+					<th class="th-header">
+						@table.TH3
+					</th>
+					<th class="th-header">
+						@table.TH3
+					</th>
+					<th class="th-header th-h-actions">
+						Actions
+					</th>
+				</tr>
+			</thead>
+			@switch (Object)
+			{
+				case List<Loan>:
+					@foreach (var l in Loans)
+					{
+						<tbody class="mm-b-tbody">
+							<tr class="mm-row">
+								<td class="tb-1 tb-value">
+									@l.Name
+								</td>
+								<td class="tb-2 tb-value">
+									@l.Total_Paid_C.ToString("C2")
+								</td>
+								<td class="tb-3 tb-value">
+									@l.Remaining_Principal_C.ToString("C2")
+								</td>
+								<td class="tb-4 tb-value">
+									@l.Loan_Type.ToString().Replace("_", " ")
+								</td>
+								<td class="tb-actions">
+									<button class="tb-a-btn edit-btn" @onclick="@(() => OpenEditLoanModal(l))">
+										<IconPencil Size="22" />
+									</button>
+									<button class="tb-a-btn trash-btn" @onclick="@(() => OpenDeleteLoanModal(l))">
+										<IconTrash Size="22" />
+									</button>
+								</td>
+							</tr>
+						</tbody>
+					}
+					break;
+				case List<Asset>:
+					@foreach (var a in Assets)
+					{
+						<tbody class="mm-b-tbody">
+							<tr class="mm-row">
+								<td class="tb-1 tb-value">
+									@a.Name
+								</td>
+								<td class="tb-2 tb-value">
+									@a.Purchase_Price.ToString("C2")
+								</td>
+								<td class="tb-3 tb-value">
+									@a.Expected_Growth_Or_Decay.ToString("C2")
+								</td>
+								<td class="tb-4 tb-value">
+									@a.Asset_Type.ToString().Replace("_", " ")
+								</td>
+								<td class="tb-actions">
+									<button class="tb-a-btn edit-btn">
+										<IconPencil Size="22" />
+									</button>
+									<button class="tb-a-btn trash-btn">
+										<IconTrash Size="22" />
+									</button>
+								</td>
+							</tr>
+						</tbody>
+					}
+					break;
+				default:
+
+					break;
+			}
+		</table>
+	</div>
+</div>
+
+@* Modals *@
+@* --- LOAN --- *@
+<AddEditLoanModal ShowModal="showEditLoanModal" ShowModalChanged="OnEditLoanModalChanged" LoanToEdit="selectedLoan" />
+
+@* Delete *@
+<HearthGenericDeleteModal @bind-ShowModal="showDeleteModal" Label="Delete Loan?" DeleteFunction="() => DeleteLoan(selectedLoan.Id)">
+	Are you sure you want to delete the "@selectedLoan?.Name" Loan?
+</HearthGenericDeleteModal> 
+
+@code {
+	#region Setup
+
+	[Parameter] public List<TItem> Object { get; set; }
+
+	// Assiging class
+	private List<Asset> Assets
+	{
+		get
+		{
+			if (Object is List<Asset> assetList)
+			{
+				return assetList;
+			}
+			return new();
+		}
+	}
+
+	private List<Loan> Loans
+	{
+		get
+		{
+			if (Object is List<Loan> loanList)
+			{
+				return loanList;
+			}
+			return new();
+		}
+	}
+
+	// Setting Up Table
+
+	private class SimpleTable
+	{
+		public string TH1 { get; set; }
+		public string TH2 { get; set; }
+		public string TH3 { get; set; }
+		public string TH4 { get; set; }
+	}
+
+	private SimpleTable table
+	{
+		get
+		{
+			SimpleTable result = new ();
+
+			switch (Object)
+			{
+				case List<Asset>:
+					result = new SimpleTable
+					{
+						TH1 = "Name",
+						TH2 = "Purhcase Price",
+						TH3 = "Rate",
+						TH4 = "Type"
+					};
+					break;
+				case List<Loan>:
+					result = new SimpleTable
+					{
+						TH1 = "Name",
+						TH2 = "Paid",
+						TH3 = "Remaining",
+						TH4 = "Type"
+					};
+					break;
+				default:
+					break;
+			}
+
+			return result;
+		}
+	}
+	#endregion
+
+	#region Modals
+	// Edit
+	private Loan? selectedLoan = null;
+	private bool showEditLoanModal = false;
+
+	private void OpenEditLoanModal(Loan loan)
+	{
+		selectedLoan = loan;
+		showEditLoanModal = true;
+	}
+
+	private void CloseEditLoanModal()
+	{
+		showEditLoanModal = false;
+	}
+
+	private async void OnEditLoanModalChanged(bool value)
+	{
+		showEditLoanModal = value;
+		if (showEditLoanModal == false)
+		{
+			// await RefreshData();
+		}
+		return;
+	}
+
+	// Delete
+	private bool showDeleteModal = false;
+
+	private void OpenDeleteLoanModal(Loan loan)
+	{
+		selectedLoan = loan;
+		showDeleteModal = true;
+	}
+
+	private void CloseDeleteModal()
+	{
+		showDeleteModal = false;
+	}
+
+	private async void DeleteLoan(int loanId)
+	{
+		LoanFunctions.Remove(_dbContext, loanId);
+		CloseDeleteModal();
+		// await RefreshData();
+		return;
+	}
+	#endregion
+}

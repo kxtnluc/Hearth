@@ -50,70 +50,13 @@
 	OnClose="CloseManageLoanModal"
 
 >
-	<div class="manage-modal-main">
-		<div class="mm-body">
-			<table class="mm-b-table panel-hearth">
-				<thead class="mm-thead">
-					<tr class="mm-trow">
-						<th class="th-header">
-							Name
-						</th>
-						<th class="th-header">
-							Paid
-						</th>
-						<th class="th-header">
-							Remaining
-						</th>
-						<th class="th-header">
-							Type
-						</th>
-						<th class="th-header th-h-actions">
-							Actions
-						</th>
-					</tr>
-				</thead>
-				@foreach (Loan l in allLoans)
-				{
-					<tbody class="mm-b-tbody">
-						<tr class="mm-row">
-							<td class="tb-name tb-value">
-								@l.Name
-							</td>
-							<td class="tb-paid tb-value">
-								@l.Total_Paid_C.ToString("C2")
-							</td>
-							<td class="tb-remaining tb-value">
-								@l.Remaining_Principal_C.ToString("C2")
-							</td>
-							<td class="tb-type tb-value">
-								@l.Loan_Type.ToString().Replace("_", " ")
-							</td>
-							<td class="tb-actions">
-								<button class="tb-a-btn edit-btn" @onclick="@(() => OpenEditLoanModal(l))">
-									<IconPencil Size="22" />
-								</button>
-								<button class="tb-a-btn trash-btn" @onclick="@(() => OpenDeleteModal(l))">
-									<IconTrash Size="22" />
-								</button>
-							</td>
-						</tr>
-					</tbody>
-				}
-			</table>
-		</div>
-	</div>
+	<HearthTableSimple Object="allLoans" />
 </HearthModal>
 
 @* Add *@
 <AddEditLoanModal ShowModal="showAddLoanModal" ShowModalChanged="OnAddLoanModalChanged" />
 
-@* Edit *@
-<AddEditLoanModal ShowModal="showEditLoanModal" ShowModalChanged="OnEditLoanModalChanged" LoanToEdit="selectedLoan" />
 
-@* Delete *@
-<HearthGenericDeleteModal @bind-ShowModal="showDeleteModal" Label="Delete Loan?" DeleteFunction="() => DeleteLoan(selectedLoan.Id)">
-	Are you sure you want to delete the "@selectedLoan?.Name" Loan?
-</HearthGenericDeleteModal> 
 
 @code {
 	private List<Loan> allLoans = new List<Loan>();
@@ -161,53 +104,6 @@
 		{
 			// await RefreshData(); TODO possibly
 		}
-		return;
-	}
-
-	// Edit
-	private Loan? selectedLoan = null;
-	private bool showEditLoanModal = false;
-
-	private void OpenEditLoanModal(Loan loan)
-	{
-		selectedLoan = loan;
-		showEditLoanModal = true;
-	}
-
-	private void CloseEditLoanModal()
-	{
-		showEditLoanModal = false;
-	}
-
-	private async void OnEditLoanModalChanged(bool value)
-	{
-		showEditLoanModal = value;
-		if (showEditLoanModal == false)
-		{
-			await RefreshData();
-		}
-		return;
-	}
-
-	// Delete
-	private bool showDeleteModal = false;
-
-	private void OpenDeleteModal(Loan loan)
-	{
-		selectedLoan = loan;
-		showDeleteModal = true;
-	}
-
-	private void CloseDeleteModal()
-	{
-		showDeleteModal = false;
-	}
-
-	private async void DeleteLoan(int loanId)
-	{
-		LoanFunctions.Remove(_dbContext, loanId);
-		CloseDeleteModal();
-		await RefreshData();
 		return;
 	}
 
