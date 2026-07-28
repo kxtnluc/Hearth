@@ -1,4 +1,5 @@
-﻿using Hearth.Core.Interfaces;
+﻿// PLAID API
+using Hearth.Core.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Text;

@@ -9,11 +9,11 @@ public class HearthDbContext : DbContext
         : base(options)
     {
     }
-
-    // DbSets go here once you have entities, e.g.:
-     public DbSet<Transaction> Transactions => Set<Transaction>();
-     public DbSet<Account> Accounts => Set<Account>();
-     public DbSet<Bank> Banks => Set<Bank>();
+    // Db Sets
+    public DbSet<Transaction> Transactions => Set<Transaction>();
+    public DbSet<Account> Accounts => Set<Account>();
+    public DbSet<Bank> Banks => Set<Bank>();
+    public DbSet<Asset> Assets => Set<Asset>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
