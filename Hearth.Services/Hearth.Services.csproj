@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Hearth.Core\Hearth.Core.csproj" />
+    <ProjectReference Include="..\Hearth.Foundation\Hearth.Foundation.csproj" />
   </ItemGroup>
 
 </Project>

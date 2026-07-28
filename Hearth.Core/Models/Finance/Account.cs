@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata;
+﻿// PLAID API
+using Microsoft.EntityFrameworkCore.Metadata;
 using Hearth.Core.Interfaces;
 
 namespace Hearth.Core.Models.Finance
