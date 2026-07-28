@@ -1,0 +1,16 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="Hearth.Core/Hearth.Core.csproj" />
+    <Project Path="Hearth.Integrations/Hearth.Integrations.csproj" />
+    <Project Path="Hearth.Services/Hearth.Services.csproj" />
+    <Project Path="Hearth.UI/Hearth.UI.csproj">
+      <Deploy Solution="Debug|*" />
+    </Project>
+  </Folder>
+  <Folder Name="/_root/">
+    <File Path=".env" />
+    <File Path=".gitignore" />
+    <File Path="notes.md" />
+    <File Path="README.md" />
+  </Folder>
+</Solution>
