@@ -14,7 +14,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IDbInitializer, DbInitializer>();
 
         services.AddScoped<IAccountService, AccountService>();
-        //services.AddScoped<ITransactionService, TransactionService>();
+        services.AddScoped<ITransactionService, TransactionService>();
         //services.AddScoped<IBankService, BankService>();
 
         return services;

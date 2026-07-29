@@ -64,49 +64,5 @@ namespace Hearth.Core.Models.Finance
         public string PpdId { get; set; } = default!;
         public string Reason { get; set; } = default!;
         public string Reference_Number { get; set; } = default!;
-
-        // TODO: This will all be moved the the DTOs
-        /*
-        // Not Mapped Props
-        [NotMapped]
-        public Account? Account { get; set; }
-        // Below are varibales enterprited from Date
-        [NotMapped]
-        public int Year
-        {
-            get
-            {
-                if (DateTime.TryParseExact(Date, "yyyy-MM-dd", null, System.Globalization.DateTimeStyles.None, out var parsedDate))
-                {
-                    return parsedDate.Year;
-                }
-                throw new FormatException("Invalid date format. Expected 'YYYY-MM-DD'.");
-            }
-        }
-        [NotMapped]
-        public int Month
-        {
-            get
-            {
-                if (DateTime.TryParseExact(Date, "yyyy-MM-dd", null, System.Globalization.DateTimeStyles.None, out var parsedDate))
-                {
-                    return parsedDate.Month;
-                }
-                throw new FormatException("Invalid date format. Expected 'YYYY-MM-DD'.");
-            }
-        }
-        [NotMapped]
-        public int Day
-        {
-            get
-            {
-                if (DateTime.TryParseExact(Date, "yyyy-MM-dd", null, System.Globalization.DateTimeStyles.None, out var parsedDate))
-                {
-                    return parsedDate.Day;
-                }
-                throw new FormatException("Invalid date format. Expected 'YYYY-MM-DD'.");
-            }
-        }
-        */
     }
 }

@@ -6,5 +6,6 @@ namespace Hearth.Services.DTOs.Finance.Transaction
 {
     internal class TransactionHeaderDTO
     {
+
     }
 }
