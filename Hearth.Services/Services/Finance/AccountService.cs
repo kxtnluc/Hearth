@@ -1,7 +1,7 @@
 ﻿using Hearth.Core.Data;
 using Hearth.Services.DTOs.Finance.Account;
 using Hearth.Services.Interfaces.Finance;
-using Hearth.Services.Mapping;
+using Hearth.Services.Mapping.Finance;
 
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;

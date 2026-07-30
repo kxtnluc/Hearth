@@ -3,6 +3,7 @@ using System;
 using Hearth.Core.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Hearth.Core.Migrations
 {
     [DbContext(typeof(HearthDbContext))]
-    partial class HearthDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260729201924_rules-attempt-01")]
+    partial class rulesattempt01
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.10");
@@ -432,6 +435,9 @@ namespace Hearth.Core.Migrations
 
                     b.Property<string>("Description")
                         .HasColumnType("TEXT");
+
+                    b.Property<int?>("Example_Transaction_Id")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Hex_Color")
                         .IsRequired()

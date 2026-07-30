@@ -2,7 +2,7 @@
 using Hearth.Services.DTOs.Finance.Account;
 using Riok.Mapperly.Abstractions;
 
-namespace Hearth.Services.Mapping;
+namespace Hearth.Services.Mapping.Finance;
 
 [Mapper]
 internal static partial class AccountMapper

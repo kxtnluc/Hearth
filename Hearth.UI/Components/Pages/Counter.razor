@@ -1,39 +1,65 @@
 ﻿@page "/counter"
 @using Hearth.Services.Interfaces.Finance
 @using Hearth.Services.DTOs.Finance.Account
+@using Hearth.Services.DTOs.Finance.Transaction
 @inject IAccountService _accountService
+@inject ITransactionService _transactionService
 
-<h1>Accounts</h1>
+<h1>Stuff</h1>
 
-@if (accounts is null)
-{
-    <p>Loading...</p>
-}
-else if (accounts.Count == 0)
-{
-    <p>No accounts found.</p>
-}
-else
-{
-    <ul>
-        @foreach (var account in accounts)
-        {
-            <li>
-                @account.Name — @account.Balance_Current?.ToString("C")
-                @if (account.Is_Credit_C)
-                {
-                    <span> (Credit)</span>
-                }
-            </li>
-        }
-    </ul>
-}
+<div>
+    @if (accounts is null)
+    {
+        <p>Loading...</p>
+    }
+    else if (accounts.Count == 0)
+    {
+        <p>No accounts found.</p>
+    }
+    else
+    {
+        <ul>
+            @foreach (var account in accounts)
+            {
+                <li>
+                    @account.Name — @account.Balance_Current?.ToString("C")
+                    @if (account.Is_Credit_C)
+                    {
+                        <span> (Credit)</span>
+                    }
+                </li>
+            }
+        </ul>
+    }
+
+    @if (transactions is null)
+    {
+        <p>Loading...</p>
+    }
+    else if (transactions.Count == 0)
+    {
+        <p>No transactions found.</p>
+    }
+    else
+    {
+        <ul>
+            @foreach (var t in transactions)
+            {
+                <li>
+                    @t?.Name — @t?.Amount.ToString("C")
+                </li>
+            }
+        </ul>
+    }
+</div>
 
 @code {
     private List<AccountDTO>? accounts;
+    private List<TransactionDTO>? transactions;
 
     protected override async Task OnInitializedAsync()
     {
         accounts = await _accountService.GetAll();
+        transactions = await _transactionService.GetAll();
     }
 }

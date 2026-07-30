@@ -14,6 +14,11 @@ public class HearthDbContext : DbContext
     public DbSet<Account> Accounts => Set<Account>();
     public DbSet<Bank> Banks => Set<Bank>();
     public DbSet<Asset> Assets => Set<Asset>();
+    public DbSet<Loan> Loans => Set<Loan>();
+    public DbSet<TransactionCategory> TransactionCategories => Set<TransactionCategory>();
+    public DbSet<TransactionCategoryRule> TransactionCategoryRules => Set<TransactionCategoryRule>();
+    public DbSet<RuleCondition> RuleConditions => Set<RuleCondition>();
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
