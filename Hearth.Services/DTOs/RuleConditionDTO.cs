@@ -1,12 +1,13 @@
 ﻿using Hearth.Foundation.Enums;
 using Hearth.Services.DTOs.Finance.Transaction;
+using Hearth.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Hearth.Services.DTOs
 {
-    public class RuleConditionDTO
+    public class RuleConditionDTO : IDTO
     {
         #region Key Props
         public int Id { get; set; }

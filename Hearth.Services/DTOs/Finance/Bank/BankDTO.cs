@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Hearth.Services.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Hearth.Services.DTOs.Finance.Bank
 {
-    public class BankDTO
+    public class BankDTO : IDTO
     {
         public int Id { get; set; }
         public string BankId { get; set; } = default!;

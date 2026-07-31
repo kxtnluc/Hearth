@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Hearth.Core.Models.Finance;
+using Hearth.Core.Models;
 
 namespace Hearth.Core.Data;
 

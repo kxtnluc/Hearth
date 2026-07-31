@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Hearth.Services.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Hearth.Services.DTOs.Finance.TransactionCategory
 {
-    public class TransactionCategoryRuleDTO
+    public class TransactionCategoryRuleDTO : IDTO
     {
         #region Key Props
         public int Id { get; set; }

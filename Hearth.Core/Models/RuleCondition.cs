@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Hearth.Core.Models.Finance
+namespace Hearth.Core.Models
 {
     public class RuleCondition : ICondition
     {

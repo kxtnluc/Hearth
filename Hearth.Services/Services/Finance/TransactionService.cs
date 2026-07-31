@@ -1,65 +1,26 @@
 ﻿using Hearth.Core.Data;
+using Hearth.Core.Models.Finance;
+using Hearth.Services.Abstract;
+using Hearth.Services.DTOs.Finance.Account;
 using Hearth.Services.DTOs.Finance.Transaction;
 using Hearth.Services.Interfaces.Finance;
 using Hearth.Services.Mapping.Finance;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace Hearth.Services.Services.Finance
 {
-    public class TransactionService : ITransactionService
+    public class TransactionService : ASqliteTableService<Transaction, TransactionDTO>, ITransactionService
     {
-        #region ISqliteTableService Functions
+        public TransactionService(HearthDbContext context) : base(context) { }
+        #region Abstract Class Setup
+        protected override DbSet<Transaction> DbSet => _context.Transactions;
+        protected override TransactionDTO ToDto(Transaction entity) => entity.ToDto();
+        protected override Transaction ToEntity(TransactionDTO dto) => dto.ToEntity();
+        protected override void ApplyUpdate(TransactionDTO dto, Transaction entity) => dto.ApplyUpdate(entity);
 
-        private readonly HearthDbContext _context;
-
-        public TransactionService(HearthDbContext context)
-        {
-            _context = context;
-        }
-
-        public async Task<TransactionDTO?> GetById(int id)
-        {
-            var transaction = await _context.Transactions.FindAsync(id);
-            return transaction?.ToDto();
-        }
-
-        public async Task<List<TransactionDTO>> GetAll()
-        {
-            var transactions = await _context.Transactions.AsNoTracking().ToListAsync();
-            return transactions.ToDtoList();
-        }
-
-        public async Task<TransactionDTO> Create(TransactionDTO payload)
-        {
-            var entity = payload.ToEntity();
-            _context.Transactions.Add(entity);
-            await _context.SaveChangesAsync();
-            return entity.ToDto();
-        }
-
-        public async Task Update(TransactionDTO payload)
-        {
-            var entity = await _context.Transactions.FindAsync(payload.Id)
-                ?? throw new KeyNotFoundException($"Transaction {payload.Id} not found");
-
-            entity.Name = payload.Name;
-            // TODO
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task Delete(int id)
-        {
-            var entity = await _context.Transactions.FindAsync(id);
-            if (entity is null) return;
-
-            _context.Transactions.Remove(entity);
-            await _context.SaveChangesAsync();
-        }
         #endregion
-        #region ITransactionService Functions
+
+
+        #region Model Specific Functions
         public async Task<TransactionDTO?> GetByTransactionId(string transactionId)
         {
             var transaction = await _context.Transactions
