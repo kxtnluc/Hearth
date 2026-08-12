@@ -35,6 +35,10 @@ namespace Hearth.Services.Services.Finance
         protected override TransactionCategoryRuleDTO ToDto(TransactionCategoryRule entity) => entity.ToDto();
         protected override TransactionCategoryRule ToEntity(TransactionCategoryRuleDTO dto) => dto.ToEntity();
         protected override void ApplyUpdate(TransactionCategoryRuleDTO dto, TransactionCategoryRule entity) => dto.ApplyUpdate(entity);
+        protected override void ValidatePayload(TransactionCategoryRuleDTO payload)
+        {
+            throw new NotImplementedException();
+        }
         #endregion
         #region Model Specific Functions
         public async Task<TransactionCategoryRuleDTO> GetByIdWithRuleConditions(int transactionCategoryRuleId)

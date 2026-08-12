@@ -13,7 +13,7 @@ namespace Hearth.Services.Services
     public class SessionService : ISessionService
     {
         //public SessionService(HearthDbContext context) : base(context) { }
-        public string GenerateSessionToken(User user)
+        public string GenerateSessionToken(UserDTO user)
         {
             // Generate a unique identifier
             var guid = Guid.NewGuid().ToString();

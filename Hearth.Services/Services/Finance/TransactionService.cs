@@ -16,6 +16,10 @@ namespace Hearth.Services.Services.Finance
         protected override TransactionDTO ToDto(Transaction entity) => entity.ToDto();
         protected override Transaction ToEntity(TransactionDTO dto) => dto.ToEntity();
         protected override void ApplyUpdate(TransactionDTO dto, Transaction entity) => dto.ApplyUpdate(entity);
+        protected override void ValidatePayload(TransactionDTO payload)
+        {
+            throw new NotImplementedException();
+        }
 
         #endregion
 

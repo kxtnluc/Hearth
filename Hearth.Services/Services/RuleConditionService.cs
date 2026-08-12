@@ -18,6 +18,10 @@ namespace Hearth.Services.Services
         protected override RuleConditionDTO ToDto(RuleCondition entity) => entity.ToDto();
         protected override RuleCondition ToEntity(RuleConditionDTO dto) => dto.ToEntity();
         protected override void ApplyUpdate(RuleConditionDTO dto, RuleCondition entity) => dto.ApplyUpdate(entity);
+        protected override void ValidatePayload(RuleConditionDTO payload)
+        {
+            throw new NotImplementedException();
+        }
         #endregion
 
         #region Model Specific Functions

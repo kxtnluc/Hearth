@@ -77,6 +77,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\..\01 Pyre\Pyre\Pyre.Element\Pyre.Element.csproj" />
       <ProjectReference Include="..\Hearth.Foundation\Hearth.Foundation.csproj" />
       <ProjectReference Include="..\Hearth.Services\Hearth.Services.csproj" />
     </ItemGroup>

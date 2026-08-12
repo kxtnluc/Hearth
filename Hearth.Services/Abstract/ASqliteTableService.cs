@@ -34,7 +34,12 @@ namespace Hearth.Services.Abstract
         /// Applies non-null DTO values onto the tracked entity.
         /// </summary>
         protected abstract void ApplyUpdate(TDto dto, TEntity entity);
-
+        /// <summary>
+        /// Checks the payload for validity before creating or updating. Throws false if invalid. Implemented by the concrete service class.
+        /// </summary>
+        /// <param name="payload"></param>
+        /// <returns></returns>
+        protected abstract void ValidatePayload(TDto payload);
         public virtual async Task<TDto?> GetById(int id)
         {
             var entity = await DbSet.FindAsync(id);
@@ -49,6 +54,18 @@ namespace Hearth.Services.Abstract
 
         public virtual async Task<TDto> Create(TDto payload)
         {
+            try
+            {
+                ValidatePayload(payload);
+            }
+            catch (ArgumentException ex)
+            {
+                throw new ArgumentException($"Invalid payload for {typeof(TEntity).Name}: {payload} --- {ex.Message}");
+            }
+            catch(NotImplementedException)
+            {
+                // If ValidatePayload is not implemented, we can choose to ignore validation or throw an exception.
+            }
             var entity = ToEntity(payload);
             DbSet.Add(entity);
             await _context.SaveChangesAsync();

@@ -16,6 +16,10 @@ namespace Hearth.Services.Services.Finance
         protected override AccountDTO ToDto(Account entity) => entity.ToDto();
         protected override Account ToEntity(AccountDTO dto) => dto.ToEntity();
         protected override void ApplyUpdate(AccountDTO dto, Account entity) => dto.ApplyUpdate(entity);
+        protected override void ValidatePayload(AccountDTO payload)
+        {
+            throw new NotImplementedException();
+        }
         #endregion
 
         #region Model Specific Functions
