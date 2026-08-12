@@ -1,5 +1,6 @@
 ﻿using Hearth.Foundation.Enums;
 using Hearth.Foundation.Enums.Finance;
+using Hearth.Services.Interfaces;
 using Riok.Mapperly.Abstractions;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ using static Hearth.Services.Utility.Finance.LoanCalculator;
 
 namespace Hearth.Services.DTOs.Finance.Loan
 {
-    public class LoanDTO
+    public class LoanDTO : IDTO
     {
         #region Generic Props
         public int Id { get; set; }

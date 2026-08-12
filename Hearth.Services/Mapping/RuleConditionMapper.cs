@@ -1,28 +1,28 @@
-﻿using Hearth.Core.Models.Finance;
-using Hearth.Services.DTOs.Finance.Account;
+﻿using Hearth.Core.Models;
+using Hearth.Services.DTOs;
 using Riok.Mapperly.Abstractions;
 
-namespace Hearth.Services.Mapping.Finance;
+namespace Hearth.Services.Mapping;
 
 //(AllowNullPropertyAssignment = false) might need this in the mapper tag
 [Mapper]
-internal static partial class AccountMapper
+internal static partial class RuleConditionMapper
 {
     /// <summary>
     /// Turns a Model (entity) into its DTO
     /// </summary>
-    public static partial AccountDTO ToDto(this Account entity);
+    public static partial RuleConditionDTO ToDto(this RuleCondition entity);
     /// <summary>
     /// Turns a DTO back into its Model (entity)
     /// </summary>
-    public static partial Account ToEntity(this AccountDTO dto);
+    public static partial RuleCondition ToEntity(this RuleConditionDTO dto);
     /// <summary>
     /// Turns a Model List into its DTO List counterpart
     /// </summary>
-    public static partial List<AccountDTO> ToDtoList(this List<Account> entities);
+    public static partial List<RuleConditionDTO> ToDtoList(this List<RuleCondition> entities);
     /// <summary>
     /// Applies non-null values from the DTO onto an existing tracked entity.
     /// Any property that's null on the DTO is left untouched on the entity.
     /// </summary>
-    public static partial void ApplyUpdate(this AccountDTO dto, Account entity);
+    public static partial void ApplyUpdate(this RuleConditionDTO dto, RuleCondition entity);
 }

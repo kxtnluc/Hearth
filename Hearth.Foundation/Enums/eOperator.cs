@@ -8,18 +8,27 @@ namespace Hearth.Foundation.Enums
     public enum E_OPERATOR
     {
         [Description("=")]
-        Equals,
+        Equals = 0,
+
         [Description(">")]
-        GreaterThan,
+        GreaterThan = 1,
+
         [Description("<")]
-        LessThan,
-        [Description("≥")]
-        GreaterThanOrEqualTo,
-        [Description("≤")]
-        LessThanOrEqualTo,
-        [Description("≥ ≤")]
-        Between,
+        LessThan = 2,
+
+        [Description(">=")]
+        GreaterThanOrEqualTo = 3,
+
+        [Description("<=")]
+        LessThanOrEqualTo = 4,
+
+        [Description(">= <=")]
+        Between = 5,
+
         [Description("+/-")]
-        GiveOrTake,
+        GiveOrTake = 6,
+
+        [Description("!=")]
+        NotEquals = 7,
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Hearth.Foundation.Enums;
 using Hearth.Foundation.Enums.Finance;
+using Hearth.Services.Interfaces;
 using Riok.Mapperly.Abstractions;
 using System;
 using System.Collections.Generic;
@@ -7,7 +8,7 @@ using System.Text;
 
 namespace Hearth.Services.DTOs.Finance.Asset
 {
-    internal class AssetDTO
+    internal class AssetDTO : IDTO
     {
         #region Generic Props
         public int Id { get; set; }

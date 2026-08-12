@@ -1,11 +1,12 @@
-﻿using Riok.Mapperly.Abstractions;
+﻿using Hearth.Services.Interfaces;
+using Riok.Mapperly.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Hearth.Services.DTOs.Finance.Account
 {
-    public class AccountDTO
+    public class AccountDTO : IDTO
     {
         public int Id { get; set; }
         public string AccountId { get; set; } = default!;
