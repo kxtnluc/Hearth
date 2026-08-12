@@ -79,10 +79,13 @@ namespace Hearth.Services.Abstract
 
             var ids = payloads.Select(p => p.Id).ToList();
             var entities = await DbSet
-                .Where(e => ids.Contains(EF.Property<int>(e, "Id")))
+                .Where(e => ids.Contains(EF.Property<int>(e, "Id")))   // fine — still inside the query
                 .ToListAsync();
 
-            var entityLookup = entities.ToDictionary(e => (int)EF.Property<int>(e, "Id"));
+            var idProperty = typeof(TEntity).GetProperty("Id")
+                ?? throw new InvalidOperationException($"{typeof(TEntity).Name} has no 'Id' property.");
+
+            var entityLookup = entities.ToDictionary(e => (int)idProperty.GetValue(e)!);
 
             foreach (var payload in payloads)
             {

@@ -1,6 +1,8 @@
 ﻿using Hearth.Core.Data;
 using Hearth.Services.Data;
 using Hearth.Services.DependencyInjection;
+using Hearth.UI.Platform;
+using Hearth.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 
 namespace Hearth.UI
@@ -24,6 +26,7 @@ namespace Hearth.UI
 
             // WebView
             builder.Services.AddMauiBlazorWebView();
+            builder.Services.AddSingleton<ISecureStorageProvider, MauiSecureStorageProvider>();
 
 #if DEBUG
             builder.Services.AddBlazorWebViewDeveloperTools();
