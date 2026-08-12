@@ -3,6 +3,7 @@ using System;
 using Hearth.Core.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Hearth.Core.Migrations
 {
     [DbContext(typeof(HearthDbContext))]
-    partial class HearthDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260812143051_rule-table-attempt-01")]
+    partial class ruletableattempt01
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.10");
@@ -150,37 +153,6 @@ namespace Hearth.Core.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Banks");
-                });
-
-            modelBuilder.Entity("Hearth.Core.Models.Finance.BankCategory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("Debit")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Hex_Color")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<bool>("Ignore")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<decimal?>("Weight")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("BankCategories");
                 });
 
             modelBuilder.Entity("Hearth.Core.Models.Finance.Loan", b =>
@@ -468,6 +440,11 @@ namespace Hearth.Core.Migrations
                     b.Property<bool>("Active")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasMaxLength(34)
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -475,16 +452,11 @@ namespace Hearth.Core.Migrations
                     b.Property<int>("Priority")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("RuleType")
-                        .IsRequired()
-                        .HasMaxLength(34)
-                        .HasColumnType("TEXT");
-
                     b.HasKey("Id");
 
-                    b.ToTable("Rules");
+                    b.ToTable("Rule");
 
-                    b.HasDiscriminator<string>("RuleType").HasValue("Rule");
+                    b.HasDiscriminator<string>("Discriminator").HasValue("Rule");
 
                     b.UseTphMappingStrategy();
                 });
@@ -517,16 +489,6 @@ namespace Hearth.Core.Migrations
                     b.ToTable("RuleConditions");
                 });
 
-            modelBuilder.Entity("Hearth.Core.Models.Finance.BankCategoryRule", b =>
-                {
-                    b.HasBaseType("Hearth.Core.Models.Rule");
-
-                    b.Property<int>("BankCategoryId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasDiscriminator().HasValue("BankCategoryRule");
-                });
-
             modelBuilder.Entity("Hearth.Core.Models.Finance.TransactionCategoryRule", b =>
                 {
                     b.HasBaseType("Hearth.Core.Models.Rule");
@@ -539,11 +501,13 @@ namespace Hearth.Core.Migrations
 
             modelBuilder.Entity("Hearth.Core.Models.RuleCondition", b =>
                 {
-                    b.HasOne("Hearth.Core.Models.Rule", null)
+                    b.HasOne("Hearth.Core.Models.Rule", "Rule")
                         .WithMany("RuleConditions")
                         .HasForeignKey("RuleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Rule");
                 });
 
             modelBuilder.Entity("Hearth.Core.Models.Rule", b =>

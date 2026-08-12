@@ -10,6 +10,7 @@ namespace Hearth.Services.Interfaces
         Task<List<TDto>> GetAll();
         Task<TDto> Create(TDto payload);
         Task Update(TDto payload);
+        Task UpdateRange(List<TDto> payloads);
         Task Delete(int id);
     }
 }

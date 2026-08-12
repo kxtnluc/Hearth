@@ -7,6 +7,6 @@ namespace Hearth.Services.Interfaces
 {
     public interface IRuleConditionService : ISqliteTableService<RuleConditionDTO>
     {
-        Task<bool> Run(int conditionid, string value);
+        Task<bool> Run<T>(RuleConditionDTO rc, T item);
     }
 }

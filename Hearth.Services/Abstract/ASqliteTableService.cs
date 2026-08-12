@@ -72,5 +72,27 @@ namespace Hearth.Services.Abstract
             ApplyUpdate(payload, entity);
             await _context.SaveChangesAsync();
         }
+
+        public virtual async Task UpdateRange(List<TDto> payloads)
+        {
+            if (payloads.Count == 0) return;
+
+            var ids = payloads.Select(p => p.Id).ToList();
+            var entities = await DbSet
+                .Where(e => ids.Contains(EF.Property<int>(e, "Id")))
+                .ToListAsync();
+
+            var entityLookup = entities.ToDictionary(e => (int)EF.Property<int>(e, "Id"));
+
+            foreach (var payload in payloads)
+            {
+                if (entityLookup.TryGetValue(payload.Id, out var entity))
+                {
+                    ApplyUpdate(payload, entity);
+                }
+            }
+
+            await _context.SaveChangesAsync();
+        }
     }
 }

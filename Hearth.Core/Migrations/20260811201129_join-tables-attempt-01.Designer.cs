@@ -3,6 +3,7 @@ using System;
 using Hearth.Core.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Hearth.Core.Migrations
 {
     [DbContext(typeof(HearthDbContext))]
-    partial class HearthDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260811201129_join-tables-attempt-01")]
+    partial class jointablesattempt01
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.10");
@@ -150,37 +153,6 @@ namespace Hearth.Core.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Banks");
-                });
-
-            modelBuilder.Entity("Hearth.Core.Models.Finance.BankCategory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("Debit")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Hex_Color")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<bool>("Ignore")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<decimal?>("Weight")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("BankCategories");
                 });
 
             modelBuilder.Entity("Hearth.Core.Models.Finance.Loan", b =>
@@ -459,7 +431,7 @@ namespace Hearth.Core.Migrations
                     b.ToTable("TransactionCategories");
                 });
 
-            modelBuilder.Entity("Hearth.Core.Models.Rule", b =>
+            modelBuilder.Entity("Hearth.Core.Models.Finance.TransactionCategoryRule", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -475,18 +447,12 @@ namespace Hearth.Core.Migrations
                     b.Property<int>("Priority")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("RuleType")
-                        .IsRequired()
-                        .HasMaxLength(34)
-                        .HasColumnType("TEXT");
+                    b.Property<int>("TransactionCategoryId")
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Rules");
-
-                    b.HasDiscriminator<string>("RuleType").HasValue("Rule");
-
-                    b.UseTphMappingStrategy();
+                    b.ToTable("TransactionCategoryRules");
                 });
 
             modelBuilder.Entity("Hearth.Core.Models.RuleCondition", b =>
@@ -510,43 +476,28 @@ namespace Hearth.Core.Migrations
                     b.Property<int>("RuleId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("RuleTable")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("TransactionCategoryRuleId")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("RuleId");
+                    b.HasIndex("TransactionCategoryRuleId");
 
                     b.ToTable("RuleConditions");
                 });
 
-            modelBuilder.Entity("Hearth.Core.Models.Finance.BankCategoryRule", b =>
+            modelBuilder.Entity("Hearth.Core.Models.RuleCondition", b =>
                 {
-                    b.HasBaseType("Hearth.Core.Models.Rule");
-
-                    b.Property<int>("BankCategoryId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasDiscriminator().HasValue("BankCategoryRule");
+                    b.HasOne("Hearth.Core.Models.Finance.TransactionCategoryRule", null)
+                        .WithMany("RuleConditions")
+                        .HasForeignKey("TransactionCategoryRuleId");
                 });
 
             modelBuilder.Entity("Hearth.Core.Models.Finance.TransactionCategoryRule", b =>
-                {
-                    b.HasBaseType("Hearth.Core.Models.Rule");
-
-                    b.Property<int>("TransactionCategoryId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasDiscriminator().HasValue("TransactionCategoryRule");
-                });
-
-            modelBuilder.Entity("Hearth.Core.Models.RuleCondition", b =>
-                {
-                    b.HasOne("Hearth.Core.Models.Rule", null)
-                        .WithMany("RuleConditions")
-                        .HasForeignKey("RuleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Hearth.Core.Models.Rule", b =>
                 {
                     b.Navigation("RuleConditions");
                 });

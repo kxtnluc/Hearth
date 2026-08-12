@@ -10,7 +10,6 @@ namespace Hearth.Core.Models
     {
         #region Key Props
         public int Id { get; set; }
-        public string RuleTable { get; set; } = default!;
         public int RuleId { get; set; }
         #endregion
         #region Model Props

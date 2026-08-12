@@ -7,11 +7,6 @@ namespace Hearth.Core.Interfaces
     public interface ICondition : ISqliteTable
     {
         /// <summary>
-        /// The rule table that this condition is referencing
-        /// </summary>
-        /// <example>"equals"</example>
-        string RuleTable { get; set; }
-        /// <summary>
         /// The specific rule that this condition is assigned to
         /// </summary>
         /// <example>"equals"</example>

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Hearth.Services.DTOs.Finance.Transaction
 {
-    internal class TransactionSyncRecordDTO : IDTO
+    internal class TransactionSyncRecordDTO
     {
     }
 }
