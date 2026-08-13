@@ -86,10 +86,18 @@ namespace Hearth.Services.Services
             var storedToken = await _secureStorage.GetAsync(SessionTokenKey);
             if (string.IsNullOrEmpty(storedToken)) return null;
 
-            // TODO: resolve the token to a real user — depends on how you're
-            // structuring auth (local PIN, session table, etc.)
-            // e.g.: return await GetById(userIdFromToken);
-            return null;
+            var parts = storedToken.Split('_');
+
+            if (parts.Length < 5 || !int.TryParse(parts[2], out int userId))
+            {
+                // Malformed or unexpected token
+                throw new FormatException("Session token is not in the expected format.");
+            }
+
+            // TODO ERROR HANDLING (actually maybe this should be in the GetById function itself
+            var currentUser = await this.GetById(userId);
+
+            return currentUser;
         }
         #endregion
     }

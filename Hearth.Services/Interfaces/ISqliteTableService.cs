@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Hearth.Services.DTOs;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -12,5 +13,6 @@ namespace Hearth.Services.Interfaces
         Task Update(TDto payload);
         Task UpdateRange(List<TDto> payloads);
         Task Delete(int id);
+        Task<__TableDataDTO> GetTableData();
     }
 }

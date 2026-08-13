@@ -19,7 +19,7 @@ namespace Hearth.UI
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 });
 
-            // Hearth SQLite Database Service
+            // Hearth SQLite Database & All Services
             string dbPath = Path.Combine(FileSystem.AppDataDirectory, "Hearth.db");
             builder.Services.AddHearthServices(dbPath);
             System.Diagnostics.Debug.WriteLine($"DB PATH: {dbPath}");

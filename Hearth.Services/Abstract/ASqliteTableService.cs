@@ -1,4 +1,5 @@
 ﻿using Hearth.Core.Data;
+using Hearth.Services.DTOs;
 using Hearth.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -113,6 +114,17 @@ namespace Hearth.Services.Abstract
             }
 
             await _context.SaveChangesAsync();
+        }
+
+        public virtual async Task<__TableDataDTO> GetTableData()
+        {
+            var rowCount = await DbSet.CountAsync();
+            return new __TableDataDTO
+            {
+                Exists = rowCount > 0,
+                IsEmpty = rowCount == 0,
+                RowCount = rowCount
+            };
         }
     }
 }

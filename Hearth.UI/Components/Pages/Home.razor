@@ -25,10 +25,10 @@
             <div class="login-container">
                 <div class="l-c">
                     <div class="l-c-name-container">
-                        <Input Label="Name" @bind-Value="@nameInput" Placeholder="Marcus" />
+                        <Input Label="Name" @bind-Value="@newUser.Name" Placeholder="Marcus" />
                     </div>
                     <div class="l-c-password-container">
-                        <Input Label="Pin" InputType="E_INPUT_TYPE.Password" @bind-Value="@pinInput" Placeholder="1234abcd" />
+                        <Input Label="Pin" InputType="E_INPUT_TYPE.Password" @bind-Value="@newUser.Pin" Placeholder="1234abcd" />
                     </div>
                     <div class="l-c-error">
                         @if (loginFailure)
@@ -49,10 +49,10 @@
             <div class="login-container">
                 <div class="l-c">
                     <div class="l-c-name-container">
-                        <Input Label="Name" @bind-Value="@newUser.Name" />
+                        <Input Label="Name" @bind-Value="@nameInput" />
                     </div>
                     <div class="l-c-password-container">
-                        <Input Label="Pin" InputType="E_INPUT_TYPE.Password" @bind-Value="@newUser.Pin" />
+                        <Input Label="Pin" InputType="E_INPUT_TYPE.Password" @bind-Value="@pinInput" />
                     </div>
                     <div class="l-c-error">
                         @if (loginFailure)
@@ -94,6 +94,11 @@
         // Fetch Session Data
         isLoggedIn = await _userService.IsLoggedIn();
         loggedInUser = await _userService.GetCurrentUser();
+        if(loggedInUser == null)
+        {
+            __TableDataDTO tableData = await _userService.GetTableData();
+            newAppUser = tableData.IsEmpty;
+        }
     }
 
     private async Task<bool> Login()

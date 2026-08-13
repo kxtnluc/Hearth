@@ -18,7 +18,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IAccountService, AccountService>();
         services.AddScoped<ITransactionService, TransactionService>();
         services.AddScoped<ITransactionCategoryRuleService, TransactionCategoryRuleService>();
-
+        services.AddScoped<IUserService, UserService>();
+        services.AddScoped<ISessionService, SessionService>();
         services.AddScoped<IRuleConditionService, RuleConditionService>();
 
         //services.AddScoped<IBankService, BankService>();
