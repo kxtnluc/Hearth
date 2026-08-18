@@ -14,5 +14,6 @@ namespace Hearth.Services.Interfaces
         Task UpdateRange(List<TDto> payloads);
         Task Delete(int id);
         Task<__TableDataDTO> GetTableData();
+        Task<bool> Exists(int id);
     }
 }

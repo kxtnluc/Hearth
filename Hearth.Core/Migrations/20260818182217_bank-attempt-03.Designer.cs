@@ -3,6 +3,7 @@ using System;
 using Hearth.Core.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Hearth.Core.Migrations
 {
     [DbContext(typeof(HearthDbContext))]
-    partial class HearthDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260818182217_bank-attempt-03")]
+    partial class bankattempt03
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.10");
@@ -129,22 +132,13 @@ namespace Hearth.Core.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Access_Token")
+                    b.Property<string>("Institution_Id")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("InstitutionId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Item_Id")
+                    b.Property<string>("Institution_Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
-
-                    b.Property<string>("Request_Id")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
@@ -180,6 +174,30 @@ namespace Hearth.Core.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("BankCategories");
+                });
+
+            modelBuilder.Entity("Hearth.Core.Models.Finance.BankUserAccessToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Access_Token")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("BankId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Request_Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BankUserAccessTokens");
                 });
 
             modelBuilder.Entity("Hearth.Core.Models.Finance.Loan", b =>

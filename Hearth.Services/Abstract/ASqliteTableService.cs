@@ -1,6 +1,7 @@
 ﻿using Hearth.Core.Data;
 using Hearth.Services.DTOs;
 using Hearth.Services.Interfaces;
+using Hearth.Services.Utility;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -36,7 +37,7 @@ namespace Hearth.Services.Abstract
         /// </summary>
         protected abstract void ApplyUpdate(TDto dto, TEntity entity);
         /// <summary>
-        /// Checks the payload for validity before creating or updating. Throws false if invalid. Implemented by the concrete service class.
+        /// Checks the payload for validity before creating or updating. Throws an InvalidPayloadException if invalid. Implemented by the concrete service class.
         /// </summary>
         /// <param name="payload"></param>
         /// <returns></returns>
@@ -59,11 +60,15 @@ namespace Hearth.Services.Abstract
             {
                 ValidatePayload(payload);
             }
-            catch (ArgumentException ex)
+            catch (HearthInvalidPayloadException ex)
             {
-                throw new ArgumentException($"Invalid payload for {typeof(TEntity).Name}: {payload} --- {ex.Message}");
+                throw new HearthInvalidPayloadException($"Invalid payload for {typeof(TEntity).Name}: {payload} --- {ex.Message}");
             }
-            catch(NotImplementedException)
+            catch (HearthRecordAlreadyExistsException ex)
+            {
+                throw new HearthRecordAlreadyExistsException($"Record already exists in Hearth of payload: {typeof(TEntity).Name}: {payload} --- {ex.Message}");
+            }
+            catch (NotImplementedException)
             {
                 // If ValidatePayload is not implemented, we can choose to ignore validation or throw an exception.
             }
@@ -125,6 +130,14 @@ namespace Hearth.Services.Abstract
                 IsEmpty = rowCount == 0,
                 RowCount = rowCount
             };
+        }
+        
+        public virtual async Task<bool> Exists(int id)
+        {
+            var entity = await DbSet.FindAsync(id);
+
+            if(entity == null) return false;
+            else return true;
         }
     }
 }

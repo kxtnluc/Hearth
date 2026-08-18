@@ -11,7 +11,13 @@ public class HearthDbContext : DbContext
     {
     }
     // Db Sets
+    #region Base
     public DbSet<User> Users => Set<User>();
+    public DbSet<Role> Roles => Set<Role>();
+    public DbSet<Rule> Rules => Set<Rule>();
+    public DbSet<RuleCondition> RuleConditions => Set<RuleCondition>();
+    #endregion
+    #region Finance
     public DbSet<Transaction> Transactions => Set<Transaction>();
     public DbSet<Account> Accounts => Set<Account>();
     public DbSet<Bank> Banks => Set<Bank>();
@@ -21,10 +27,7 @@ public class HearthDbContext : DbContext
     public DbSet<TransactionCategoryRule> TransactionCategoryRules => Set<TransactionCategoryRule>();
     public DbSet<BankCategory> BankCategories => Set<BankCategory>();
     public DbSet<BankCategoryRule> BankCategoryRules => Set<BankCategoryRule>();
-    public DbSet<Rule> Rules => Set<Rule>();
-    public DbSet<RuleCondition> RuleConditions => Set<RuleCondition>();
-    public DbSet<Role> Roles => Set<Role>();
-
+    #endregion
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

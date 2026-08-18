@@ -4,6 +4,7 @@ using Hearth.Services.Abstract;
 using Hearth.Services.DTOs;
 using Hearth.Services.Interfaces;
 using Hearth.Services.Mapping;
+using Hearth.Services.Utility;
 using Microsoft.EntityFrameworkCore;
 
 namespace Hearth.Services.Services
@@ -33,7 +34,7 @@ namespace Hearth.Services.Services
         {
             if(payload.Name == null || payload.Pin == null)
             {
-                throw new ArgumentException("UserDTO must have a Name and Pin.");
+                throw new HearthInvalidPayloadException("UserDTO must have a Name and Pin.");
             }
 
             return;
