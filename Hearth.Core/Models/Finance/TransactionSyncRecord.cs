@@ -15,6 +15,6 @@ namespace Hearth.Core.Models.Finance
         public string Request_Id { get; set; } = default!;
         public string Transactions_Update_Status { get; set; } = default!;
         public DateTime Write_Date { get; set; } = DateTime.UtcNow;
-        public string Bank_Id { get; set; } = default!;
+        public string Item_Id { get; set; } = default!;
     }
 }

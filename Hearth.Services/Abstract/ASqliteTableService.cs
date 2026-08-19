@@ -45,6 +45,9 @@ namespace Hearth.Services.Abstract
         public virtual async Task<TDto?> GetById(int id)
         {
             var entity = await DbSet.FindAsync(id);
+
+            if (entity == null) throw new HearthRecordNotFoundException();
+            // i think this is redundant a bit
             return entity is null ? default : ToDto(entity);
         }
 
@@ -53,8 +56,15 @@ namespace Hearth.Services.Abstract
             var entities = await DbSet.AsNoTracking().ToListAsync();
             return entities.Select(ToDto).ToList();
         }
-
-        public virtual async Task<TDto> Create(TDto payload)
+        /// <summary>
+        /// Creates the payload object in its table. [Save] may be set to false to reduce use of SaveChangesAsync(), allowing it to instead be called manually.
+        /// </summary>
+        /// <param name="payload"></param>
+        /// <param name="saveChanges"></param>
+        /// <returns></returns>
+        /// <exception cref="HearthInvalidPayloadException"></exception>
+        /// <exception cref="HearthRecordAlreadyExistsException"></exception>
+        public virtual async Task<TDto> Create(TDto payload, bool saveChanges = true)
         {
             try
             {
@@ -74,29 +84,91 @@ namespace Hearth.Services.Abstract
             }
             var entity = ToEntity(payload);
             DbSet.Add(entity);
-            await _context.SaveChangesAsync();
+            if(saveChanges) await _context.SaveChangesAsync();
             return ToDto(entity);
         }
 
-        public virtual async Task Delete(int id)
+        /// <summary>
+        /// Creates all payload objects as new rows. [saveChanges] may be set to false to reduce use of SaveChangesAsync(), allowing it to instead be called manually.
+        /// </summary>
+        /// <param name="payload"></param>
+        /// <param name="saveChanges"></param>
+        /// <returns></returns>
+        /// <exception cref="HearthInvalidPayloadException"></exception>
+        /// <exception cref="HearthRecordAlreadyExistsException"></exception>
+        public virtual async Task<List<TDto>> CreateRange(List<TDto> payload, bool saveChanges = true)
+        {
+            if (payload.Count == 0) return new List<TDto>();
+
+            var entities = new List<TEntity>();
+
+            foreach (var item in payload)
+            {
+                try
+                {
+                    ValidatePayload(item);
+                }
+                catch (HearthInvalidPayloadException ex)
+                {
+                    throw new HearthInvalidPayloadException($"Invalid payload for {typeof(TEntity).Name}: {item} --- {ex.Message}");
+                }
+                catch (HearthRecordAlreadyExistsException ex)
+                {
+                    throw new HearthRecordAlreadyExistsException($"Record already exists in Hearth of payload: {typeof(TEntity).Name}: {item} --- {ex.Message}");
+                }
+                catch (NotImplementedException)
+                {
+                    // If ValidatePayload is not implemented, we can choose to ignore validation or throw an exception.
+                }
+
+                entities.Add(ToEntity(item));
+            }
+
+            DbSet.AddRange(entities);
+            if (saveChanges) await _context.SaveChangesAsync();
+
+            return entities.Select(ToDto).ToList();
+        }
+
+        public virtual async Task Delete(int id, bool saveChanges = true)
         {
             var entity = await DbSet.FindAsync(id);
             if (entity is null) return;
 
             DbSet.Remove(entity);
-            await _context.SaveChangesAsync();
+            if (saveChanges) await _context.SaveChangesAsync();
         }
 
-        public virtual async Task Update(TDto payload)
+        /// <summary>
+        /// Deletes all rows matching the given ids. [saveChanges] may be set to false to reduce use of SaveChangesAsync(), allowing it to instead be called manually.
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <param name="saveChanges"></param>
+        /// <returns></returns>
+        public virtual async Task DeleteRange(int[] ids, bool saveChanges = true)
+        {
+            if (ids.Length == 0) return;
+
+            var entities = await DbSet
+                .Where(e => ids.Contains(EF.Property<int>(e, "Id")))
+                .ToListAsync();
+
+            if (entities.Count == 0) return;
+
+            DbSet.RemoveRange(entities);
+            if (saveChanges) await _context.SaveChangesAsync();
+        }
+
+        public virtual async Task Update(TDto payload, bool saveChanges = true)
         {
             var entity = await DbSet.FindAsync(payload.Id)
                 ?? throw new KeyNotFoundException($"{typeof(TEntity).Name} {payload.Id} not found");
 
             ApplyUpdate(payload, entity);
-            await _context.SaveChangesAsync();
+            if (saveChanges) await _context.SaveChangesAsync();
         }
 
-        public virtual async Task UpdateRange(List<TDto> payloads)
+        public virtual async Task UpdateRange(List<TDto> payloads, bool saveChanges = true)
         {
             if (payloads.Count == 0) return;
 
@@ -118,7 +190,7 @@ namespace Hearth.Services.Abstract
                 }
             }
 
-            await _context.SaveChangesAsync();
+            if (saveChanges) await _context.SaveChangesAsync();
         }
 
         public virtual async Task<__TableDataDTO> GetTableData()

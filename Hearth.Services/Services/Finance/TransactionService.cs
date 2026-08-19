@@ -28,7 +28,7 @@ namespace Hearth.Services.Services.Finance
         public async Task<TransactionDTO?> GetByTransactionId(string transactionId)
         {
             var transaction = await _context.Transactions
-                .FirstOrDefaultAsync(a => a.TransactionId == transactionId);
+                .FirstOrDefaultAsync(a => a.Transaction_Id == transactionId);
 
             return transaction?.ToDto();
         }

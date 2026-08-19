@@ -2,15 +2,23 @@
 @using Hearth.Integrations.APIs.Plaid.Interfaces
 @using Hearth.Services.Interfaces
 @using Hearth.Services.DTOs
+@using Hearth.Services.DTOs.Finance.Bank
+@using Hearth.Services.Interfaces.Finance
 @implements IAsyncDisposable
 @inject IUserService _userService
 @inject IJSRuntime JS
 @inject IPlaidService _plaidService
+@inject IPlaidTransactionService _plaidTransactionService
+@inject IBankService _bankService
 
 <h3>DebugRoom</h3>
 
-<Button Variant="E_VARIANT.Primary" OnClick="StartLinkFlow">
+<Button Variant="E_VARIANT.Primary" Color="E_COLOR_BASIC.Info" OnClick="StartLinkFlow">
     Link a Bank Account
+</Button>
+
+<Button Variant="E_VARIANT.Primary" OnClick="SyncTransactions">
+    Sync Transactions
 </Button>
 
 @code {
@@ -57,5 +65,11 @@
     {
         _dotNetRef?.Dispose();
         return ValueTask.CompletedTask;
+    }
+
+    public async Task SyncTransactions()
+    {
+        BankDTO bank = await _bankService.GetById(1); //hardcoded for now
+        await _plaidTransactionService.SyncBankTransactions(bank.Item_Id);
     }
 }

@@ -14,7 +14,11 @@ namespace Hearth.Integrations.DependencyInjection
         public static IServiceCollection AddHearthIntegrations(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<PlaidOptions>(configuration.GetSection("Plaid"));
+
             services.AddHttpClient<IPlaidService, PlaidService>();
+            services.AddHttpClient<IPlaidTransactionService, PlaidTransactionService>();
+            services.AddHttpClient<IPlaidAccountService, PlaidAccountService>();
+
             return services;
         }
     }

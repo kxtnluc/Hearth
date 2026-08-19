@@ -32,7 +32,7 @@ namespace Hearth.Services.Services.Finance
         public async Task<BankDTO?> GetByItemId(string itemid)
         {
             var bank = await _context.Banks
-                .FirstOrDefaultAsync(b => b.Item_Id == itemid);
+                .SingleOrDefaultAsync(b => b.Item_Id == itemid);
 
             if (bank == null)
             {

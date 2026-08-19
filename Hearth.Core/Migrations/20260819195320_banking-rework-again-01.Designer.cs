@@ -3,6 +3,7 @@ using System;
 using Hearth.Core.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Hearth.Core.Migrations
 {
     [DbContext(typeof(HearthDbContext))]
-    partial class HearthDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260819195320_banking-rework-again-01")]
+    partial class bankingreworkagain01
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.10");
@@ -614,7 +617,7 @@ namespace Hearth.Core.Migrations
                                 .HasForeignKey("TransactionId");
                         });
 
-                    b.OwnsOne("Hearth.Core.Models.Finance.ValueObjects.TransactionPaymentMeta", "Payment_Meta", b1 =>
+                    b.OwnsOne("Hearth.Core.Models.Finance.ValueObjects.TransactionPaymentMeta", "PaymentMeta", b1 =>
                         {
                             b1.Property<int>("TransactionId")
                                 .HasColumnType("INTEGER");
@@ -659,7 +662,7 @@ namespace Hearth.Core.Migrations
                                 .HasForeignKey("TransactionId");
                         });
 
-                    b.OwnsOne("Hearth.Core.Models.Finance.ValueObjects.TransactionPersonalFinanceCategory", "Personal_Finance_Category", b1 =>
+                    b.OwnsOne("Hearth.Core.Models.Finance.ValueObjects.TransactionPersonalFinanceCategory", "PersonalFinanceCategory", b1 =>
                         {
                             b1.Property<int>("TransactionId")
                                 .HasColumnType("INTEGER");
@@ -676,7 +679,11 @@ namespace Hearth.Core.Migrations
 
                             b1.HasKey("TransactionId");
 
-                            b1.ToTable("Transactions");
+                            b1.ToTable("Transactions", t =>
+                                {
+                                    t.Property("Confidence_Level")
+                                        .HasColumnName("PersonalFinanceCategory_Confidence_Level1");
+                                });
 
                             b1.WithOwner()
                                 .HasForeignKey("TransactionId");
@@ -686,9 +693,9 @@ namespace Hearth.Core.Migrations
 
                     b.Navigation("Location");
 
-                    b.Navigation("Payment_Meta");
+                    b.Navigation("PaymentMeta");
 
-                    b.Navigation("Personal_Finance_Category");
+                    b.Navigation("PersonalFinanceCategory");
                 });
 
             modelBuilder.Entity("Hearth.Core.Models.RuleCondition", b =>

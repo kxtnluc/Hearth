@@ -27,7 +27,7 @@
             @foreach (var account in accounts)
             {
                 <li>
-                    @account.Name — @account.Balance_Current?.ToString("C")
+                    @account.Name — @account.Balances!.Current?.ToString("C")
                     @if (account.Is_Credit_C)
                     {
                         <span> (Credit)</span>

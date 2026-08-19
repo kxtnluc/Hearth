@@ -23,6 +23,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ISessionService, SessionService>();
         services.AddScoped<IRuleConditionService, RuleConditionService>();
         services.AddScoped<IBankService, BankService>();
+        services.AddScoped<ITransactionSyncRecordService, TransactionSyncRecordService>();
 
         return services;
     }

@@ -23,20 +23,10 @@ namespace Hearth.Services.Services.Finance
         #endregion
 
         #region Model Specific Functions
-        public async Task<List<AccountDTO>> GetByBankId(string bankId)
-        {
-            var accounts = await _context.Accounts
-                .AsNoTracking()
-                .Where(a => a.BankId == bankId)
-                .ToListAsync();
-
-            return accounts.ToDtoList();
-        }
-
-        public async Task<AccountDTO?> GetByAccountNumber(string accountNumber)
+        public async Task<AccountDTO?> GetByAccountId(string accountId)
         {
             var account = await _context.Accounts
-                .FirstOrDefaultAsync(a => a.Account_Number == accountNumber);
+                .FirstOrDefaultAsync(a => a.Account_Id == accountId);
 
             return account?.ToDto();
         }

@@ -4,8 +4,6 @@ namespace Hearth.Services.Interfaces.Finance
 {
     public interface IAccountService : ISqliteTableService<AccountDTO>
     {
-        Task<AccountDTO?> GetByAccountNumber(string accountNumber);
-
-        Task<List<AccountDTO>> GetByBankId(string bankId);
+        Task<AccountDTO?> GetByAccountId(string accountId);
     }
 }

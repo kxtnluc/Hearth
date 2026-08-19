@@ -28,8 +28,11 @@ namespace Hearth.Services.DTOs.Finance.Bank
         /// </summary>
         public string? Request_Id { get; set; }
         /// <summary>
-        /// Foreign key for the [Institution] table. This is the bank that the access token is associated with.
+        /// 
         /// </summary>
-        public int? InstitutionId { get; set; }
+        public string? Institution_Id { get; set; }
+        public DateTime? InitalDateRequested { get; set; }
+        public DateTime? LastDateRequested { get; set; }
+        public DateTime? LastModified { get; set; }
     }
 }

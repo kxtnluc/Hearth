@@ -9,10 +9,12 @@ namespace Hearth.Services.Interfaces
     {
         Task<TDto?> GetById(int id);
         Task<List<TDto>> GetAll();
-        Task<TDto> Create(TDto payload);
-        Task Update(TDto payload);
-        Task UpdateRange(List<TDto> payloads);
-        Task Delete(int id);
+        Task<TDto> Create(TDto payload, bool saveChanges = true);
+        Task<List<TDto>> CreateRange(List<TDto> payload, bool saveChanges = true);
+        Task Update(TDto payload, bool saveChanges = true);
+        Task UpdateRange(List<TDto> payloads, bool saveChanges = true);
+        Task Delete(int id, bool saveChanges = true);
+        Task DeleteRange(int[] ids, bool saveChanges = true);
         Task<__TableDataDTO> GetTableData();
         Task<bool> Exists(int id);
     }

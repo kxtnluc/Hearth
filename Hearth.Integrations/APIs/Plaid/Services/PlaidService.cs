@@ -7,6 +7,8 @@ using Hearth.Services.Utility;
 using Microsoft.Extensions.Options;
 using System.Net.Http.Json;
 using Hearth.Integrations.APIs.Plaid.Interfaces;
+using Hearth.Core.Data;
+using Hearth.Integrations.APIs.Plaid.Mapping;
 
 namespace Hearth.Integrations.APIs.Plaid.Services
 {
@@ -17,6 +19,8 @@ namespace Hearth.Integrations.APIs.Plaid.Services
         private readonly IBankService _bankService;
         private readonly IAccountService _accountService;
         private readonly ITransactionService _transactionService;
+        private readonly IPlaidAccountService _plaidAccountService;
+        private readonly HearthDbContext _context;
 
         private class LinkTokenResponse
         {
@@ -36,13 +40,18 @@ namespace Hearth.Integrations.APIs.Plaid.Services
             IOptions<PlaidOptions> options,
             IBankService bankService,
             IAccountService accountService,
-            ITransactionService transactionService)
+            ITransactionService transactionService,
+            IPlaidAccountService plaidAccountService,
+            HearthDbContext context
+        )
         {
             _httpClient = httpClient;
             _options = options.Value;
             _bankService = bankService;
             _accountService = accountService;
             _transactionService = transactionService;
+            _plaidAccountService = plaidAccountService;
+            _context = context;
         }
         /// <summary>
         /// [/link/token/create] Takes a userId and creates a unqiue temporary "Plaid Link Token" for that user to connect to their bank institution.
@@ -76,8 +85,8 @@ namespace Hearth.Integrations.APIs.Plaid.Services
             return responseData?.link_token;
         }
         /// <summary>
-        /// [/item/public_token/exchange] Takes the temporary "public token" aka "Plaid Link Token" and exchanges it for a permanent access token, then stores the access token in the database.
-        /// Access Tokens are attributed to a Bank aka "Institution" and a User. The user can then use the access token to retrieve their accounts and transactions from that Bank, with the Access token.
+        /// [/item/public_token/exchange] Takes the temporary "public token" aka "Plaid Link Token" generated when opening the Link Modal and exchanges it for a permanent access token, then stores the access token in the database.
+        /// Access Tokens are attributed to a Bank and a User. The user can then use the access token to retrieve their accounts and transactions from that Bank, with the Access token.
         /// </summary>
         /// <param name="publicToken"></param>
         /// <param name="userId"></param>
@@ -103,34 +112,51 @@ namespace Hearth.Integrations.APIs.Plaid.Services
             var responseData = await response.Content.ReadFromJsonAsync<ExchangeToken>();
             if (responseData is null) return null;
 
+            var accountsResponseData = await _plaidAccountService.GetFreshBankAccountsWithItem(responseData.access_token);
+            
+            //if(accountsResponseData == null) throw new HearthRecordNotFoundException(responseData.access_token);
+
             // IMPORTANT
             // - REMEMBER a bank is simply a users relationship to an institution. DO NOT think of it as an actual bank.
-
             var bank = new BankDTO
             {
                 Item_Id = responseData.item_id,
                 Access_Token = responseData.access_token,
                 UserId = userId,
                 Request_Id = responseData.request_id,
-                InstitutionId = null
+                Institution_Id = accountsResponseData.Item?.Institution_Id,
+                LastDateRequested = DateTime.UtcNow,
+                LastModified = DateTime.UtcNow,
+                InitalDateRequested = DateTime.UtcNow,
             };
+
+
+            var accounts = accountsResponseData.Accounts.ToDtoList();
+            // this prob isn't the cleanest way to do this but i dont care rn
+            accounts.Select(a => a.Bank_Item_Id = accountsResponseData.Item.Item_Id).ToList();
 
             try
             {
-                await _bankService.Create(bank);
+                await _bankService.Create(bank, false);
+                await _accountService.CreateRange(accounts, false);
             }
-            catch (HearthRecordAlreadyExistsException)
+            catch
             {
-                // maybe do something here
+                // TODO
+                throw;
+            }
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch
+            {
+                // TODO
                 throw;
             }
 
             return bank;
-        }
-
-        public async Task<List<Account>?> SyncBankAccounts(BankDTO bank)
-        {
-            return null;
         }
     }
 }

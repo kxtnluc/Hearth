@@ -3,6 +3,7 @@ using System;
 using Hearth.Core.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Hearth.Core.Migrations
 {
     [DbContext(typeof(HearthDbContext))]
-    partial class HearthDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260819153052_nested-model-objects-attempt-03")]
+    partial class nestedmodelobjectsattempt03
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.10");
@@ -23,15 +26,43 @@ namespace Hearth.Core.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Account_Id")
+                    b.Property<string>("AccountId")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Bank_Item_Id")
+                    b.Property<string>("Account_Number")
                         .HasColumnType("TEXT");
 
-                    b.Property<bool?>("IsOpen")
+                    b.Property<decimal?>("Balance_Available")
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal?>("Balance_Current")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("BankId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("Inital_Date_Requested")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Institution_Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Institution_Name")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool?>("Is_Open")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("Item_Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("Last_Date_Requested")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("Last_Modified")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Mask")
                         .HasColumnType("TEXT");
@@ -39,7 +70,10 @@ namespace Hearth.Core.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Official_Name")
+                    b.Property<string>("Offical_Name")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Request_Id")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Subtype")
@@ -47,6 +81,9 @@ namespace Hearth.Core.Migrations
 
                     b.Property<string>("Type")
                         .HasColumnType("TEXT");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
@@ -99,20 +136,11 @@ namespace Hearth.Core.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime?>("InitalDateRequested")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Institution_Id")
-                        .HasColumnType("TEXT");
+                    b.Property<int?>("InstitutionId")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Item_Id")
                         .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime?>("LastDateRequested")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime?>("LastModified")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Request_Id")
@@ -484,46 +512,6 @@ namespace Hearth.Core.Migrations
                     b.HasDiscriminator().HasValue("TransactionCategoryRule");
                 });
 
-            modelBuilder.Entity("Hearth.Core.Models.Finance.Account", b =>
-                {
-                    b.OwnsOne("Hearth.Core.Models.Finance.ValueObjects.AccountBalances", "Balances", b1 =>
-                        {
-                            b1.Property<int>("AccountId")
-                                .HasColumnType("INTEGER");
-
-                            b1.Property<decimal?>("Available")
-                                .HasColumnType("TEXT")
-                                .HasColumnName("Balances_Available");
-
-                            b1.Property<decimal>("Current")
-                                .HasColumnType("TEXT")
-                                .HasColumnName("Balances_Current");
-
-                            b1.Property<string>("Iso_Currency_Code")
-                                .IsRequired()
-                                .HasColumnType("TEXT")
-                                .HasColumnName("Balances_Iso_Currency_Code");
-
-                            b1.Property<decimal?>("Limit")
-                                .HasColumnType("TEXT")
-                                .HasColumnName("Balances_Limit");
-
-                            b1.Property<string>("Unofficial_Currency_Code")
-                                .IsRequired()
-                                .HasColumnType("TEXT")
-                                .HasColumnName("Balances_Unofficial_Currency_Code");
-
-                            b1.HasKey("AccountId");
-
-                            b1.ToTable("Accounts");
-
-                            b1.WithOwner()
-                                .HasForeignKey("AccountId");
-                        });
-
-                    b.Navigation("Balances");
-                });
-
             modelBuilder.Entity("Hearth.Core.Models.Finance.Transaction", b =>
                 {
                     b.OwnsMany("Hearth.Core.Models.Finance.ValueObjects.TransactionCounterparty", "Counterparties", b1 =>
@@ -614,7 +602,7 @@ namespace Hearth.Core.Migrations
                                 .HasForeignKey("TransactionId");
                         });
 
-                    b.OwnsOne("Hearth.Core.Models.Finance.ValueObjects.TransactionPaymentMeta", "Payment_Meta", b1 =>
+                    b.OwnsOne("Hearth.Core.Models.Finance.ValueObjects.TransactionPaymentMeta", "PaymentMeta", b1 =>
                         {
                             b1.Property<int>("TransactionId")
                                 .HasColumnType("INTEGER");
@@ -659,7 +647,7 @@ namespace Hearth.Core.Migrations
                                 .HasForeignKey("TransactionId");
                         });
 
-                    b.OwnsOne("Hearth.Core.Models.Finance.ValueObjects.TransactionPersonalFinanceCategory", "Personal_Finance_Category", b1 =>
+                    b.OwnsOne("Hearth.Core.Models.Finance.ValueObjects.TransactionPersonalFinanceCategory", "PersonalFinanceCategory", b1 =>
                         {
                             b1.Property<int>("TransactionId")
                                 .HasColumnType("INTEGER");
@@ -676,7 +664,11 @@ namespace Hearth.Core.Migrations
 
                             b1.HasKey("TransactionId");
 
-                            b1.ToTable("Transactions");
+                            b1.ToTable("Transactions", t =>
+                                {
+                                    t.Property("Confidence_Level")
+                                        .HasColumnName("PersonalFinanceCategory_Confidence_Level1");
+                                });
 
                             b1.WithOwner()
                                 .HasForeignKey("TransactionId");
@@ -686,9 +678,9 @@ namespace Hearth.Core.Migrations
 
                     b.Navigation("Location");
 
-                    b.Navigation("Payment_Meta");
+                    b.Navigation("PaymentMeta");
 
-                    b.Navigation("Personal_Finance_Category");
+                    b.Navigation("PersonalFinanceCategory");
                 });
 
             modelBuilder.Entity("Hearth.Core.Models.RuleCondition", b =>
