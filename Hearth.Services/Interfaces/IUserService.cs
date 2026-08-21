@@ -1,11 +1,12 @@
 ﻿using Hearth.Services.DTOs;
+using Hearth.Services.Filters;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Hearth.Services.Interfaces
 {
-    public interface IUserService : ISqliteTableService<UserDTO>
+    public interface IUserService : ISqliteTableService<UserDTO, SqliteTableFilter>
     {
         /// <summary>
         /// Checks if there is a user currently logged in by checking for a stored session token.

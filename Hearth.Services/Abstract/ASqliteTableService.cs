@@ -9,9 +9,10 @@ using System.Text;
 
 namespace Hearth.Services.Abstract
 {
-    public abstract class ASqliteTableService<TEntity, TDto> : ISqliteTableService<TDto>
+    public abstract class ASqliteTableService<TEntity, TDto, TFilter> : ISqliteTableService<TDto, TFilter>
         where TEntity : class
         where TDto : IDTO
+        where TFilter : class
     {
         protected readonly HearthDbContext _context;
 
@@ -33,9 +34,20 @@ namespace Hearth.Services.Abstract
         /// </summary>
         protected abstract TEntity ToEntity(TDto dto);
         /// <summary>
+        /// Maps a list of entities to their DTO list — implemented by calling the entity's Mapperly-generated ToDtoList()
+        /// </summary>
+        protected abstract List<TDto> ToDtoList(List<TEntity> entities);
+        /// <summary>
         /// Applies non-null DTO values onto the tracked entity.
         /// </summary>
         protected abstract void ApplyUpdate(TDto dto, TEntity entity);
+        /// <summary>
+        /// TODO idk what gon on
+        /// </summary>
+        /// <param name="dtos"></param>
+        /// <param name="filter"></param>
+        /// <returns></returns>
+        public abstract List<TDto> Filter(List<TDto> dtos, TFilter filter);
         /// <summary>
         /// Checks the payload for validity before creating or updating. Throws an InvalidPayloadException if invalid. Implemented by the concrete service class.
         /// </summary>
@@ -54,7 +66,7 @@ namespace Hearth.Services.Abstract
         public virtual async Task<List<TDto>> GetAll()
         {
             var entities = await DbSet.AsNoTracking().ToListAsync();
-            return entities.Select(ToDto).ToList();
+            return ToDtoList(entities);
         }
         /// <summary>
         /// Creates the payload object in its table. [Save] may be set to false to reduce use of SaveChangesAsync(), allowing it to instead be called manually.
@@ -127,7 +139,7 @@ namespace Hearth.Services.Abstract
             DbSet.AddRange(entities);
             if (saveChanges) await _context.SaveChangesAsync();
 
-            return entities.Select(ToDto).ToList();
+            return ToDtoList(entities);
         }
 
         public virtual async Task Delete(int id, bool saveChanges = true)

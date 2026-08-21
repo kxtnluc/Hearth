@@ -20,6 +20,7 @@ namespace Hearth.Integrations.APIs.Plaid.Services
         private readonly IAccountService _accountService;
         private readonly ITransactionService _transactionService;
         private readonly IPlaidAccountService _plaidAccountService;
+        private readonly IPlaidTransactionService _plaidTransactionService;
         private readonly HearthDbContext _context;
 
         private class LinkTokenResponse
@@ -42,6 +43,7 @@ namespace Hearth.Integrations.APIs.Plaid.Services
             IAccountService accountService,
             ITransactionService transactionService,
             IPlaidAccountService plaidAccountService,
+            IPlaidTransactionService plaidTransactionService,
             HearthDbContext context
         )
         {
@@ -51,6 +53,7 @@ namespace Hearth.Integrations.APIs.Plaid.Services
             _accountService = accountService;
             _transactionService = transactionService;
             _plaidAccountService = plaidAccountService;
+            _plaidTransactionService = plaidTransactionService;
             _context = context;
         }
         /// <summary>
@@ -157,6 +160,35 @@ namespace Hearth.Integrations.APIs.Plaid.Services
             }
 
             return bank;
+        }
+
+        public async Task MajorSync(PlaidSyncOptions? plaidSyncOptions = null)
+        {
+            var options = plaidSyncOptions ?? new PlaidSyncOptions();
+
+            if (options.SyncTransactions)
+            {
+                try
+                {
+                    await _plaidTransactionService.SyncAllBanksTransactions(options.NumberOfTransactionToSync);
+                }
+                catch 
+                { 
+                    // TODO
+                }
+            }
+
+            if(options.SyncAccounts)
+            {
+                try
+                {
+                    await _plaidAccountService.CreateAndUpdateAllAccounts();
+                }
+                catch
+                {
+                    // TODO
+                }
+            }
         }
     }
 }

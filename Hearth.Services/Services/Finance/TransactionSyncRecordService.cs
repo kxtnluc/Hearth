@@ -2,6 +2,7 @@
 using Hearth.Core.Models.Finance;
 using Hearth.Services.Abstract;
 using Hearth.Services.DTOs.Finance.Transaction;
+using Hearth.Services.Filters;
 using Hearth.Services.Interfaces.Finance;
 using Hearth.Services.Mapping.Finance;
 using Hearth.Services.Utility;
@@ -13,13 +14,14 @@ using System.Text;
 
 namespace Hearth.Services.Services.Finance
 {
-    public class TransactionSyncRecordService : ASqliteTableService<TransactionSyncRecord, TransactionSyncRecordDTO>, ITransactionSyncRecordService
+    public class TransactionSyncRecordService : ASqliteTableService<TransactionSyncRecord, TransactionSyncRecordDTO, SqliteTableFilter>, ITransactionSyncRecordService
     {
         public TransactionSyncRecordService(HearthDbContext context) : base(context) { }
         #region Abstract Class Setup
         protected override DbSet<TransactionSyncRecord> DbSet => _context.TransactionSyncRecords;
         protected override TransactionSyncRecordDTO ToDto(TransactionSyncRecord entity) => entity.ToDto();
         protected override TransactionSyncRecord ToEntity(TransactionSyncRecordDTO dto) => dto.ToEntity();
+        protected override List<TransactionSyncRecordDTO> ToDtoList(List<TransactionSyncRecord> entities) => entities.ToDtoList();
         protected override void ApplyUpdate(TransactionSyncRecordDTO dto, TransactionSyncRecord entity) => dto.ApplyUpdate(entity);
         protected override void ValidatePayload(TransactionSyncRecordDTO payload)
         {
@@ -31,6 +33,12 @@ namespace Hearth.Services.Services.Finance
 
         #endregion
 
+        #region Filter
+        public override List<TransactionSyncRecordDTO> Filter(List<TransactionSyncRecordDTO> banks, SqliteTableFilter filter)
+        {
+            throw new NotImplementedException();
+        }
+        #endregion
 
         #region Model Specific Functions
         public async Task<TransactionSyncRecordDTO> GetNextByItemId(string itemId)

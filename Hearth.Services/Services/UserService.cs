@@ -2,6 +2,8 @@
 using Hearth.Core.Models;
 using Hearth.Services.Abstract;
 using Hearth.Services.DTOs;
+using Hearth.Services.DTOs.Finance.Transaction;
+using Hearth.Services.Filters;
 using Hearth.Services.Interfaces;
 using Hearth.Services.Mapping;
 using Hearth.Services.Utility;
@@ -9,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Hearth.Services.Services
 {
-    public class UserService : ASqliteTableService<User, UserDTO>, IUserService
+    public class UserService : ASqliteTableService<User, UserDTO, SqliteTableFilter>, IUserService
     {
         private readonly ISecureStorageProvider _secureStorage;
         private readonly ISessionService _sessionService;
@@ -29,6 +31,7 @@ namespace Hearth.Services.Services
         protected override DbSet<User> DbSet => _context.Users;
         protected override UserDTO ToDto(User entity) => entity.ToDto();
         protected override User ToEntity(UserDTO dto) => dto.ToEntity();
+        protected override List<UserDTO> ToDtoList(List<User> entities) => entities.ToDtoList();
         protected override void ApplyUpdate(UserDTO dto, User entity) => dto.ApplyUpdate(entity);
         protected override void ValidatePayload(UserDTO payload)
         {
@@ -38,6 +41,13 @@ namespace Hearth.Services.Services
             }
 
             return;
+        }
+        #endregion
+
+        #region Filter
+        public override List<UserDTO> Filter(List<UserDTO> banks, SqliteTableFilter filter)
+        {
+            throw new NotImplementedException();
         }
         #endregion
 

@@ -1,5 +1,6 @@
 ﻿@page "/debugroom"
 @using Hearth.Integrations.APIs.Plaid.Interfaces
+@using Hearth.Integrations.APIs.Plaid
 @using Hearth.Services.Interfaces
 @using Hearth.Services.DTOs
 @using Hearth.Services.DTOs.Finance.Bank
@@ -67,9 +68,20 @@
         return ValueTask.CompletedTask;
     }
 
+    private int currentBank;
+    private int totalBanks;
+    private string? statusText;
+
     public async Task SyncTransactions()
     {
-        BankDTO bank = await _bankService.GetById(1); //hardcoded for now
-        await _plaidTransactionService.SyncBankTransactions(bank.Item_Id);
+        var progress = new Progress<PlaidSyncProgress>(p =>
+        {
+            currentBank = p.CurrentBankIndex;
+            totalBanks = p.TotalBanks;
+            statusText = $"{p.Stage} - {p.CurrentInstitution}";
+        });
+
+        BankDTO bank = await _bankService.GetById(2); //hardcoded for now
+        await _plaidTransactionService.SyncBankTransactions(bank.Item_Id, 250, true, progress);
     }
 }

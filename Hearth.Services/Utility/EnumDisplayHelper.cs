@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Reflection;
 using System.Text;
 
-namespace Hearth.Services.Utility.Finance
+namespace Hearth.Services.Utility
 {
     public static class EnumDisplayHelper
     {
@@ -23,6 +23,16 @@ namespace Hearth.Services.Utility.Finance
                     return value;
             }
             return null;
+        }
+
+        public static string[] ToDisplayStringArray<TEnum>(bool withAnyOption = false) where TEnum : struct, Enum
+        {
+            var result = Enum.GetValues<TEnum>()
+                .Select(value => value.ToDisplayString());
+
+            if (withAnyOption) result = result.Prepend("any");
+
+            return result.ToArray();
         }
     }
 }

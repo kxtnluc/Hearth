@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Hearth.Services.Interfaces
 {
-    public interface ISqliteTableService<TDto>
+    public interface ISqliteTableService<TDto, TFilter>
     {
         Task<TDto?> GetById(int id);
         Task<List<TDto>> GetAll();
@@ -17,5 +17,6 @@ namespace Hearth.Services.Interfaces
         Task DeleteRange(int[] ids, bool saveChanges = true);
         Task<__TableDataDTO> GetTableData();
         Task<bool> Exists(int id);
+        List<TDto> Filter(List<TDto> payload, TFilter filter);
     }
 }

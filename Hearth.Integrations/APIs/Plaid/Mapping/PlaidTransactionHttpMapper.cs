@@ -10,6 +10,7 @@ namespace Hearth.Integrations.APIs.Plaid.Mapping;
 [Mapper]
 internal static partial class PlaidTransactionHttpMapper
 {
+    //TODO some mapper error going on here. fix later
     [MapperIgnoreTarget(nameof(TransactionDTO.Id))]
     [MapperIgnoreTarget(nameof(TransactionDTO.CategoryId))]
     public static partial TransactionDTO ToDto(this PlaidTransactionHttpResponse source);
