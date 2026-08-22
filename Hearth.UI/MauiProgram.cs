@@ -1,8 +1,11 @@
 ﻿using Hearth.Core.Data;
+using Hearth.Integrations.APIs.Plaid;
+using Hearth.Integrations.DependencyInjection;
 using Hearth.Services.Data;
 using Hearth.Services.DependencyInjection;
-using Hearth.UI.Platform;
 using Hearth.Services.Interfaces;
+using Hearth.UI.Platform;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace Hearth.UI
@@ -19,10 +22,23 @@ namespace Hearth.UI
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 });
 
-            // Hearth SQLite Database Service
+            // Load appsettings.json as an embedded asset
+            using var stream = FileSystem.OpenAppPackageFileAsync("appsettings.json").GetAwaiter().GetResult();
+            var config = new ConfigurationBuilder()
+                .AddJsonStream(stream)
+                .Build();
+
+            builder.Configuration.AddConfiguration(config);
+
+            // Hearth SQLite Database & All Services
             string dbPath = Path.Combine(FileSystem.AppDataDirectory, "Hearth.db");
             builder.Services.AddHearthServices(dbPath);
             System.Diagnostics.Debug.WriteLine($"DB PATH: {dbPath}");
+
+            // Hearth .Integrations
+            builder.Services.AddHearthIntegrations(builder.Configuration);
+
+            builder.Services.Configure<PlaidOptions>(builder.Configuration.GetSection("Plaid"));
 
             // WebView
             builder.Services.AddMauiBlazorWebView();

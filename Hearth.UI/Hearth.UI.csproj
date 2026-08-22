@@ -71,14 +71,38 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Content Remove="appsettings.json" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <MauiAsset Include="appsettings.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </MauiAsset>
+    </ItemGroup>
+
+    <ItemGroup>
         <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="$(MauiVersion)" />
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\..\01 Pyre\Pyre\Pyre.Element\Pyre.Element.csproj" />
       <ProjectReference Include="..\Hearth.Foundation\Hearth.Foundation.csproj" />
+      <ProjectReference Include="..\Hearth.Integrations\Hearth.Integrations.csproj" />
       <ProjectReference Include="..\Hearth.Services\Hearth.Services.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Components\Elements\Automotive\" />
+      <Folder Include="Components\Elements\Main\" />
+      <Folder Include="Components\Pages\Finance\BankAccounts\Account\" />
+      <Folder Include="Components\Pages\Finance\Debts\" />
+      <Folder Include="Components\Pages\Finance\Assets\" />
+      <Folder Include="Components\Pages\Finance\Reports\" />
+      <Folder Include="Components\Pages\Finance\Transactions\" />
+      <Folder Include="Components\Pages\Main\" />
+      <Folder Include="Components\Pages\Automotive\" />
     </ItemGroup>
 
 </Project>

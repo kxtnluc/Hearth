@@ -1,0 +1,13 @@
+﻿@using Hearth.Services.DTOs.Finance.Account
+
+<div class="bank-account-card-list-element-wraper">
+    @foreach (AccountDTO account in Accounts)
+    {
+        <BankAccountCardElement Account="@account" />
+    }
+</div>
+
+@code {
+    // - List DTO -
+    [Parameter] public List<AccountDTO> Accounts { get; set; } = default!;
+}

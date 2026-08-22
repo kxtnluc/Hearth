@@ -1,4 +1,5 @@
 ﻿using Hearth.Core.Models.Finance;
+using Hearth.Core.Models.Finance.ValueObjects;
 using Hearth.Services.DTOs.Finance.Transaction;
 using Riok.Mapperly.Abstractions;
 using System;

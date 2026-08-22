@@ -1,0 +1,87 @@
+﻿@page "/debugroom"
+@using Hearth.Integrations.APIs.Plaid.Interfaces
+@using Hearth.Integrations.APIs.Plaid
+@using Hearth.Services.Interfaces
+@using Hearth.Services.DTOs
+@using Hearth.Services.DTOs.Finance.Bank
+@using Hearth.Services.Interfaces.Finance
+@implements IAsyncDisposable
+@inject IUserService _userService
+@inject IJSRuntime JS
+@inject IPlaidService _plaidService
+@inject IPlaidTransactionService _plaidTransactionService
+@inject IBankService _bankService
+
+<h3>DebugRoom</h3>
+
+<Button Variant="E_VARIANT.Primary" Color="E_COLOR_BASIC.Info" OnClick="StartLinkFlow">
+    Link a Bank Account
+</Button>
+
+<Button Variant="E_VARIANT.Primary" OnClick="SyncTransactions">
+    Sync Transactions
+</Button>
+
+@code {
+    private DotNetObjectReference<DebugRoom>? _dotNetRef;
+    private string? statusMessage;
+    private UserDTO? activeUser = new UserDTO { };
+
+    protected override async Task OnInitializedAsync()
+    {
+        activeUser = await _userService.GetCurrentUser();
+    }
+
+    private async Task StartLinkFlow()
+    {
+        statusMessage = null;
+
+        var linkToken = await _plaidService.CreateLinkTokenAsync(activeUser.Id);
+        if (string.IsNullOrEmpty(linkToken))
+        {
+            statusMessage = "Failed to create link token.";
+            return;
+        }
+
+        _dotNetRef = DotNetObjectReference.Create(this);
+        await JS.InvokeVoidAsync("openPlaidLinkModal", linkToken, _dotNetRef);
+    }
+
+    [JSInvokable]
+    public async Task OnPlaidLinkSuccess(string publicToken)
+    {
+        var accessToken = await _plaidService.StoreAccessTokenAsync(publicToken, activeUser.Id);
+        statusMessage = accessToken is not null ? "Linked!" : "Something went wrong.";
+        StateHasChanged();
+    }
+
+    [JSInvokable]
+    public Task OnPlaidLinkError(string errorDetails)
+    {
+        System.Diagnostics.Debug.WriteLine($"Plaid Link error: {errorDetails}");
+        return Task.CompletedTask;
+    }
+
+    public ValueTask DisposeAsync()
+    {
+        _dotNetRef?.Dispose();
+        return ValueTask.CompletedTask;
+    }
+
+    private int currentBank;
+    private int totalBanks;
+    private string? statusText;
+
+    public async Task SyncTransactions()
+    {
+        var progress = new Progress<PlaidSyncProgress>(p =>
+        {
+            currentBank = p.CurrentBankIndex;
+            totalBanks = p.TotalBanks;
+            statusText = $"{p.Stage} - {p.CurrentInstitution}";
+        });
+
+        BankDTO bank = await _bankService.GetById(2); //hardcoded for now
+        await _plaidTransactionService.SyncBankTransactions(bank.Item_Id, 250, true, progress);
+    }
+}

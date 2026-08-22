@@ -7,31 +7,32 @@ namespace Hearth.Services.DTOs.Finance.Bank
 {
     public class BankDTO : IDTO
     {
+        /// <summary>
+        /// Primary key for the Bank table. Referenced as [BankId] in other tables.
+        /// </summary>
         public int Id { get; set; }
-        public string BankId { get; set; } = default!;
+        /// <summary>
+        /// Foreign key for the [User] table. This is the user that owns the access token.
+        /// </summary>
         public int UserId { get; set; }
-        public string Institution_Name { get; set; } = default!;
-        public string Generated_Color
-        {
-            get
-            {
-                var color = "";
-
-                switch (Institution_Name)
-                {
-                    case "First Horizon Bank - Digital Banking":
-                        color = "#0050b5"; // Ripped from Website
-                        break;
-                    case "Discover":
-                        color = "#C85A22"; // Ripped from Website
-                        break;
-                    case "Robinhood":
-                        color = "#3B5B4B";
-                        break;
-                }
-
-                return color;
-            }
-        }
+        /// <summary>
+        /// The ITEM ID provided by Plaid.
+        /// </summary>
+        public string Item_Id { get; set; } = string.Empty;
+        /// <summary>
+        /// The access token provided by Plaid. This is used to make API calls to Plaid on behalf of the user.
+        /// </summary>
+        public string Access_Token { get; set; } = string.Empty;
+        /// <summary>
+        /// Unsure what this does lowkey :D TODO findout
+        /// </summary>
+        public string? Request_Id { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string? Institution_Id { get; set; }
+        public DateTime? InitalDateRequested { get; set; }
+        public DateTime? LastDateRequested { get; set; }
+        public DateTime? LastModified { get; set; }
     }
 }

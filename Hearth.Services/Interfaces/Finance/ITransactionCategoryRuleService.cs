@@ -1,9 +1,10 @@
 ﻿using Hearth.Services.DTOs.Finance.Transaction;
 using Hearth.Services.DTOs.Finance.TransactionCategory;
+using Hearth.Services.Filters;
 
 namespace Hearth.Services.Interfaces.Finance
 {
-    public interface ITransactionCategoryRuleService : ISqliteTableService<TransactionCategoryRuleDTO>
+    public interface ITransactionCategoryRuleService : ISqliteTableService<TransactionCategoryRuleDTO, SqliteTableFilter>
     {
         /// <summary>
         /// Gets a specific transaction category rule by its ID, including its associated rule conditions.

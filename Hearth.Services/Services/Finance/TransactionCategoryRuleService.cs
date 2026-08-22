@@ -2,8 +2,11 @@
 using Hearth.Core.Models.Finance;
 using Hearth.Services.Abstract;
 using Hearth.Services.DTOs.Finance.Account;
+using Hearth.Services.DTOs.Finance.Bank;
 using Hearth.Services.DTOs.Finance.Transaction;
 using Hearth.Services.DTOs.Finance.TransactionCategory;
+using Hearth.Services.Filters;
+using Hearth.Services.Filters.Finance;
 using Hearth.Services.Interfaces;
 using Hearth.Services.Interfaces.Finance;
 using Hearth.Services.Mapping.Finance;
@@ -14,7 +17,7 @@ using System.Text;
 
 namespace Hearth.Services.Services.Finance
 {
-    public class TransactionCategoryRuleService : ASqliteTableService<TransactionCategoryRule, TransactionCategoryRuleDTO>, ITransactionCategoryRuleService
+    public class TransactionCategoryRuleService : ASqliteTableService<TransactionCategoryRule, TransactionCategoryRuleDTO, SqliteTableFilter>, ITransactionCategoryRuleService
     {
         private readonly IRuleConditionService _ruleConditionService;
         private readonly ITransactionService _transactionService;
@@ -34,8 +37,21 @@ namespace Hearth.Services.Services.Finance
         protected override DbSet<TransactionCategoryRule> DbSet => _context.TransactionCategoryRules;
         protected override TransactionCategoryRuleDTO ToDto(TransactionCategoryRule entity) => entity.ToDto();
         protected override TransactionCategoryRule ToEntity(TransactionCategoryRuleDTO dto) => dto.ToEntity();
+        protected override List<TransactionCategoryRuleDTO> ToDtoList(List<TransactionCategoryRule> entities) => entities.ToDtoList();
         protected override void ApplyUpdate(TransactionCategoryRuleDTO dto, TransactionCategoryRule entity) => dto.ApplyUpdate(entity);
+        protected override void ValidatePayload(TransactionCategoryRuleDTO payload)
+        {
+            throw new NotImplementedException();
+        }
         #endregion
+
+        #region Filter
+        public override List<TransactionCategoryRuleDTO> Filter(List<TransactionCategoryRuleDTO> banks, SqliteTableFilter filter)
+        {
+            throw new NotImplementedException();
+        }
+        #endregion
+
         #region Model Specific Functions
         public async Task<TransactionCategoryRuleDTO> GetByIdWithRuleConditions(int transactionCategoryRuleId)
         {

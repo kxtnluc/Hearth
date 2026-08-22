@@ -23,43 +23,15 @@ namespace Hearth.Core.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("AccountId")
+                    b.Property<string>("Account_Id")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Account_Number")
+                    b.Property<string>("Bank_Item_Id")
                         .HasColumnType("TEXT");
 
-                    b.Property<decimal?>("Balance_Available")
-                        .HasColumnType("TEXT");
-
-                    b.Property<decimal?>("Balance_Current")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("BankId")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime?>("Inital_Date_Requested")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Institution_Id")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Institution_Name")
-                        .HasColumnType("TEXT");
-
-                    b.Property<bool?>("Is_Open")
+                    b.Property<bool?>("IsOpen")
                         .HasColumnType("INTEGER");
-
-                    b.Property<string>("Item_Id")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime?>("Last_Date_Requested")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime?>("Last_Modified")
-                        .HasColumnType("TEXT");
 
                     b.Property<string>("Mask")
                         .HasColumnType("TEXT");
@@ -67,10 +39,7 @@ namespace Hearth.Core.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Offical_Name")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Request_Id")
+                    b.Property<string>("Official_Name")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Subtype")
@@ -78,9 +47,6 @@ namespace Hearth.Core.Migrations
 
                     b.Property<string>("Type")
                         .HasColumnType("TEXT");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
@@ -133,12 +99,20 @@ namespace Hearth.Core.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("BankId")
+                    b.Property<DateTime?>("InitalDateRequested")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Institution_Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Item_Id")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Institution_Name")
-                        .IsRequired()
+                    b.Property<DateTime?>("LastDateRequested")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("LastModified")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Request_Id")
@@ -246,15 +220,11 @@ namespace Hearth.Core.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("AccountId")
+                    b.Property<string>("Account_Id")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Account_Owner")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Address")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<decimal>("Amount")
@@ -266,30 +236,10 @@ namespace Hearth.Core.Migrations
                     b.Property<string>("Authorized_Datetime")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("By_Order_Of")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.Property<int?>("CategoryId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Check_Number")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("City")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Confidence_Level")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Counter_Party_Name")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Country")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Date")
@@ -299,26 +249,15 @@ namespace Hearth.Core.Migrations
                     b.Property<string>("Datetime")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("EntityId")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("Iso_Currency_Code")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<double?>("Lat")
-                        .HasColumnType("REAL");
-
-                    b.Property<string>("LogoUrl")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Logo_Url")
                         .HasColumnType("TEXT");
 
-                    b.Property<double?>("Lon")
-                        .HasColumnType("REAL");
+                    b.Property<string>("Merchant_Category_Code")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Merchant_Entity_Id")
                         .HasColumnType("TEXT");
@@ -330,23 +269,7 @@ namespace Hearth.Core.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Payee")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Payer")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("Payment_Channel")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Payment_Method")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Payment_Processor")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("Pending")
@@ -355,69 +278,21 @@ namespace Hearth.Core.Migrations
                     b.Property<string>("Pending_Transaction_Id")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Personal_Finance_Category_Confidence_Level")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Personal_Finance_Category_Detailed")
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("Personal_Finance_Category_Icon_Url")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Personal_Finance_Category_Primary")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Plaid_Category_Id")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Postal_Code")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("PpdId")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Reason")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Reference_Number")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Region")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Store_Number")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("TransactionId")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Transaction_Code")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Transaction_Id")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Transaction_Type")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("Unofficial_Currency_Code")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Website")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -457,6 +332,39 @@ namespace Hearth.Core.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("TransactionCategories");
+                });
+
+            modelBuilder.Entity("Hearth.Core.Models.Finance.TransactionSyncRecord", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("Has_More")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Item_Id")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Next_Cursor")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Request_Id")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Transactions_Update_Status")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("Write_Date")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TransactionSyncRecords");
                 });
 
             modelBuilder.Entity("Hearth.Core.Models.Role", b =>
@@ -574,6 +482,213 @@ namespace Hearth.Core.Migrations
                         .HasColumnType("INTEGER");
 
                     b.HasDiscriminator().HasValue("TransactionCategoryRule");
+                });
+
+            modelBuilder.Entity("Hearth.Core.Models.Finance.Account", b =>
+                {
+                    b.OwnsOne("Hearth.Core.Models.Finance.ValueObjects.AccountBalances", "Balances", b1 =>
+                        {
+                            b1.Property<int>("AccountId")
+                                .HasColumnType("INTEGER");
+
+                            b1.Property<decimal?>("Available")
+                                .HasColumnType("TEXT")
+                                .HasColumnName("Balances_Available");
+
+                            b1.Property<decimal>("Current")
+                                .HasColumnType("TEXT")
+                                .HasColumnName("Balances_Current");
+
+                            b1.Property<string>("Iso_Currency_Code")
+                                .IsRequired()
+                                .HasColumnType("TEXT")
+                                .HasColumnName("Balances_Iso_Currency_Code");
+
+                            b1.Property<decimal?>("Limit")
+                                .HasColumnType("TEXT")
+                                .HasColumnName("Balances_Limit");
+
+                            b1.Property<string>("Unofficial_Currency_Code")
+                                .IsRequired()
+                                .HasColumnType("TEXT")
+                                .HasColumnName("Balances_Unofficial_Currency_Code");
+
+                            b1.HasKey("AccountId");
+
+                            b1.ToTable("Accounts");
+
+                            b1.WithOwner()
+                                .HasForeignKey("AccountId");
+                        });
+
+                    b.Navigation("Balances");
+                });
+
+            modelBuilder.Entity("Hearth.Core.Models.Finance.Transaction", b =>
+                {
+                    b.OwnsMany("Hearth.Core.Models.Finance.ValueObjects.TransactionCounterparty", "Counterparties", b1 =>
+                        {
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("INTEGER");
+
+                            b1.Property<string>("Confidence_Level")
+                                .HasColumnType("TEXT")
+                                .HasColumnName("Confidence_Level");
+
+                            b1.Property<string>("Entity_Id")
+                                .HasColumnType("TEXT")
+                                .HasColumnName("Entity_Id");
+
+                            b1.Property<string>("Logo_Url")
+                                .HasColumnType("TEXT")
+                                .HasColumnName("Logo_Url");
+
+                            b1.Property<string>("Name")
+                                .HasColumnType("TEXT")
+                                .HasColumnName("Name");
+
+                            b1.Property<int>("TransactionId")
+                                .HasColumnType("INTEGER");
+
+                            b1.Property<string>("Type")
+                                .HasColumnType("TEXT")
+                                .HasColumnName("Type");
+
+                            b1.Property<string>("Website")
+                                .HasColumnType("TEXT")
+                                .HasColumnName("Website");
+
+                            b1.HasKey("Id");
+
+                            b1.HasIndex("TransactionId");
+
+                            b1.ToTable("TransactionCounterparties", (string)null);
+
+                            b1.WithOwner()
+                                .HasForeignKey("TransactionId");
+                        });
+
+                    b.OwnsOne("Hearth.Core.Models.Finance.ValueObjects.TransactionLocation", "Location", b1 =>
+                        {
+                            b1.Property<int>("TransactionId")
+                                .HasColumnType("INTEGER");
+
+                            b1.Property<string>("Address")
+                                .HasColumnType("TEXT")
+                                .HasColumnName("Location_Address");
+
+                            b1.Property<string>("City")
+                                .HasColumnType("TEXT")
+                                .HasColumnName("Location_City");
+
+                            b1.Property<string>("Country")
+                                .HasColumnType("TEXT")
+                                .HasColumnName("Location_Country");
+
+                            b1.Property<double?>("Lat")
+                                .HasColumnType("REAL")
+                                .HasColumnName("Location_Lat");
+
+                            b1.Property<double?>("Lon")
+                                .HasColumnType("REAL")
+                                .HasColumnName("Location_Lon");
+
+                            b1.Property<string>("Postal_Code")
+                                .HasColumnType("TEXT")
+                                .HasColumnName("Location_Postal_Code");
+
+                            b1.Property<string>("Region")
+                                .HasColumnType("TEXT")
+                                .HasColumnName("Location_Region");
+
+                            b1.Property<string>("Store_Number")
+                                .HasColumnType("TEXT")
+                                .HasColumnName("Location_Store_Number");
+
+                            b1.HasKey("TransactionId");
+
+                            b1.ToTable("Transactions");
+
+                            b1.WithOwner()
+                                .HasForeignKey("TransactionId");
+                        });
+
+                    b.OwnsOne("Hearth.Core.Models.Finance.ValueObjects.TransactionPaymentMeta", "Payment_Meta", b1 =>
+                        {
+                            b1.Property<int>("TransactionId")
+                                .HasColumnType("INTEGER");
+
+                            b1.Property<string>("By_Order_Of")
+                                .HasColumnType("TEXT")
+                                .HasColumnName("PaymentMeta_By_Order_Of");
+
+                            b1.Property<string>("Payee")
+                                .HasColumnType("TEXT")
+                                .HasColumnName("PaymentMeta_Payee");
+
+                            b1.Property<string>("Payer")
+                                .HasColumnType("TEXT")
+                                .HasColumnName("PaymentMeta_Payer");
+
+                            b1.Property<string>("Payment_Method")
+                                .HasColumnType("TEXT")
+                                .HasColumnName("PaymentMeta_Payment_Method");
+
+                            b1.Property<string>("Payment_Processor")
+                                .HasColumnType("TEXT")
+                                .HasColumnName("PaymentMeta_Payment_Processor");
+
+                            b1.Property<string>("Ppd_Id")
+                                .HasColumnType("TEXT")
+                                .HasColumnName("PaymentMeta_Ppd_Id");
+
+                            b1.Property<string>("Reason")
+                                .HasColumnType("TEXT")
+                                .HasColumnName("PaymentMeta_Reason");
+
+                            b1.Property<string>("Reference_Number")
+                                .HasColumnType("TEXT")
+                                .HasColumnName("PaymentMeta_Reference_Number");
+
+                            b1.HasKey("TransactionId");
+
+                            b1.ToTable("Transactions");
+
+                            b1.WithOwner()
+                                .HasForeignKey("TransactionId");
+                        });
+
+                    b.OwnsOne("Hearth.Core.Models.Finance.ValueObjects.TransactionPersonalFinanceCategory", "Personal_Finance_Category", b1 =>
+                        {
+                            b1.Property<int>("TransactionId")
+                                .HasColumnType("INTEGER");
+
+                            b1.Property<string>("Confidence_Level")
+                                .HasColumnType("TEXT");
+
+                            b1.Property<string>("Detailed")
+                                .HasColumnType("TEXT");
+
+                            b1.Property<string>("Primary")
+                                .HasColumnType("TEXT")
+                                .HasColumnName("PersonalFinanceCategory_Confidence_Level");
+
+                            b1.HasKey("TransactionId");
+
+                            b1.ToTable("Transactions");
+
+                            b1.WithOwner()
+                                .HasForeignKey("TransactionId");
+                        });
+
+                    b.Navigation("Counterparties");
+
+                    b.Navigation("Location");
+
+                    b.Navigation("Payment_Meta");
+
+                    b.Navigation("Personal_Finance_Category");
                 });
 
             modelBuilder.Entity("Hearth.Core.Models.RuleCondition", b =>

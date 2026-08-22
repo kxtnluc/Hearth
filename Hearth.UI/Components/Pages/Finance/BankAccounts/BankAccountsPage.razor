@@ -1,0 +1,129 @@
+﻿@page "/finance/bank-accounts"
+@using Hearth.Services.DTOs.Finance.Account;
+@using Hearth.UI.Components.Elements.Finance.BankAccounts.Lists
+@using Hearth.Services.Filters.Finance
+@using Hearth.Integrations.APIs.Plaid.Enums
+@inject IUserService _userService
+@inject IAccountService _accountService
+
+@* Loading *@
+
+@if (initialRenderComplete == false)
+{
+	<LoadingCircleIcon AutoCenter="true" />
+}
+
+@* Page *@
+
+<main>
+    <section>
+        <Title>
+            Bank Accounts
+        </Title>
+    </section>
+
+    <section>
+        <div>
+            filters and stuff prolly
+        </div>
+        <div>
+            <BankAccountCardListElement Accounts="filteredAccounts" />
+        </div>
+        <div>
+
+        </div>
+    </section>
+</main>
+
+@* Toolbar *@
+
+<Toolbar 
+    HasAddBtn="false"
+    HasSearchBtn="true"
+    OnSearch="OpenToolbarSearchModal"
+    Position="E_TOOLBAR_POSITION.BottomRight"
+    Size="E_SIZE.lg"
+    TooltipSubject="Account" 
+/>
+
+@* Toolbar Modals *@
+
+<Modal 
+    Title="Search"
+    Size="E_SIZE.lg"
+    Open="showToolbarSearchModal"
+    OnClose="CloseToolbarSearchModal"
+    HelpBtn="true"
+    Variant="E_MODAL.AddEdit"
+>
+    <Form>
+        <FormContent>
+            <FormRow>
+                <FormCell Ratio="1/2">
+                    <Input InputType="E_INPUT_TYPE.Text" Label="Name" Placeholder="Cool Bank #1" @bind-Value="accountFilter.Name" />
+                </FormCell>
+                <FormCell Ratio="1/4">
+                    <Input InputType="E_INPUT_TYPE.Text" Label="Description" Placeholder="First National Bank of..." @bind-Value="accountFilter.Official_Name" />
+                </FormCell>
+                <FormCell Ratio="1/4">
+                    <Dropdown Variant="E_DROPDOWN.Default" Label="State" Options="@accountTypeOptions" @bind-Value="accountFilter.Type" />
+                </FormCell>
+            </FormRow>
+        </FormContent>
+        <FormFooter>
+            <Button Variant="E_VARIANT.Secondary" Color="E_COLOR_BASIC.OffWhite" Onclick="CloseToolbarSearchModal">Cancel</Button>
+            <Button Variant="E_VARIANT.Primary" Color="E_COLOR_BASIC.Info" Onclick="InitiateFilter">Search</Button>
+        </FormFooter>
+    </Form>
+</Modal>
+
+@code {
+    // - Loading -
+    bool initialRenderComplete = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (initialRenderComplete == false)
+            {
+                initialRenderComplete = true;
+                StateHasChanged(); // Trigger re-render to hide the spinner
+            }
+        }
+    }
+
+    // - Page -
+    UserDTO currentUser = new();
+    List<AccountDTO> allUserAccounts = new();
+    List<AccountDTO> filteredAccounts = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            currentUser = await _userService.GetCurrentUser();
+            allUserAccounts = await _accountService.GetByUserId(currentUser.Id);
+            filteredAccounts = allUserAccounts;
+        }
+        catch (HearthRecordNotFoundException ex)
+        {
+            // TODO show error toast
+        }
+    }
+
+    // - Toolbar -
+    bool showToolbarSearchModal;
+    void OpenToolbarSearchModal() => showToolbarSearchModal = true;
+    void CloseToolbarSearchModal() => showToolbarSearchModal = false;
+
+    AccountFilter accountFilter = new AccountFilter { };
+    string[] accountTypeOptions = EnumDisplayHelper.ToDisplayStringArray<E_PLAID_ACCOUNT_TYPES>(true);
+
+    void InitiateFilter()
+    {
+        filteredAccounts = _accountService.Filter(allUserAccounts, accountFilter);
+        CloseToolbarSearchModal();
+        StateHasChanged();
+    }
+}

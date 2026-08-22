@@ -27,7 +27,7 @@
             @foreach (var account in accounts)
             {
                 <li>
-                    @account.Name — @account.Balance_Current?.ToString("C")
+                    @account.Name — @account.Balances!.Current?.ToString("C")
                     @if (account.Is_Credit_C)
                     {
                         <span> (Credit)</span>
@@ -79,7 +79,7 @@
     }
 
     <div>
-        <button @onclick="EvaluateTransactions">Evaluated Transactions</button>
+        <Button OnClick="EvaluateTransactions" Variant="E_VARIANT.Primary">Evaluated Transactions</Button>
         <button @onclick="CreateRule">Create Transaction Category Rule</button>
         <button @onclick="CreateCondition">Create Condition</button>
     </div>

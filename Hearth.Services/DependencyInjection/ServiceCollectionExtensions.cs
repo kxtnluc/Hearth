@@ -4,6 +4,7 @@ using Hearth.Services.Interfaces;
 using Hearth.Services.Interfaces.Finance;
 using Hearth.Services.Services;
 using Hearth.Services.Services.Finance;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Hearth.Services.DependencyInjection;
@@ -18,11 +19,11 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IAccountService, AccountService>();
         services.AddScoped<ITransactionService, TransactionService>();
         services.AddScoped<ITransactionCategoryRuleService, TransactionCategoryRuleService>();
-
+        services.AddScoped<IUserService, UserService>();
+        services.AddScoped<ISessionService, SessionService>();
         services.AddScoped<IRuleConditionService, RuleConditionService>();
-
-        //services.AddScoped<IBankService, BankService>();
-
+        services.AddScoped<IBankService, BankService>();
+        services.AddScoped<ITransactionSyncRecordService, TransactionSyncRecordService>();
 
         return services;
     }

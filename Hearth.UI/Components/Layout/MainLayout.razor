@@ -1,17 +1,76 @@
 ﻿@inherits LayoutComponentBase
+@inject IUserService _userService
 
 <div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+    <div class="layout @(_collapsed ? "layout--collapsed" : "")">
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
+        <NavBarSide Label="Hearth"
+                    OnToggle="HandleToggle"
+                    Sidebar="Sidebar"
+                    Collapsed="_collapsed" />
 
-        <article class="content px-4">
+        <main class="layout__main">
             @Body
-        </article>
-    </main>
+        </main>
+
+    </div>
 </div>
+
+@code {
+    private bool _collapsed = false;
+    private void HandleToggle() => _collapsed = !_collapsed;
+
+    public SidebarPyre Sidebar = new SidebarPyre
+        {
+            MainTabs = new()
+            {
+                new NavBarTabPyre { Label = "Home", Url = "/", Icon = @<HouseIcon Size="26" /> },
+            },
+            FooterTabs = new()
+            {
+                new NavBarTabPyre { Label = "Settings", Url = "/settings", Icon = @<GearIcon Size="26" /> },
+                new NavBarTabPyre { Label = "Logout", Url = "/logout", Icon = @<OpenWindowIcon Size="26" /> },
+            }
+        };
+    public UserDTO? currentUser = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        currentUser = await _userService.GetCurrentUser();
+
+        if(currentUser != null)
+        {
+            Sidebar.MainTabs = new()
+            {
+                new NavBarTabPyre { Label = "Home", Url = "/", Icon = @<HouseIcon Size="26" /> },
+                new NavBarTabPyre { Label = "Dashboard", Url = "/finance/dashboard", Icon = @<DashboardIcon Size="26" /> },
+                new NavBarTabPyre { Label = "Accounts", Url = "/finance/bank-accounts", Icon = @<BankIcon Size="26" /> },
+                new NavBarTabPyre { Label = "Reports", Url = "/finance/reports", Icon = @<PieChartDollarIcon Size="26" /> },
+                new NavBarTabPyre { Label = "Debts", Url = "/finance/debts", Icon = @<LoanIcon Size="26" /> },
+                new NavBarTabPyre { Label = "Assets", Url = "/finance/assets", Icon = @<WalletMoneyIcon Size="26" /> },
+                new NavBarTabPyre { Label = "Categories", Url = "/finance/categories", Icon = @<CubesStackedIcon Size="26" /> },
+                new NavBarTabPyre { Label = "Transactions", Url = "/finance/transactions", Icon = @<CreditCardIcon Size="26" /> },
+            };
+
+            Sidebar.FooterTabs = new()
+            {
+                new NavBarTabPyre { Label = "Settings", Url = "/settings", Icon = @<GearIcon Size="26" /> },
+                new NavBarTabPyre { Label = "Logout", Url = "/logout", Icon = @<OpenWindowIcon Size="26" /> },
+            };
+
+            Sidebar.ActionItem = new NavBarActionItemPyre
+            {
+                CallbackAction = EventCallback.Factory.Create(this, Sync),
+                Icon = @<SyncIcon Size="26" />,
+                Label = "Sync"
+            };
+        }
+
+    }
+
+    private void Sync()
+    {
+        // TODO
+    }
+}
