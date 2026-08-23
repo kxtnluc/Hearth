@@ -1,5 +1,4 @@
-﻿@page "/debugroom"
-@using Hearth.Integrations.APIs.Plaid.Interfaces
+﻿@using Hearth.Integrations.APIs.Plaid.Interfaces
 @using Hearth.Integrations.APIs.Plaid
 @using Hearth.Services.Interfaces
 @using Hearth.Services.DTOs
@@ -16,12 +15,8 @@
     Link a Bank Account
 </Button>
 
-<Button Variant="E_VARIANT.Primary" OnClick="SyncTransactions">
-    Sync Transactions
-</Button>
-
 @code {
-    private DotNetObjectReference<DebugRoom>? _dotNetRef;
+    private DotNetObjectReference<PlaidLinkButton>? _dotNetRef;
     private string? statusMessage;
     private UserDTO? activeUser = new UserDTO { };
 
@@ -64,22 +59,5 @@
     {
         _dotNetRef?.Dispose();
         return ValueTask.CompletedTask;
-    }
-
-    private int currentBank;
-    private int totalBanks;
-    private string? statusText;
-
-    public async Task SyncTransactions()
-    {
-        var progress = new Progress<PlaidSyncProgress>(p =>
-        {
-            currentBank = p.CurrentBankIndex;
-            totalBanks = p.TotalBanks;
-            statusText = $"{p.Stage} - {p.CurrentInstitution}";
-        });
-
-        BankDTO bank = await _bankService.GetById(2); //hardcoded for now
-        await _plaidTransactionService.SyncBankTransactions(bank.Item_Id, 250, true, progress);
     }
 }

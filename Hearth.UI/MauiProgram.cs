@@ -4,7 +4,9 @@ using Hearth.Integrations.DependencyInjection;
 using Hearth.Services.Data;
 using Hearth.Services.DependencyInjection;
 using Hearth.Services.Interfaces;
+using Hearth.UI.Interfaces.Plaid;
 using Hearth.UI.Platform;
+using Hearth.UI.Services.Plaid;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -39,6 +41,9 @@ namespace Hearth.UI
             builder.Services.AddHearthIntegrations(builder.Configuration);
 
             builder.Services.Configure<PlaidOptions>(builder.Configuration.GetSection("Plaid"));
+
+            // Hearth .UI Services
+            builder.Services.AddScoped<IPlaidLinkService, PlaidLinkService>();
 
             // WebView
             builder.Services.AddMauiBlazorWebView();

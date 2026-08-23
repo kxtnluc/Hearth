@@ -11,6 +11,7 @@
   <Folder Name="/_root/">
     <File Path=".env" />
     <File Path=".gitignore" />
+    <File Path="global.json" />
     <File Path="notes.md" />
     <File Path="README.md" />
   </Folder>

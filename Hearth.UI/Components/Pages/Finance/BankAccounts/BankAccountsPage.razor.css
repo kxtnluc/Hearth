@@ -1,0 +1,24 @@
+.main-bankaccounts{
+    height: 100%;
+/*    background-color: palegoldenrod;*/
+}
+
+.section-page-title{
+    height: 5%;
+    display: flex;
+}
+
+.section-no-records{
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    height: 95%;
+
+/*    background-color: blue;*/
+
+    .title-container{
+        align-self: center;
+    }
+}

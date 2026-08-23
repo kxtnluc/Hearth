@@ -95,13 +95,11 @@
 
     <ItemGroup>
       <Folder Include="Components\Elements\Automotive\" />
-      <Folder Include="Components\Elements\Main\" />
       <Folder Include="Components\Pages\Finance\BankAccounts\Account\" />
       <Folder Include="Components\Pages\Finance\Debts\" />
       <Folder Include="Components\Pages\Finance\Assets\" />
       <Folder Include="Components\Pages\Finance\Reports\" />
       <Folder Include="Components\Pages\Finance\Transactions\" />
-      <Folder Include="Components\Pages\Main\" />
       <Folder Include="Components\Pages\Automotive\" />
     </ItemGroup>
 
