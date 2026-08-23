@@ -3,8 +3,10 @@
 @using Hearth.UI.Components.Elements.Finance.BankAccounts.Lists
 @using Hearth.Services.Filters.Finance
 @using Hearth.Integrations.APIs.Plaid.Enums
+@using Hearth.UI.Interfaces.Plaid
 @inject IUserService _userService
 @inject IAccountService _accountService
+@inject IPlaidLinkService PlaidLink
 
 @* Loading *@
 
@@ -15,24 +17,34 @@
 
 @* Page *@
 
-<main>
-    <section>
+<main class="main-bankaccounts">
+    <section class="section-page-title">
         <Title>
             Bank Accounts
         </Title>
     </section>
+    @if(allUserAccounts.Count >= 1)
+    {
+        <section>
+            <div>
+                filters and stuff prolly
+            </div>
+            <div>
+                <BankAccountCardListElement Accounts="filteredAccounts" />
+            </div>
+            <div>
 
-    <section>
-        <div>
-            filters and stuff prolly
-        </div>
-        <div>
-            <BankAccountCardListElement Accounts="filteredAccounts" />
-        </div>
-        <div>
-
-        </div>
-    </section>
+            </div>
+        </section>
+    }
+    else
+    {
+        <section class="section-no-records">
+            <div class="title-container">
+                <Title>No Accounts Linked...</Title>
+            </div>
+        </section>
+    }
 </main>
 
 @* Toolbar *@
@@ -40,6 +52,8 @@
 <Toolbar 
     HasAddBtn="false"
     HasSearchBtn="true"
+    HasLinkBtn="true"
+    OnLink="LinkBank"
     OnSearch="OpenToolbarSearchModal"
     Position="E_TOOLBAR_POSITION.BottomRight"
     Size="E_SIZE.lg"
@@ -113,6 +127,15 @@
     }
 
     // - Toolbar -
+        // Add
+    private string? statusMessage;
+
+    private async Task LinkBank()
+    {
+        var result = await PlaidLink.LinkBankAccount(currentUser.Id);
+        statusMessage = result.Success ? "Linked!" : result.ErrorMessage;
+    }
+        // Seach
     bool showToolbarSearchModal;
     void OpenToolbarSearchModal() => showToolbarSearchModal = true;
     void CloseToolbarSearchModal() => showToolbarSearchModal = false;

@@ -1,0 +1,89 @@
+﻿@page "/"
+@using Hearth.Services.DTOs
+@using Hearth.Services.Interfaces
+@using Hearth.UI.Components.Elements.Main
+@inject IUserService _userService
+
+<main class="main-home">
+    @if (isLoggedIn)
+    {
+        <section class="section-01-logged-in">
+            <div class="s01-title-and-button-container">
+                <Title>Welcome Back, @loggedInUser?.Name</Title>
+
+                <Button OnClick="Logout">
+                    Logout
+                </Button>
+            </div>
+        </section>
+    }
+    else
+    {
+        <section class="section-02-login">
+            <Title>Welcome to the Hearth</Title>
+
+            @if (newAppUser)
+            {
+                <div class="s02-new-user">
+                    <LoginCard isCreate="true" />
+                </div>
+            }
+            else
+            {
+                <div class="s02-returning-user">
+                    <LoginCard />
+                </div>
+            }
+        </section>
+    }
+</main>
+
+
+@code {
+    #region Variables
+    bool isLoggedIn = false;
+    bool newAppUser = false;
+
+    private UserDTO? loggedInUser = new UserDTO { };
+
+    private string nameInput = string.Empty;
+    private string pinInput = string.Empty;
+
+    private UserDTO? newUser = new UserDTO { };
+
+    private bool loginFailure = false;
+    #endregion
+
+    #region Functions
+    // On Load
+    protected override async Task OnInitializedAsync()
+    {
+        // Fetch Session Data
+        isLoggedIn = await _userService.IsLoggedIn();
+        loggedInUser = await _userService.GetCurrentUser();
+        if(loggedInUser == null)
+        {
+            __TableDataDTO tableData = await _userService.GetTableData();
+            newAppUser = tableData.IsEmpty;
+        }
+    }
+
+    private async Task<bool> Logout()
+    {
+        var success = false;
+
+        if (loggedInUser != null)
+        {
+            success = await _userService.Logout(loggedInUser);
+            if (success)
+            {
+                // TODO-2: reload the page to reflect the new logout state
+            }
+            StateHasChanged();
+        }
+
+        return success;
+    }
+    #endregion
+
+}

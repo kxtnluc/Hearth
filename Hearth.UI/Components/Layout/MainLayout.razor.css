@@ -1,5 +1,11 @@
+.page{
+/*    background-color: red;*/
+    height: 100%;
+}
+
 .layout {
     display: flex;
+    height: 100%;
 }
 
 .layout__main {
@@ -9,6 +15,7 @@
 
     /* Simple Spacing For Neatness applied to EVERY page*/
     padding: 1rem;
+    height: 100%;
 }
 
 /* When sidebar is collapsed */

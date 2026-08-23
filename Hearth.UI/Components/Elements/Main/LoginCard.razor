@@ -1,0 +1,129 @@
+﻿@inject IUserService _userService
+
+<div class="element-login-card">
+    @if(isCreate)
+    {
+        <Card Variant="E_CARD.Raised">
+            <CardHeader>
+                <CardTitle>
+                    <Title>
+                        Create
+                    </Title>
+                </CardTitle>
+            </CardHeader>
+            <CardContent IsForm="true">
+                <Form>
+                    <FormContent>
+                        <FormRow>
+                            <FormCell Ratio="1/1">
+                                <Input InputType="E_INPUT_TYPE.Text" Label="Name" @bind-Value="newUser.Name" Placeholder="Marcus Johnson" />
+                            </FormCell>
+                        </FormRow>
+                        <FormRow>
+                            <FormCell Ratio="1/1">
+                                <Input InputType="E_INPUT_TYPE.Text" @bind-Value="newUser.Pin" Label="Pin" Placeholder="1234" />
+                            </FormCell>
+                        </FormRow>
+                    </FormContent>
+                    <FormFooter>
+                    <Button OnClick="ToggleLoginCreate" Variant="E_VARIANT.Outline">
+                            Login to an Account
+                        </Button>
+                        <Button OnClick="Login">
+                            Login
+                        </Button>
+                    </FormFooter>
+                </Form>
+            </CardContent>
+        </Card>
+    }
+    else
+    {
+        <Card Variant="E_CARD.Inset">
+            <CardHeader>
+                <CardTitle>
+                    <Title>
+                        Login
+                    </Title>
+                </CardTitle>
+            </CardHeader>
+            <CardContent IsForm="true">
+                <Form>
+                    <FormContent>
+                        <FormRow>
+                            <FormCell Ratio="1/1">
+                                <Input InputType="E_INPUT_TYPE.Text" Label="Name" @bind-Value="loginUser.Name" Placeholder="Marcus Johnson" />
+                            </FormCell>
+                        </FormRow>
+                        <FormRow>
+                            <FormCell Ratio="1/1">
+                                <Input InputType="E_INPUT_TYPE.Text" @bind-Value="loginUser.Pin" Label="Pin" Placeholder="1234" />
+                            </FormCell>
+                        </FormRow>
+                    </FormContent>
+                    <FormFooter>
+                    <Button OnClick="ToggleLoginCreate" Variant="E_VARIANT.Outline">
+                            Create an Account
+                        </Button>
+                        <Button OnClick="Login">
+                            Login
+                        </Button>
+                    </FormFooter>
+                </Form>
+            </CardContent>
+        </Card>
+    }
+</div>
+
+@code {
+    [Parameter] public bool isCreate { get; set; } = false;
+
+    UserDTO loginUser = new UserDTO { };
+    UserDTO newUser = new UserDTO { };
+
+    private bool loginFailure = false;
+
+    private async Task<bool> Login()
+    {
+        var success = false;
+        success = await _userService.Login(loginUser.Name, loginUser.Pin);
+        if (success)
+        {
+            // TODO-2: reload the page to reflect the new login state
+        }
+        else
+        {
+            loginFailure = true;
+        }
+
+        StateHasChanged();
+
+        return success;
+    }
+
+    private async Task<UserDTO?> CreateUserAccount()
+    {
+        if (newUser == null) return null;
+
+        UserDTO? createdUser = await _userService.Create(newUser);
+
+        if (createdUser != null)
+        {
+            // TODO-2: reload the page to reflect the new login state
+        }
+        else
+        {
+            loginFailure = true;
+        }
+
+        StateHasChanged();
+        return createdUser;
+    }
+
+    private void ToggleLoginCreate()
+    {
+        isCreate = !isCreate;
+        StateHasChanged();
+        return;
+    }
+}

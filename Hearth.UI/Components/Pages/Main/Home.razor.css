@@ -1,0 +1,28 @@
+.main-home{
+    height: 100%;
+}
+
+.section-01-logged-in {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .s01-title-and-button-container{
+        display: flex;
+        flex-flow: column nowrap;
+        gap: 1rem;
+    }
+}
+
+.section-02-login {
+    height: 100%;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+
+    .s02-new-user, .s02-returning-user {
+        width: 25%;
+    }
+}
