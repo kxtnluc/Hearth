@@ -95,7 +95,6 @@
 
     <ItemGroup>
       <Folder Include="Components\Elements\Automotive\" />
-      <Folder Include="Components\Pages\Finance\BankAccounts\Account\" />
       <Folder Include="Components\Pages\Finance\Debts\" />
       <Folder Include="Components\Pages\Finance\Assets\" />
       <Folder Include="Components\Pages\Finance\Reports\" />

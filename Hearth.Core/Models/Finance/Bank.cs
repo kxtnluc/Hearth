@@ -34,8 +34,10 @@ namespace Hearth.Core.Models.Finance
         /// 
         /// </summary>
         public string? Institution_Id { get; set; }
+        #region Tracking
         public DateTime? InitalDateRequested { get; set; }
         public DateTime? LastDateRequested { get; set; }
         public DateTime? LastModified { get; set; }
+        #endregion
     }
 }

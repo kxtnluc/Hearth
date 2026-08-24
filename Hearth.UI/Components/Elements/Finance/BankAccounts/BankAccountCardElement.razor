@@ -1,14 +1,15 @@
 ﻿@using Hearth.Services.DTOs.Finance.Account
+@inject NavigationManager _nav
 
 <div class="bank-account-card-element-wraper">
-    <ClickWraper OnClick="@(() => HandleAccountClick(Account.Id))">
-        <Card Variant="E_CARD.Raised" HoverEffects="true">
-            <CardHeader>
+    <Card Variant="E_CARD.Raised" HoverEffects="false">
+        <ClickWraper OnClick="@(() => HandleAccountClick(Account.Id))">
+            <CardHeader class="bank-account-card-banner" style="@($"background-color: {Account.HexColor}; color: {Account.HexColorText_C};")">
                 <CardTitle>
                     <Icon>
                         <BankIcon Size="22" />
                     </Icon>
-                    <Title>@Account.Name</Title>
+                    <Title>@Account.Name_C</Title>
                 </CardTitle>
                 <CardDescription>
                     @Account.Official_Name
@@ -17,12 +18,12 @@
                     <span class="bank-account-type">@Account.Type?.ToUpper()</span>
                 </CardAction>
             </CardHeader>
-            <CardContent IsDataPoint="true">@Account.Balances.Current?.ToString("C") @Account.Balances.Iso_Currency_Code</CardContent>
-            <CardFooter IsDataPoint="true" DataStatus="E_STATUS.Neutral" LateralDirection="E_DIRECTION_LATERAL.Right">
-                @(Account.Is_Credit_C ? ("Credit") : ("Debit"))
-            </CardFooter>
-        </Card>
-    </ClickWraper>
+        </ClickWraper>
+        <CardContent IsDataPoint="true">@Account.Balances!.Current?.ToString("C") @Account.Balances.Iso_Currency_Code</CardContent>
+        <CardFooter IsDataPoint="true" DataStatus="E_STATUS.Neutral" LateralDirection="E_DIRECTION_LATERAL.Right">
+            @(Account.Is_Credit_C ? ("Credit") : ("Debit"))
+        </CardFooter>
+    </Card>
 </div>
 
 @code {
@@ -32,6 +33,6 @@
     // - Logic -
     private void HandleAccountClick(int id)
     {
-        // _navigation.NavigateTo($"/finances/accounts/{id}");
+        _nav.NavigateTo($"/finance/bank-accounts/{id}");
     }
 }

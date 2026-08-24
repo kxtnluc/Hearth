@@ -5,3 +5,12 @@
 .bank-account-type{
     font-style: italic;
 }
+
+::deep .bank-account-card-banner{
+    padding-bottom: 1rem;
+    transition: 150ms;
+}
+
+::deep .bank-account-card-banner:hover {
+    opacity: 0.85;
+}

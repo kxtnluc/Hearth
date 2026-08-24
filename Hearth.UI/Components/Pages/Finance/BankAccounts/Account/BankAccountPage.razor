@@ -1,0 +1,128 @@
+﻿@page "/finance/bank-accounts/{accountId}"
+@using Hearth.Services.DTOs.Finance.Account
+@using Hearth.Services.DTOs.Finance.Transaction
+@inject IAccountService _accountService
+@inject ITransactionService _transactionService
+
+@* Loading *@
+
+@if (initialRenderComplete == false)
+{
+    <LoadingCircleIcon AutoCenter="true" />
+}
+
+@* Page *@
+
+<main class="main-bank-account" hidden="@(initialRenderComplete ? false : true)">
+    <section class="section-01-account">
+        <div class="s01-account-header-container">
+            <div class="title-and-status">
+                <div>
+                    <Title>
+                        <Icon><BankIcon Size="28" /></Icon>
+                        <ChildContent>@Account.Name_C</ChildContent>
+                    </Title>
+                </div>
+                <div>
+                    <Title Size="E_SIZE.sm">@(Account.IsOpen_C)</Title>
+                </div>
+            </div>
+            <div class="description">
+                @Account.Official_Name
+            </div>
+        </div>
+        <div class="s01-account-body-container">
+
+        </div>
+        <div class="01-account-footer-container">
+
+        </div>
+    </section>
+    <section class="section-02-stats">
+
+    </section>
+    <section class="section-03-transactions">
+
+    </section>
+</main>
+
+@* Toolbar *@
+
+<Toolbar HasAddBtn="false"
+         HasManageBtn="true"
+         HasSettingsBtn="false"
+         Position="E_TOOLBAR_POSITION.BottomRight"
+         Size="E_SIZE.lg"
+         TooltipSubject="Account" 
+/>
+
+@* Toolbar Modals *@
+    @* Manage Modal *@
+<Modal Title="Manage"
+       Size="E_SIZE.lg"
+       Open="showToolbarManageModal"
+       OnClose="CloseToolbarManageModal"
+       HelpBtn="true"
+       Variant="E_MODAL.AddEdit">
+    <Form>
+        <FormContent>
+            <FormRow>
+                <FormCell Ratio="1">
+                    <Input InputType="E_INPUT_TYPE.Text" Label="Name" Placeholder="Cool Name" @bind-Value="Account?.HearthName" />
+                </FormCell>
+            </FormRow>
+        </FormContent>
+        <FormFooter>
+            <Button Variant="E_VARIANT.Secondary" Color="E_COLOR_BASIC.OffWhite" Onclick="CloseToolbarManageModal">Cancel</Button>
+            <Button Variant="E_VARIANT.Primary" Color="E_COLOR_BASIC.Info" Onclick="InitiateUpdate">Save</Button>
+        </FormFooter>
+    </Form>
+</Modal>
+
+@code {
+    // - Loading -
+    bool initialRenderComplete = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (initialRenderComplete == false && Account != null)
+            {
+                initialRenderComplete = true;
+                StateHasChanged(); // Trigger re-render to hide the spinner
+            }
+        }
+    }
+
+    // - Page -
+    [Parameter] public string accountId { get; set; } = default!;
+    int _accountId;
+    AccountDTO? Account = null;
+    List<TransactionDTO>? Transactions = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _accountId = int.Parse(accountId);
+        try
+        {
+            Account = await _accountService.GetById(_accountId);
+        }
+        catch(HearthRecordNotFoundException)
+        {
+            // TODO
+            throw;
+        }
+    }
+
+    // - Toolbar -
+    // Manage
+    bool showToolbarManageModal;
+    void OpenToolbarManageModal() => showToolbarManageModal = true;
+    void CloseToolbarManageModal() => showToolbarManageModal = false;
+
+    void InitiateUpdate()
+    {
+        
+    }
+}

@@ -3,6 +3,7 @@ using System;
 using Hearth.Core.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Hearth.Core.Migrations
 {
     [DbContext(typeof(HearthDbContext))]
-    partial class HearthDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260824192438_added-hex-color-to-bank-account")]
+    partial class addedhexcolortobankaccount
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.10");
@@ -23,20 +26,11 @@ namespace Hearth.Core.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("AccountNumber")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("AccountRoutingNumber")
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("Account_Id")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Bank_Item_Id")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("HearthName")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("HexColor")

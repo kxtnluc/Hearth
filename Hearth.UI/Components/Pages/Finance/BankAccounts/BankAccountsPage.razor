@@ -17,7 +17,7 @@
 
 @* Page *@
 
-<main class="main-bankaccounts">
+<main class="main-bankaccounts" hidden="@(initialRenderComplete ? false : true)">
     <section class="section-page-title">
         <Title>
             Bank Accounts
@@ -52,6 +52,8 @@
 <Toolbar 
     HasAddBtn="false"
     HasSearchBtn="true"
+    HasManageBtn="false"
+    HasSettingsBtn="false"
     HasLinkBtn="true"
     OnLink="LinkBank"
     OnSearch="OpenToolbarSearchModal"
@@ -99,7 +101,7 @@
     {
         if (firstRender)
         {
-            if (initialRenderComplete == false)
+            if (initialRenderComplete == false && allUserAccounts != null)
             {
                 initialRenderComplete = true;
                 StateHasChanged(); // Trigger re-render to hide the spinner
