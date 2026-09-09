@@ -1,5 +1,7 @@
 ﻿using Hearth.Services.Interfaces;
+using Hearth.Services.Mapping.Finance;
 using Hearth.Services.Utility;
+using Hearth.Services.Utility.Finance;
 using Riok.Mapperly.Abstractions;
 using System;
 using System.Collections.Generic;
@@ -37,13 +39,17 @@ namespace Hearth.Services.DTOs.Finance.Account
         /// </summary>
         public string? AccountNumber { get; set; } = null;
         /// <summary>
+        /// User Set. The bank account's routing number
+        /// </summary>
+        public string? AccountRoutingNumber { get; set; } = null;
+        /// <summary>
         /// User Set. This name overwrites "Name" for display purposes.
         /// </summary>
         public string? HearthName { get; set; } = null;
         #endregion
         // DTO specific
         [MapperIgnore]
-        public bool Is_Credit_C => Type?.Equals("credit", StringComparison.OrdinalIgnoreCase) ?? false;
+        public bool IsCredit_C => Type?.Equals("credit", StringComparison.OrdinalIgnoreCase) ?? false;
         [MapperIgnore]
         public string HexColorText_C => ColorHelper.HexColorTextEvaluator(HexColor);
         /// <summary>
@@ -56,7 +62,17 @@ namespace Hearth.Services.DTOs.Finance.Account
         /// </summary>
         [MapperIgnore]
         public string IsOpen_C => IsOpen ? "Open" : "Closed";
-
+        /// <summary>
+        /// This is a shallow copy, so if you have nested in here (like Balances), they will not be cloned. If you need a deep copy, you will need to implement that manually.
+        /// </summary>
+        /// <returns></returns>
+        [MapperIgnore]
+        public AccountDTO Clone()
+        {
+            var copy = new AccountDTO();
+            this.CopyInto(copy);
+            return copy;
+        }
 
         // public ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
     }
@@ -72,5 +88,40 @@ namespace Hearth.Services.DTOs.Finance.Account
         public decimal? Limit { get; set; }
 
         public string? Unofficial_Currency_Code { get; set; } = string.Empty;
+
+        /// <summary>
+        /// The effective currency code for this balance — prefers ISO code, falls back to
+        /// the unofficial code, defaults to USD if neither is present.
+        /// </summary>
+        [MapperIgnore]
+        public string CurrencyCode_C => Iso_Currency_Code?.ToUpper() ?? Unofficial_Currency_Code?.ToUpper() ?? "USD";
+
+        [MapperIgnore]
+        public string? Current_C
+        {
+            get
+            {
+                if (Current is null) return null;
+
+                var format = (System.Globalization.NumberFormatInfo)System.Globalization.CultureInfo.InvariantCulture.NumberFormat.Clone();
+                format.CurrencySymbol = CurrencySymbolHelper.GetCurrencySymbol(CurrencyCode_C);
+
+                return Current.Value.ToString("C", format);
+            }
+        }
+
+        [MapperIgnore]
+        public string? Available_C
+        {
+            get
+            {
+                if (Available is null) return null;
+
+                var format = (System.Globalization.NumberFormatInfo)System.Globalization.CultureInfo.InvariantCulture.NumberFormat.Clone();
+                format.CurrencySymbol = CurrencySymbolHelper.GetCurrencySymbol(CurrencyCode_C);
+
+                return Available.Value.ToString("C", format);
+            }
+        }
     }
 }

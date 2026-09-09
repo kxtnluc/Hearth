@@ -25,4 +25,9 @@ internal static partial class AccountMapper
     /// Any property that's null on the DTO is left untouched on the entity.
     /// </summary>
     public static partial void ApplyUpdate(this AccountDTO dto, Account entity);
+    /// <summary>
+    /// Deep-copies every property from source onto target — used to implement Clone()
+    /// without Mapperly's same-type identity-mapping shortcut kicking in.
+    /// </summary>
+    public static partial void CopyInto(this AccountDTO source, AccountDTO target);
 }

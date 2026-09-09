@@ -1,4 +1,5 @@
 ﻿using Hearth.Services.Interfaces;
+using Riok.Mapperly.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -36,6 +37,16 @@ namespace Hearth.Services.DTOs.Finance.Transaction
         public LocationDTO? Location { get; set; }
         public PaymentMetaDTO? Payment_Meta { get; set; }
         public PersonalFinanceCategoryDTO? Personal_Finance_Category { get; set; }
+        [MapperIgnore]
+        public bool IsIncome_C
+        {
+            get
+            {
+                var result = false;
+                if (Amount < 0) result = true;
+                return result;
+            }
+        }
     }
 
     public class LocationDTO

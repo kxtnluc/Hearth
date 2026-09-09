@@ -21,7 +21,7 @@
         </ClickWraper>
         <CardContent IsDataPoint="true">@Account.Balances!.Current?.ToString("C") @Account.Balances.Iso_Currency_Code</CardContent>
         <CardFooter IsDataPoint="true" DataStatus="E_STATUS.Neutral" LateralDirection="E_DIRECTION_LATERAL.Right">
-            @(Account.Is_Credit_C ? ("Credit") : ("Debit"))
+            @(Account.IsCredit_C ? ("Credit") : ("Debit"))
         </CardFooter>
     </Card>
 </div>

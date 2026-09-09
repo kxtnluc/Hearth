@@ -1,6 +1,7 @@
 ﻿@page "/finance/bank-accounts/{accountId}"
 @using Hearth.Services.DTOs.Finance.Account
 @using Hearth.Services.DTOs.Finance.Transaction
+@using Hearth.Services.Mapping.Finance
 @inject IAccountService _accountService
 @inject ITransactionService _transactionService
 
@@ -15,34 +16,93 @@
 
 <main class="main-bank-account" hidden="@(initialRenderComplete ? false : true)">
     <section class="section-01-account">
-        <div class="s01-account-header-container">
+        <article class="s01-account-header-container">
             <div class="title-and-status">
-                <div>
-                    <Title>
+                <div class="title" style="@($"background-color: {account.HexColor};")">
+                    <Title HexColor="@account.HexColorText_C">
                         <Icon><BankIcon Size="28" /></Icon>
-                        <ChildContent>@Account.Name_C</ChildContent>
+                        <ChildContent>@account.Name_C</ChildContent>
                     </Title>
                 </div>
-                <div>
-                    <Title Size="E_SIZE.sm">@(Account.IsOpen_C)</Title>
-                </div>
+                @if (account.IsOpen)
+                {
+                    <div class="status" style="@($"background-color: var(--color-info")">
+                        <Title Size="E_SIZE.sm" Color="E_COLOR_BASIC.OffWhite">@(account.IsOpen_C)</Title>
+                    </div>
+                }
+                else
+                {
+                    <div class="status" style="@($"background-color: var(--color-primary")">
+                        <Title Size="E_SIZE.sm" Color="E_COLOR_BASIC.OffWhite">@(account.IsOpen_C)</Title>
+                    </div>
+                }
             </div>
             <div class="description">
-                @Account.Official_Name
+                @account.Official_Name | @account.Type
             </div>
+        </article>
+        <div class="lb">
+            <LineBreak Size="E_SIZE.md" Width="14%" />
         </div>
-        <div class="s01-account-body-container">
+        <article class="s01-account-body-container">
+            @if (account.IsCredit_C)
+            {
 
-        </div>
+            }
+            else
+            {
+                <div>
+                    <div class="account-and-routing-numbers">
+                        <div class="num-account">
+                            <span>Account #</span>
+                            <span class="num">@(string.IsNullOrWhiteSpace(account.AccountNumber) ? ("unset...") : (account.AccountNumber))</span>
+                        </div>
+                        <div class="num-routing">
+                            <span>Routing #</span>
+                            <span class="num">@(string.IsNullOrWhiteSpace(account.AccountNumber) ? ("unset...") : (account.AccountRoutingNumber))</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="balance-container">
+                    <div class="debit-grid">
+                        @* Row 1: Headers — middle cell is empty *@
+                        <div class="debit-grid__header">Outgoing per Month</div>
+                        <div></div>  @* empty middle header *@
+                        <div class="debit-grid__header">Incoming per Month</div>
+
+                        @* Row 2: Data *@
+                        <div class="outgoing-data-container">
+                            <div class="outgoing-num">$200*</div>
+                            <div class="outgoing-percent-container">
+                                <ArrowIcon DirectionPoint="E_DIRECTION_EIGHT_POINT.DownRight" Size="26" />
+                                <div class="outgoing-percent">4.1%*</div>
+                            </div>
+                        </div>
+
+                        @* Balance in the middle column *@
+                        <div class="debit-grid__balance">
+                            <Title Size="E_SIZE.xl">
+                                @account.Balances.Current_C
+                            </Title>
+                        </div>
+
+                        <div class="incoming-data-container">
+                            <div class="incoming-percent-container">
+                                <ArrowIcon DirectionPoint="E_DIRECTION_EIGHT_POINT.UpRight" Size="26" />
+                                <div class="incoming-percent">4.1%*</div>
+                            </div>
+                            <div class="incoming-num">$200*</div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </article>
         <div class="01-account-footer-container">
-
         </div>
     </section>
     <section class="section-02-stats">
-
     </section>
     <section class="section-03-transactions">
-
     </section>
 </main>
 
@@ -50,31 +110,43 @@
 
 <Toolbar HasAddBtn="false"
          HasManageBtn="true"
+         OnManage="OpenToolbarManageModal"
          HasSettingsBtn="false"
          Position="E_TOOLBAR_POSITION.BottomRight"
          Size="E_SIZE.lg"
-         TooltipSubject="Account" 
-/>
+         TooltipSubject="Account" />
 
 @* Toolbar Modals *@
-    @* Manage Modal *@
-<Modal Title="Manage"
-       Size="E_SIZE.lg"
-       Open="showToolbarManageModal"
-       OnClose="CloseToolbarManageModal"
-       HelpBtn="true"
-       Variant="E_MODAL.AddEdit">
+@* Manage Modal *@
+<Modal Title="Manage Account Details"
+    Size="E_SIZE.lg"
+    Open="showToolbarManageModal"
+    OnClose="CloseToolbarManageModal"
+    HelpBtn="true"
+    Variant="E_MODAL.AddEdit"
+>
     <Form>
         <FormContent>
             <FormRow>
-                <FormCell Ratio="1">
-                    <Input InputType="E_INPUT_TYPE.Text" Label="Name" Placeholder="Cool Name" @bind-Value="Account?.HearthName" />
+                <FormCell Ratio="4/6">
+                    <Input InputType="E_INPUT_TYPE.Text" Label="Custom Name" Placeholder="Personal Debit" @bind-Value="accountDraft?.HearthName" />
+                </FormCell>
+                <FormCell Ratio="2/6" CenterVertically="true" AlignRight="true">
+                    <Checkbox FlipLabel="true" Label="Status" @bind-Value="accountDraft.IsOpen" />
+                </FormCell>
+            </FormRow>
+            <FormRow>
+                <FormCell Ratio="1/2">
+                    <Input InputType="E_INPUT_TYPE.Number" Label="Account Number" Placeholder="444400008888" @bind-Value="accountDraft?.AccountNumber" />
+                </FormCell>
+                <FormCell Ratio="1/2">
+                    <Input InputType="E_INPUT_TYPE.Number" Label="Routing Number" Placeholder="123456789" @bind-Value="accountDraft?.AccountRoutingNumber" />
                 </FormCell>
             </FormRow>
         </FormContent>
         <FormFooter>
-            <Button Variant="E_VARIANT.Secondary" Color="E_COLOR_BASIC.OffWhite" Onclick="CloseToolbarManageModal">Cancel</Button>
-            <Button Variant="E_VARIANT.Primary" Color="E_COLOR_BASIC.Info" Onclick="InitiateUpdate">Save</Button>
+            <Button Variant="E_VARIANT.Secondary" Color="E_COLOR_BASIC.OffWhite" Onclick="HandleCancelSave">Cancel</Button>
+            <Button Variant="E_VARIANT.Primary" Color="E_COLOR_BASIC.Info" Onclick="HandleSave">Save</Button>
         </FormFooter>
     </Form>
 </Modal>
@@ -87,7 +159,7 @@
     {
         if (firstRender)
         {
-            if (initialRenderComplete == false && Account != null)
+            if (initialRenderComplete == false && account != null)
             {
                 initialRenderComplete = true;
                 StateHasChanged(); // Trigger re-render to hide the spinner
@@ -98,7 +170,7 @@
     // - Page -
     [Parameter] public string accountId { get; set; } = default!;
     int _accountId;
-    AccountDTO? Account = null;
+    AccountDTO? account = null;
     List<TransactionDTO>? Transactions = null;
 
     protected override async Task OnInitializedAsync()
@@ -106,9 +178,9 @@
         _accountId = int.Parse(accountId);
         try
         {
-            Account = await _accountService.GetById(_accountId);
+            account = await _accountService.GetById(_accountId);
         }
-        catch(HearthRecordNotFoundException)
+        catch (HearthRecordNotFoundException)
         {
             // TODO
             throw;
@@ -117,12 +189,45 @@
 
     // - Toolbar -
     // Manage
+    AccountDTO? accountDraft = null;
     bool showToolbarManageModal;
-    void OpenToolbarManageModal() => showToolbarManageModal = true;
-    void CloseToolbarManageModal() => showToolbarManageModal = false;
 
-    void InitiateUpdate()
+    void OpenToolbarManageModal()
     {
-        
+        showToolbarManageModal = true;
+        accountDraft = account?.Clone();
+        System.Diagnostics.Debug.WriteLine($"Same reference? {ReferenceEquals(account, accountDraft)}");
+    }
+    void CloseToolbarManageModal()
+    {
+        showToolbarManageModal = false;
+        accountDraft = null;
+    }
+
+    void HandleCancelSave()
+    {
+        CloseToolbarManageModal();
+    }
+
+    void HandleSave()
+    {
+        InitiateUpdate();
+        CloseToolbarManageModal();
+    }
+
+    async void InitiateUpdate()
+    {
+        if(account != null)
+        {
+            try
+            {
+                await _accountService.Update(accountDraft);
+                account = accountDraft;
+            }
+            catch
+            {
+                throw; // TODO: Handle error
+            }
+        }
     }
 }

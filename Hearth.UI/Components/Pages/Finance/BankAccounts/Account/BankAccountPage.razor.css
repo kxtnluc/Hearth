@@ -1,0 +1,111 @@
+.lb {
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
+}
+
+.s01-account-header-container {
+
+    .title-and-status {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .title {
+            border-radius: var(--radius-md);
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+            padding-top: 0.25rem;
+            padding-bottom: 0.25rem;
+        }
+
+
+        .status {
+            border-radius: var(--radius-md);
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+            padding-top: 0.25rem;
+            padding-bottom: 0.25rem;
+        }
+    }
+
+    .description {
+        font-style: italic;
+        margin-top: 0.33rem;
+    }
+}
+
+
+
+
+.s01-account-body-container {
+    .account-and-routing-numbers {
+        .num-account {
+        }
+
+        .num-routing {
+        }
+    }
+
+    .balance-container{
+        .debit-grid {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr; /* outgoing | balance | incoming */
+            grid-template-rows: auto auto;
+            justify-items: center;
+            align-items: center;
+            width: 100%;
+        }
+
+        .debit-grid__header {
+            font-style: italic;
+            padding: 0.5rem 0;
+            text-align: center;
+        }
+
+        .debit-grid__balance{
+            align-self: center;
+/*            background-color: red;*/
+        }
+
+        .outgoing-data-container,
+        .incoming-data-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            gap: 1.25rem;
+
+            .outgoing-num {
+                font-weight: 700;
+                font-size: 1.5rem;
+                color: var(--color-negative);
+            }
+
+            .outgoing-percent-container {
+                color: var(--color-negative);
+
+                .outgoing-percent {
+                    text-align: center;
+                    font-size: 0.8rem;
+                    font-weight: 700;
+                }
+            }
+
+            .incoming-num {
+                font-weight: 700;
+                font-size: 1.5rem;
+                color: var(--color-positive);
+            }
+
+            .incoming-percent-container {
+                color: var(--color-positive);
+
+                .incoming-percent {
+                    text-align: center;
+                    font-size: 0.8rem;
+                    font-weight: 700;
+                }
+            }
+        }
+    }
+}
