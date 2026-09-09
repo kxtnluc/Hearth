@@ -1,4 +1,5 @@
-﻿using Hearth.Services.Interfaces;
+﻿using Hearth.Services.DTOs.Finance.Transaction;
+using Hearth.Services.Interfaces;
 using Hearth.Services.Mapping.Finance;
 using Hearth.Services.Utility;
 using Hearth.Services.Utility.Finance;
@@ -20,6 +21,7 @@ namespace Hearth.Services.DTOs.Finance.Account
         public string? Official_Name { get; set; }
         public string? Type { get; set; }
         public string? Subtype { get; set; }
+        public List<TransactionDTO>? Transactions { get; set; } = new();
         #endregion
         #region Hearth
         /// <summary>

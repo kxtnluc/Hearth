@@ -16,6 +16,7 @@ namespace Hearth.Core.Models.Finance
         public string Date { get; set; } = default!;
         public decimal Amount { get; set; }
         public string Account_Id { get; set; } = default!;
+        public Account? Account { get; set; }
         public string? Account_Owner { get; set; }
         public string? Authorized_Date { get; set; }
         public string? Authorized_Datetime { get; set; }

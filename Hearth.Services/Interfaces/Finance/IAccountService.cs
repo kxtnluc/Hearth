@@ -1,4 +1,5 @@
-﻿using Hearth.Services.DTOs;
+﻿using Hearth.Services.CTOs.Finance.Account;
+using Hearth.Services.DTOs;
 using Hearth.Services.DTOs.Finance.Account;
 using Hearth.Services.Filters.Finance;
 
@@ -8,5 +9,7 @@ namespace Hearth.Services.Interfaces.Finance
     {
         Task<AccountDTO?> GetByAccountId(string accountId);
         Task<List<AccountDTO>?> GetByUserId(int userId);
+        Task<AccountDTO?> GetByIdWithTransactions(int id);
+        Task<AccountCTO?> GenerateAccountCTO(AccountDTO account, AccountCTO_Options options);
     }
 }

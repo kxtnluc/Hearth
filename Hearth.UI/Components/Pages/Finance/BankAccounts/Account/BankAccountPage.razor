@@ -1,7 +1,7 @@
 ﻿@page "/finance/bank-accounts/{accountId}"
 @using Hearth.Services.DTOs.Finance.Account
+@using Hearth.Services.CTOs.Finance.Account
 @using Hearth.Services.DTOs.Finance.Transaction
-@using Hearth.Services.Mapping.Finance
 @inject IAccountService _accountService
 @inject ITransactionService _transactionService
 
@@ -167,18 +167,32 @@
         }
     }
 
-    // - Page -
+    // - Main Object -
     [Parameter] public string accountId { get; set; } = default!;
     int _accountId;
     AccountDTO? account = null;
-    List<TransactionDTO>? Transactions = null;
-
+    // - Report Object -
+    AccountCTO? accountReport = null;
+    AccountCTO_Options ctoOptions = new AccountCTO_Options
+    {
+        IncludeTransfers = true,
+        Frequency = Foundation.Enums.E_CALENDAR_FREQUENCY.Monthly
+    };
+    private async void RefreshAccountReport()
+    {
+        if (account != null)
+        {
+            accountReport = await _accountService.GenerateAccountCTO(account, ctoOptions);
+        }
+    }
+    // - Page -
     protected override async Task OnInitializedAsync()
     {
         _accountId = int.Parse(accountId);
         try
         {
-            account = await _accountService.GetById(_accountId);
+            account = await _accountService.GetByIdWithTransactions(_accountId);
+            RefreshAccountReport();
         }
         catch (HearthRecordNotFoundException)
         {

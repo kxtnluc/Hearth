@@ -55,6 +55,15 @@ namespace Hearth.Services.Services.Finance
             DbSet.RemoveRange(entities);
             if (saveChanges) await _context.SaveChangesAsync();
         }
+
+        public async Task<List<TransactionDTO>?> GetByAccountId(string accountId)
+        {
+            var transactions = await _context.Transactions
+                .Where(t => t.Account_Id == accountId)
+                .ToListAsync();
+            var result = transactions.ToDtoList();
+            return result;
+        }
         #endregion
     }
 }

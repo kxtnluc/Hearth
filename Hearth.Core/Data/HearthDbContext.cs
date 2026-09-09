@@ -40,6 +40,12 @@ public class HearthDbContext : DbContext
             .HasValue<TransactionCategoryRule>("TransactionCategoryRule")
             .HasValue<BankCategoryRule>("BankCategoryRule");
 
+        modelBuilder.Entity<Account>()
+            .HasMany(a => a.Transactions)
+            .WithOne(a => a.Account)
+            .HasForeignKey(t => t.Account_Id)
+            .HasPrincipalKey(a => a.Account_Id);
+
         modelBuilder.Entity<Account>(builder =>
         {
             builder.OwnsOne(a => a.Balances, bal =>

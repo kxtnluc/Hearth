@@ -2,6 +2,7 @@
 using Hearth.Core.Models.Finance;
 using Hearth.Services.Abstract;
 using Hearth.Services.DTOs.Finance.Account;
+using Hearth.Services.CTOs.Finance.Account;
 using Hearth.Services.Utility;
 using Hearth.Services.Interfaces.Finance;
 using Hearth.Services.Mapping.Finance;
@@ -69,6 +70,27 @@ namespace Hearth.Services.Services.Finance
             }
 
             return ToDtoList(userAccounts);
+        }
+
+        public async Task<AccountDTO?> GetByIdWithTransactions(int id)
+        {
+            var account = await _context.Accounts
+                .Include(a => a.Transactions)
+                .FirstOrDefaultAsync(a => a.Id == id);
+
+            return account?.ToDto();
+        }
+        #endregion
+        #region CTO Generation
+        public async Task<AccountCTO>? GenerateAccountCTO(AccountDTO account, AccountCTO_Options options)
+        {
+            var result = new AccountCTO();
+
+            result.Account = account;
+            result.Frequency = options.Frequency;
+            result.IncludeTransfers = options.IncludeTransfers;
+
+            return result;
         }
         #endregion
     }

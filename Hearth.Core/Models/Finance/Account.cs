@@ -16,6 +16,7 @@ namespace Hearth.Core.Models.Finance
         public string? Official_Name { get; set; }
         public string? Type { get; set; }
         public string? Subtype { get; set; }
+        public List<Transaction> Transactions { get; set; } = new();
         #endregion
         #region Hearth
         /// <summary>
