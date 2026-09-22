@@ -54,18 +54,38 @@ namespace Hearth.Services.Abstract
         /// <param name="payload"></param>
         /// <returns></returns>
         protected abstract void ValidatePayload(TDto payload);
-        public virtual async Task<TDto?> GetById(int id)
+        public virtual async Task<TDto?> GetById(int id, string[]? inclusions = null)
         {
-            var entity = await DbSet.FindAsync(id);
+            IQueryable<TEntity> query = DbSet.AsNoTracking();
 
-            if (entity == null) throw new HearthRecordNotFoundException();
-            // i think this is redundant a bit
-            return entity is null ? default : ToDto(entity);
+            if (inclusions is not null)
+            {
+                foreach (var inclusion in inclusions)
+                {
+                    query = query.Include(inclusion);
+                }
+            }
+
+            var entity = await query.FirstOrDefaultAsync(e => EF.Property<int>(e, "Id") == id);
+
+            if (entity is null) throw new HearthRecordNotFoundException();
+
+            return ToDto(entity);
         }
 
-        public virtual async Task<List<TDto>> GetAll()
+        public virtual async Task<List<TDto>> GetAll(string[]? inclusions = null)
         {
-            var entities = await DbSet.AsNoTracking().ToListAsync();
+            IQueryable<TEntity> query = DbSet.AsNoTracking();
+
+            if (inclusions is not null)
+            {
+                foreach (var inclusion in inclusions)
+                {
+                    query = query.Include(inclusion);
+                }
+            }
+
+            var entities = await query.ToListAsync();
             return ToDtoList(entities);
         }
         /// <summary>

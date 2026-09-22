@@ -98,7 +98,6 @@
       <Folder Include="Components\Pages\Finance\Debts\" />
       <Folder Include="Components\Pages\Finance\Assets\" />
       <Folder Include="Components\Pages\Finance\Reports\" />
-      <Folder Include="Components\Pages\Finance\Transactions\" />
       <Folder Include="Components\Pages\Automotive\" />
     </ItemGroup>
 

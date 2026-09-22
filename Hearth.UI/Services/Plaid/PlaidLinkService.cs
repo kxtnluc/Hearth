@@ -18,7 +18,12 @@ internal class PlaidLinkService : IPlaidLinkService
         _js = js;
         _plaidService = plaidService;
     }
-
+    /// <summary>
+    /// NOT WORKING. Theres probably a way to get this to work properly with the JSInvoked functions, but i couldnt' so this is how it remains for now
+    /// currently the page itself handles the link functions
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <returns></returns>
     public async Task<PlaidLinkResult> LinkBankAccount(int userId)
     {
         var linkToken = await _plaidService.CreateLinkTokenAsync(userId);

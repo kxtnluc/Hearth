@@ -1,0 +1,53 @@
+﻿@using Hearth.Services.DTOs.Finance.Transaction
+@inject NavigationManager _nav
+
+<div class="transaction-card-element-wraper" @onclick="HandleClick">
+    <section class="section-01-card">
+        <article class="s01-article-01-date-and-category">
+            <div class="s01-a01-date-container">
+                <div>@Transaction.DateShort_S</div>
+            </div>
+            <div class="s01-a01-category-container" style="background-color: @(Transaction.Category?.HexColor ?? "var(--color-primary-faded-2)")">
+                <div style="color: @(Transaction.Category?.HexColorText_C ?? "white")">@(Transaction.Category?.Name ?? "N/A")</div>
+            </div>
+        </article>
+        <article class="s01-article-01-name-and-amount">
+            <div class="s01-a01-name-and-icon-container">
+                <div class="plaid-icon-container">
+                    <img class="plaid-icon" src="@Transaction.Logo_Url" />
+                </div>
+                <div class="name">
+                    @Transaction.DisplayName_S
+                </div>
+            </div>
+            <div class="s01-a01-amount">
+                @if(Transaction.IsIncome_C)
+                {
+                    <div class="amount-income">
+                        @Transaction.Amount_S
+                    </div>
+                }
+                else
+                {
+                    <div class="amount-expense">
+                        @Transaction.Amount_S
+                    </div>
+                }
+            </div>
+        </article>
+    </section>
+</div>
+
+@code {
+    // - DTO -
+    [Parameter] public TransactionDTO Transaction { get; set; } = default!;
+
+    // - On Select -
+    [Parameter] public EventCallback<TransactionDTO> OnSelect { get; set; }
+
+    // - Logic -
+    async Task HandleClick()
+    {
+        await OnSelect.InvokeAsync(Transaction);
+    }
+}

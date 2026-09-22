@@ -45,7 +45,7 @@ namespace Hearth.Integrations.APIs.Plaid.Services
             _context = context;
         }
 
-        public async Task<PlaidSyncSummary> SyncBankTransactions(string itemId, int recordsToSync = 250, bool saveChanges = true, IProgress<PlaidSyncProgress>? progress = null)
+        public async Task<PlaidTransactionSyncSummary> SyncBankTransactions(string itemId, int recordsToSync = 250, bool saveChanges = true, IProgress<PlaidSyncProgress>? progress = null)
         {
             BankDTO? foundBank;
 
@@ -70,12 +70,12 @@ namespace Hearth.Integrations.APIs.Plaid.Services
                 TransactionSyncRecordDTO tsr = await _transactionSyncRecordService.GetNextByItemId(itemId);
                 nextCursor = tsr.Next_Cursor;
             }
-            catch(HearthRecordNotFoundException)
+            catch (HearthRecordNotFoundException)
             {
                 nextCursor = string.Empty;
             }
 
-            var summary = new PlaidSyncSummary();
+            var summary = new PlaidTransactionSyncSummary();
             bool hasMore = true;
             int page = 0;
             const int maxPages = 100;
@@ -140,7 +140,7 @@ namespace Hearth.Integrations.APIs.Plaid.Services
                     if (modifiedTransactions.Count >= 1) await _transactionService.UpdateRange(modifiedTransactions, false);
                     if (removedTransactions.Count >= 1) await _transactionService.DeleteTransactionsFromPlaidSyncRemoval(removedTransactions, false);
                 }
-                catch(HearthInvalidPayloadException ex)
+                catch (HearthInvalidPayloadException ex)
                 {
                     throw new($@"
                         Invalid Paylaod Exception ):
@@ -180,32 +180,47 @@ namespace Hearth.Integrations.APIs.Plaid.Services
             return summary;
         }
 
-        public async Task<PlaidSyncSummary> SyncRangeBanksTransactions(List<BankDTO>? banks, int recordsToSync = 250, bool saveChanges = true, IProgress<PlaidSyncProgress>? progress = null)
+        public async Task<PlaidTransactionSyncSummary> SyncRangeBanksTransactions(List<BankDTO>? banks, int recordsToSync = 250, bool saveChanges = true, IProgress<PlaidSyncProgress>? progress = null)
         {
+            PlaidTransactionSyncSummary summary = new();
+            banks ??= new();
 
-            PlaidSyncSummary summary = new();
-
-            foreach (var bank in banks)
+            for (int i = 0; i < banks.Count; i++)
             {
-                var bankSyncSummary = await SyncBankTransactions(bank.Item_Id, recordsToSync, false);
-                
+                var bank = banks[i];
+
+                // Wrap the caller's progress so each bank's individual report also carries
+                // its position in the overall batch (index / total).
+                var bankProgress = progress is null
+                    ? null
+                    : new Progress<PlaidSyncProgress>(p =>
+                    {
+                        p.CurrentBankIndex = i + 1;
+                        p.TotalBanks = banks.Count;
+                        p.Phase = "Transactions";
+                        progress.Report(p);
+                    });
+
+                var bankSyncSummary = await SyncBankTransactions(bank.Item_Id, recordsToSync, false, bankProgress);
+
                 summary.TotalAdded += bankSyncSummary.TotalAdded;
                 summary.TotalModified += bankSyncSummary.TotalModified;
                 summary.TotalRemoved += bankSyncSummary.TotalRemoved;
             }
 
-            if(saveChanges) await _context.SaveChangesAsync();
+            if (saveChanges) await _context.SaveChangesAsync();
 
             return summary;
         }
 
-        public async Task<PlaidSyncSummary> SyncAllBanksTransactions(int recordsToSync = 250, bool saveChanges = true, IProgress<PlaidSyncProgress>? progress = null)
+
+        public async Task<PlaidTransactionSyncSummary> SyncAllBanksTransactions(int recordsToSync = 250, bool saveChanges = true, IProgress<PlaidSyncProgress>? progress = null)
         {
             List<BankDTO> allBanks = new List<BankDTO>();
-            PlaidSyncSummary summary = new();
+            PlaidTransactionSyncSummary summary = new();
 
             allBanks = await _bankService.GetAll();
-            summary = await SyncRangeBanksTransactions(allBanks, recordsToSync, false);
+            summary = await SyncRangeBanksTransactions(allBanks, recordsToSync, false, progress);
 
             if (saveChanges) await _context.SaveChangesAsync();
 

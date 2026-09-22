@@ -1,0 +1,192 @@
+.main-transactions {
+    height: 100%;
+    /*        background-color: palegoldenrod;*/
+}
+
+.section-no-records {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 95%;
+
+    .title-container {
+        align-self: center;
+    }
+}
+
+
+.section-01 {
+    margin-top: 0.75rem;
+
+    .s01-article-01-filters {
+    }
+
+    .s01-article-02-list-and-stats {
+        display: flex;
+        align-items: flex-start;
+
+        .s01-a02-transaction-list-container {
+            flex: 0 0 75%;
+            min-width: 0;
+        }
+
+        .resize-divider {
+            flex: 0 0 4px;
+            margin-top: 1rem;
+            margin-left: 0.25rem;
+            margin-right: 0.25rem;
+            align-self: stretch;
+            background: var(--color-primary-faded);
+            opacity: 0.1;
+            transition: 300ms;
+            cursor: e-resize;
+            border-radius: var(--radius-md);
+        }
+
+            .resize-divider:hover {
+                opacity: 1;
+            }
+
+        .s01-a02-stats-container {
+            flex: 0 0 20%;
+            min-width: 0;
+            position: sticky;
+            max-height: calc(100vh - 2rem);
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            top: 1rem;
+            margin-top: 1rem;
+
+            .s01-a02-stats-card {
+                display: flex;
+                min-height: 0;
+                min-width: 0;
+                overflow-y: auto;
+            }
+
+            .s01-a02-stats-card--top {
+                flex: 0 0 33%;
+                overflow-y: visible;
+
+                .s01-a02-card--top-content {
+                    .card-section-01 {
+                        .cs01-in-out-container {
+                            display: flex;
+                            justify-content: space-between;
+
+                            .in-container {
+                                .incoming-text {
+                                    font-weight: 700;
+                                    text-align: center;
+                                }
+
+                                .incoming {
+                                    font-size: 1.25rem;
+                                    font-weight: 700;
+                                    background-color: var(--color-positive-faded-3);
+                                    padding: 0.25rem;
+                                    border-radius: var(--radius-md);
+                                    color: var(--color-positive);
+                                }
+                            }
+
+                            .out-container {
+                                .outgoing-text {
+                                    font-weight: 700;
+                                    text-align: center;
+                                }
+
+                                .outgoing {
+                                    font-size: 1.25rem;
+                                    font-weight: 700;
+                                    background-color: var(--color-negative-faded-3);
+                                    padding: 0.25rem;
+                                    border-radius: var(--radius-md);
+                                    color: var(--color-negative);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            .s01-a02-stats-card--bottom {
+                flex: 1 1 auto;
+                overflow-y: visible;
+
+                .s01-a02-card--bottom-content {
+                    .card-section-01 {
+                        .cs01-icon-name-and-amount-container {
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+
+                            .icon-and-name {
+                                display: flex;
+                                align-items: center;
+                                gap: 0.5rem;
+
+                                .plaid-icon-container {
+                                    margin-left: 0.25rem;
+
+                                    .plaid-icon {
+                                        aspect-ratio: 1;
+                                        border-radius: 100rem;
+                                        width: 4rem;
+                                    }
+                                }
+
+                                .display-name {
+                                }
+                            }
+
+                            .amount {
+                                font-size: 1.5rem;
+                            }
+                        }
+
+                        .cs01-out-in {
+                            display: flex;
+                            justify-content: space-between;
+                            margin-left: 5%;
+                            margin-right: 5%;
+
+                            .outgoing {
+                                font-size: 2rem;
+                                font-weight: 700;
+                                text-align: center;
+
+                                .subtitle {
+                                    align-self: center;
+                                    font-size: 1rem;
+                                }
+                            }
+
+                            .incoming {
+                                font-size: 2rem;
+                                font-weight: 700;
+                                color: var(--color-positive);
+
+                                .subtitle {
+                                    text-align: center;
+                                    font-size: 1rem;
+                                }
+
+                            }
+                        }
+                    }
+
+                    .card-section-02 {
+                    }
+                }
+            }
+
+            .s01-a02-stats-card > * {
+                width: 100%;
+                height: 100%;
+                min-width: 0;
+            }
+        }
+    }
+}

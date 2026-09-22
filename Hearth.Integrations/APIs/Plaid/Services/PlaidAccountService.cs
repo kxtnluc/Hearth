@@ -116,9 +116,10 @@ namespace Hearth.Integrations.APIs.Plaid.Services
             return responseData;
         }
     
-        public async Task<List<AccountDTO>?> CreateAndUpdateAllAccounts(IProgress<PlaidSyncProgress>? progress = null)
+        public async Task<PlaidAccountSyncSummary> CreateAndUpdateAllAccounts(bool saveChanges = true, IProgress<PlaidSyncProgress>? progress = null)
         {
             List<AccountDTO> totalAdded = new List<AccountDTO>();
+            PlaidAccountSyncSummary summary = new();
 
             var allBanks = await _bankService.GetAll();
             var hearthAccounts = await _accountService.GetAll();
@@ -164,6 +165,7 @@ namespace Hearth.Integrations.APIs.Plaid.Services
                         Stage = $"Creating {newAccounts.Count} new accounts from {bank.Item_Id}"
                     });
                     await _accountService.CreateRange(newAccounts, false);
+                    summary.TotalAdded += newAccounts.Count;
                 }
 
                 if(updateAccounts != null && updateAccounts.Count >= 1)
@@ -176,20 +178,28 @@ namespace Hearth.Integrations.APIs.Plaid.Services
                         Stage = $"Updating {updateAccounts.Count} accounts from {bank.Item_Id}"
                     });
                     await _accountService.UpdateRange(updateAccounts, false);
+                    summary.TotalModified += updateAccounts.Count;
+
                 }
 
+                // TODO No logic for removing accounts yet. Unsure how plaid flags for this
+
             }
 
-            try
+
+            if(saveChanges)
             {
-                await _context.SaveChangesAsync();
-            }
-            catch
-            {
-                // TODO
+                try
+                {
+                    await _context.SaveChangesAsync();
+                }
+                catch
+                {
+                    // TODO
+                }
             }
 
-            return totalAdded;
+            return summary;
         }
     }
 }

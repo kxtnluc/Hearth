@@ -15,7 +15,7 @@ namespace Hearth.Services.Utility
         /// <param name="end"></param>
         /// <returns></returns>
         /// <exception cref="NotSupportedException"></exception>
-        public static int GetPeriodCount(E_CALENDAR_FREQUENCY period, DateTime start, DateTime end, bool inclusive = false)
+        public static int GetPeriodCount(E_CALENDAR_FREQUENCY period, DateTime start, DateTime end)
         {
             var result = 0;
 
@@ -27,23 +27,76 @@ namespace Hearth.Services.Utility
             int count = period switch
             {
                 E_CALENDAR_FREQUENCY.Daily =>
-                    (end.Date - start.Date).Days,
+                    (end.Date - start.Date).Days + 1,
 
                 E_CALENDAR_FREQUENCY.Weekly =>
-                    (end.Date - start.Date).Days / 7,
+                    (GetIsoWeekBucket(end) - GetIsoWeekBucket(start)) + 1,
 
                 E_CALENDAR_FREQUENCY.Monthly =>
-                    ((end.Year - start.Year) * 12) + end.Month - start.Month,
+                    ((end.Year - start.Year) * 12 + end.Month - start.Month) + 1,
 
                 E_CALENDAR_FREQUENCY.Annually =>
-                    end.Year - start.Year,
+                    (end.Year - start.Year) + 1,
 
                 _ => throw new NotSupportedException($"Unsupported period: {period}")
             };
 
-            result = inclusive ? count + 1 : count;
+            result = count;
 
             return result;
+        }
+
+        /// <summary>
+        /// Converts a date string to a long date format with an ordinal suffix for the day (e.g., "January 1st, 2024"). If the input string cannot be parsed as a date, it returns the original string.
+        /// </summary>
+        /// <param name="dateString"></param>
+        /// <returns>October 17th, 2025</returns>
+        public static string ToLongDateWithOrdinal(string dateString)
+        {
+            if (!DateTime.TryParse(dateString, out var date))
+                return dateString; // fallback: return original string if it doesn't parse
+
+            var day = date.Day;
+            var suffix = GetOrdinalSuffix(day);
+
+            return $"{date:MMMM} {day}{suffix}, {date:yyyy}";
+        }
+
+        /// <summary>
+        /// Converts a date string to a short date format with an ordinal suffix for the day (e.g., "Jan 1st, 2024"). If the input string cannot be parsed as a date, it returns the original string.
+        /// </summary>
+        /// <param name="dateString"></param>
+        /// <returns></returns>
+        public static string ToShortDateWithOrdinal(string dateString)
+        {
+            if (!DateTime.TryParse(dateString, out var date))
+                return dateString; // fallback: return original string if it doesn't parse
+
+            var day = date.Day;
+            var suffix = GetOrdinalSuffix(day);
+
+            return $"{date:MMM} {day}{suffix}, {date:yyyy}";
+        }
+
+        private static string GetOrdinalSuffix(int day)
+        {
+            if (day is >= 11 and <= 13) return "th"; // 11th, 12th, 13th are always "th", not "st"/"nd"/"rd"
+
+            return (day % 10) switch
+            {
+                1 => "st",
+                2 => "nd",
+                3 => "rd",
+                _ => "th"
+            };
+        }
+
+        private static int GetIsoWeekBucket(DateTime date)
+        {
+            // Combine year and ISO week number into one comparable integer bucket
+            var year = System.Globalization.ISOWeek.GetYear(date);
+            var week = System.Globalization.ISOWeek.GetWeekOfYear(date);
+            return (year * 52) + week;
         }
     }
 }

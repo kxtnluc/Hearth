@@ -1,4 +1,8 @@
-﻿using Hearth.Services.Interfaces;
+﻿using Hearth.Services.DTOs.Finance.Account;
+using Hearth.Services.DTOs.Finance.TransactionCategory;
+using Hearth.Services.Interfaces;
+using Hearth.Services.Utility;
+using Hearth.Services.Utility.Finance;
 using Riok.Mapperly.Abstractions;
 using System;
 using System.Collections.Generic;
@@ -11,11 +15,12 @@ namespace Hearth.Services.DTOs.Finance.Transaction
         public int Id { get; set; }
         public string Name { get; set; } = default!;
         public int? CategoryId { get; set; }
-
+        public TransactionCategoryDTO? Category { get; set; }
         public string Transaction_Id { get; set; } = default!;
         public string Date { get; set; } = default!;
         public decimal Amount { get; set; }
         public string Account_Id { get; set; } = default!;
+        public AccountDTO? Account { get; set; }
         public string? Account_Owner { get; set; }
         public string? Authorized_Date { get; set; }
         public string? Authorized_Datetime { get; set; }
@@ -33,7 +38,7 @@ namespace Hearth.Services.DTOs.Finance.Transaction
         public string? Transaction_Code { get; set; }
         public string? Transaction_Type { get; set; }
         public string? Unofficial_Currency_Code { get; set; }
-        public List<CounterpartyDTO>? Counterparties { get; set; } = new();
+        public List<CounterpartyDTO>? Counterparties { get; set; }
         public LocationDTO? Location { get; set; }
         public PaymentMetaDTO? Payment_Meta { get; set; }
         public PersonalFinanceCategoryDTO? Personal_Finance_Category { get; set; }
@@ -47,6 +52,16 @@ namespace Hearth.Services.DTOs.Finance.Transaction
                 return result;
             }
         }
+        [MapperIgnore]
+        public string DateLong_S => DateTimeHelper.ToLongDateWithOrdinal(Date);
+        [MapperIgnore]
+        public string DateShort_S => DateTimeHelper.ToShortDateWithOrdinal(Date);
+        [MapperIgnore]
+        public string Amount_S => CurrencySymbolHelper.ConvertDecimalToCurrency(Amount, Iso_Currency_Code);
+        [MapperIgnore]
+        public string DisplayName_S => Merchant_Name != null ? Merchant_Name : Name;
+        [MapperIgnore]
+        public string CurrencyCode_S => Iso_Currency_Code?.ToUpper() ?? Unofficial_Currency_Code?.ToUpper() ?? "USD";
     }
 
     public class LocationDTO
@@ -73,7 +88,7 @@ namespace Hearth.Services.DTOs.Finance.Transaction
     }
     public class CounterpartyDTO
     {
-        public int? Id { get; set; }
+        public int Id { get; set; }
         public string? Name { get; set; }
         public string? Type { get; set; }
         public string? Logo_Url { get; set; }

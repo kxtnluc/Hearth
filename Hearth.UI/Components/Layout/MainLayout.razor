@@ -1,5 +1,14 @@
 ﻿@inherits LayoutComponentBase
+@using Hearth.Integrations.APIs.Plaid.Interfaces
+@using Hearth.Integrations.APIs.Plaid
+@using Hearth.Services.Interfaces
+@using Hearth.Services.DTOs
+@using Hearth.Services.Interfaces.Finance
 @inject IUserService _userService
+@inject IJSRuntime JS
+@inject IBankService _bankService
+@inject IUserService _userService
+@inject IPlaidService _plaidService
 
 <div class="page">
     <div class="layout @(_collapsed ? "layout--collapsed" : "")">
@@ -16,6 +25,40 @@
     </div>
 </div>
 
+<Modal Title="@(isSyncComplete ? "Sync Complete" : "Major Sync")"
+       Size="E_SIZE.sm"
+       Open="showSyncModal"
+       OnClose="CloseModal"
+       Closeable="isSyncComplete"
+       Variant="E_MODAL.Info">
+
+    @if (!isSyncComplete)
+    {
+        <div class="sync-progress">
+            <div class="sync-progress__status">@statusText</div>
+
+            <div class="sync-progress__bar-track">
+                <div class="sync-progress__bar-fill" style="width: @(percentComplete)%;"></div>
+            </div>
+
+            @if (totalBanks > 0)
+            {
+                <div class="sync-progress__count">Bank @currentBankIndex of @totalBanks</div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="sync-results">
+            <div>Transactions added: @(syncResult?.Transaction.TotalAdded)</div>
+            <div>Transactions modified: @(syncResult?.Transaction.TotalModified)</div>
+            <div>Transactions removed: @(syncResult?.Transaction.TotalRemoved)</div>
+            <div>Accounts added: @(syncResult?.Account.TotalAdded)</div>
+            <div>Accounts modified: @(syncResult?.Account.TotalModified)</div>
+        </div>
+    }
+</Modal>
+
 @code {
     private bool _collapsed = false;
     private void HandleToggle() => _collapsed = !_collapsed;
@@ -28,6 +71,7 @@
             },
             FooterTabs = new()
             {
+                new NavBarTabPyre { Label = "Debug", Url = "/debugroom", Icon = @<GearIcon Size="26" /> },
                 new NavBarTabPyre { Label = "Settings", Url = "/settings", Icon = @<GearIcon Size="26" /> },
                 new NavBarTabPyre { Label = "Logout", Url = "/logout", Icon = @<OpenWindowIcon Size="26" /> },
             }
@@ -55,6 +99,7 @@
 
             Sidebar.FooterTabs = new()
             {
+                new NavBarTabPyre { Label = "Debug", Url = "/debugroom", Icon = @<GearIcon Size="26" /> },
                 new NavBarTabPyre { Label = "Settings", Url = "/settings", Icon = @<GearIcon Size="26" /> },
                 new NavBarTabPyre { Label = "Logout", Url = "/logout", Icon = @<OpenWindowIcon Size="26" /> },
             };
@@ -69,8 +114,63 @@
 
     }
 
-    private void Sync()
+    
+    // - Modal State -
+    void OpenModal() => showSyncModal = true;
+    void CloseModal() => showSyncModal = false;
+
+    // - Sync state -
+    bool showSyncModal;
+    bool isSyncComplete;
+    int currentBankIndex;
+    int totalBanks;
+    double percentComplete;
+    string? statusText;
+    PlaidMajorSyncSummary? syncResult;
+
+    async Task Sync()
     {
-        // TODO
+        isSyncComplete = false;
+        syncResult = null;
+        currentBankIndex = 0;
+        totalBanks = 0;
+        percentComplete = 0;
+        statusText = "Starting sync...";
+        OpenModal();
+
+        var progress = new Progress<PlaidSyncProgress>(p =>
+        {
+            currentBankIndex = p.CurrentBankIndex;
+            totalBanks = p.TotalBanks;
+            statusText = string.IsNullOrEmpty(p.CurrentInstitution)
+                ? p.Stage
+                : $"{p.Stage} — {p.CurrentInstitution}";
+
+            // Coarse two-phase weighting: Transactions covers 0-70%, Accounts covers 70-100%
+            if (p.Phase == "Accounts")
+            {
+                percentComplete = 70;
+            }
+            else if (totalBanks > 0)
+            {
+                percentComplete = (currentBankIndex - 1.0) / totalBanks * 70;
+            }
+
+            StateHasChanged();
+        });
+
+        var options = new PlaidMajorSyncOptions
+        {
+            SyncTransactions = true,
+            SyncAccounts = true,
+            SyncPastDays = 50,
+            NumberOfTransactionToSync = 50
+        };
+
+        syncResult = await _plaidService.MajorSync(options, progress);
+
+        percentComplete = 100;
+        isSyncComplete = true;
+        StateHasChanged();
     }
 }

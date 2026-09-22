@@ -21,6 +21,6 @@ namespace Hearth.Integrations.APIs.Plaid.Interfaces
         /// <returns></returns>
         Task<PlaidAccountGetHttpResponse> GetFreshBankAccountsWithItem(string accessToken);
 
-        Task<List<AccountDTO>?> CreateAndUpdateAllAccounts(IProgress<PlaidSyncProgress>? progress = null);
+        Task<PlaidAccountSyncSummary> CreateAndUpdateAllAccounts(bool saveChanges = true, IProgress<PlaidSyncProgress>? progress = null);
     }
 }

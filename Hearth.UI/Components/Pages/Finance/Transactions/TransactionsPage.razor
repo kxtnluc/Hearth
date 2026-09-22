@@ -1,0 +1,287 @@
+﻿@page "/finance/transactions"
+@using Hearth.Services.DTOs.Finance.Transaction;
+@using Hearth.Services.CTOs.Finance.Transaction;
+@using Hearth.UI.Components.Elements.Finance.Transactions.Lists
+@using Hearth.Services.Filters.Finance
+@inject IUserService _userService
+@inject ITransactionService _transactionService
+@inject IAccountService _accountService
+@inject IJSRuntime JS
+
+@* Loading *@
+
+@if (initialRenderComplete == false)
+{
+    <LoadingCircleIcon AutoCenter="true" />
+}
+
+@* Page *@
+
+<main class="main-transactions" hidden="@(initialRenderComplete ? false : true)">
+    <section class="section-page-title">
+        <Title>
+            Transactions
+        </Title>
+    </section>
+    @if (allTransactions.Count >= 1)
+    {
+        <section class="section-01">
+            <article class="s01-article-01-filters">
+                <Form>
+                    <FormContent>
+                        <FormRow>
+                            <FormCell Ratio="3/8">
+                                <Input @onblur="InitiateFilter" InputType="E_INPUT_TYPE.Text" Label="Merchant Name" @bind-Value="transactionFilter.Merchant_Name" />
+                            </FormCell>
+                            <FormCell Ratio="2/8">
+                                <Input @onblur="InitiateFilter" InputType="E_INPUT_TYPE.Text" Label="Transaction Name" @bind-Value="transactionFilter.Transaction_Name" />
+                            </FormCell>
+                            <FormCell Ratio="1/8">
+                                <Input @onblur="InitiateFilter" InputType="E_INPUT_TYPE.Text" Label="Transaction Id" @bind-Value="transactionFilter.Transaction_Id" />
+                            </FormCell>
+                            <FormCell Ratio="1/8" CenterVertically="true" AlignCenter="true">
+                                <Checkbox FlipLabel="true" Label="Income Only" @bind-Value="transactionFilter.IncomeOnly" />
+                            </FormCell>
+                            <FormCell Ratio="1/8" CenterVertically="true" AlignCenter="true">
+                                <Button OnClick="ResetFilter" Color="E_COLOR_BASIC.Info" Variant="E_VARIANT.Primary">Reset</Button>
+                            </FormCell>
+                        </FormRow>
+                    </FormContent>
+                </Form>
+            </article>
+            <article class="s01-article-02-list-and-stats" id="resizable-container">
+                <div class="s01-a02-transaction-list-container" id="pane-list">
+                    <TransactionCardListElement Transactions="filteredTransactions" OnSelect="HandleSelectTransaction" />
+                </div>
+
+                <div class="resize-divider" id="pane-divider"></div>
+
+                <div class="s01-a02-stats-container" id="pane-stats">
+                    <div class="s01-a02-stats-card s01-a02-stats-card--top">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>
+                                    <Text>Stats (@filterStatus)</Text>
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div class="s01-a02-card--top-content">
+                                    <section class="card-section-01">
+                                        <div class="cs01-in-out-container">
+                                            <div class="in-container">
+                                                <div class="incoming-text">in</div>
+                                                <div class="incoming">@stats.Formated.Average_IncomingPerPeriod_Num_S</div>
+                                            </div>
+                                            <div class="out-container">
+                                                <div class="outgoing-text">out</div>
+                                                <div class="outgoing">@stats.Formated.Average_OutgoingPerPeriod_Num_S</div>
+                                            </div>
+                                        </div>
+                                    </section>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
+
+                    <div class="s01-a02-stats-card s01-a02-stats-card--bottom">
+                        <Card Overflow="visible">
+                            @if (stats.SingleTransaction != null)
+                            {
+                                <CardContent>
+                                    <div class="s01-a02-card--bottom-content">
+                                        <section class="card-section-01">
+                                            <div class="cs01-icon-name-and-amount-container">
+                                                <div class="icon-and-name">
+                                                    <div class="plaid-icon-container">
+                                                        <img class="plaid-icon" src="@stats.SingleTransaction.Logo_Url" />
+                                                    </div>
+                                                    <div class="display-name">
+                                                        @stats.SingleTransaction.DisplayName_S
+                                                    </div>
+                                                </div>
+                                                <div class="amount">
+                                                    @stats.SingleTransaction.Amount_S
+                                                </div>
+                                            </div>
+                                            @if (stats.SingleTransaction.IsIncome_C)
+                                            {
+                                                <div class="cs01-out-in">
+                                                    <div class="incoming">
+                                                        <Tooltip Text="This transactions's portion of all expense Transactions listed/filtered">
+                                                            <div class="subtitle">
+                                                                total
+                                                            </div>
+                                                        </Tooltip>
+                                                        <div>
+                                                            @stats.Formated.Single_IncomingInRelationToList_Percent_S
+                                                        </div>
+                                                    </div>
+                                                    <div class="incoming">
+                                                        <Tooltip Text="This transactions's portion of all expense Transactions listed/filtered">
+                                                            <div class="subtitle">
+                                                                category
+                                                            </div>
+                                                        </Tooltip>
+                                                        <div>
+                                                            @stats.Formated.Single_IncomingInRelationToCategory_Percent_S
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="cs01-out-in">
+                                                    <div class="outgoing">
+                                                        <Tooltip Text="This transactions's portion of all expense Transactions listed/filtered">
+                                                            <div class="subtitle">
+                                                                total
+                                                            </div>
+                                                        </Tooltip>
+                                                        <div>
+                                                            @stats.Formated.Single_OutgoingInRelationToList_Percent_S
+                                                        </div>
+                                                    </div>
+                                                    <div class="outgoing">
+                                                        <Tooltip Text="This transactions's portion of all expense Transactions filtered in their category">
+                                                            <div class="subtitle">
+                                                                category
+                                                            </div>
+                                                        </Tooltip>
+                                                        <div>
+                                                            @stats.Formated.Single_OutgoingInRelationToCategory_Percent_S
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </section>
+                                        <section class="card-section-02">
+                                            <div class="cs02">
+                                            </div>
+                                        </section>
+                                    </div>
+                                </CardContent>
+                            }
+                            else
+                            {
+                                <CardHeader>
+                                    <CardTitle>
+                                        <Text>No Selection...</Text>
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                </CardContent>
+                            }
+                        </Card>
+                    </div>
+                </div>
+            </article>
+            <div>
+            </div>
+        </section>
+    }
+    else
+    {
+        <section class="section-no-records">
+            <div class="title-container">
+                <Title>No Transactions Synced...</Title>
+            </div>
+        </section>
+    }
+</main>
+
+@* Toolbar *@
+
+<Toolbar HasAddBtn="false"
+         HasSearchBtn="true"
+         HasManageBtn="false"
+         HasSettingsBtn="false"
+         HasLinkBtn="true"
+         Position="E_TOOLBAR_POSITION.BottomRight"
+         Size="E_SIZE.lg"
+         TooltipSubject="Transaction" />
+
+@code {
+    // - Loading -
+    bool initialRenderComplete = false;
+    bool resizeInitialized = false;
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (initialRenderComplete == false && allTransactions != null)
+            {
+                initialRenderComplete = true;
+                StateHasChanged(); // Trigger re-render to hide the spinner
+            }
+
+        }
+        if (initialRenderComplete && !resizeInitialized)
+        {
+            resizeInitialized = true;
+            await JS.InvokeVoidAsync("initResizablePanes",
+                "resizable-container", "pane-divider", "pane-list", "pane-stats", 30, 80, 75);
+        }
+    }
+
+
+    // - Page -
+    UserDTO currentUser = new();
+    List<TransactionDTO> allTransactions = new();
+    List<TransactionDTO> filteredTransactions = new();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            currentUser = await _userService.GetCurrentUser();
+            allTransactions = await _transactionService.GetAllWithAccountAndCategory();
+            filteredTransactions = allTransactions;
+            stats.Transactions = filteredTransactions;
+        }
+        catch (HearthRecordNotFoundException ex)
+        {
+            // TODO show error toast
+        }
+    }
+
+    // CTO
+    TransactionListCTO stats = new();
+    TransactionDTO? selectedTransaction = null;
+
+    void HandleSelectTransaction(TransactionDTO transaction)
+    {
+        selectedTransaction = transaction;
+        stats.SingleTransaction = selectedTransaction;
+    }
+
+    // - Filter -
+    string filterStatus = "all";
+    TransactionFilter transactionFilter = new TransactionFilter { };
+    // TODO
+    // string[] accountListOptions =
+
+    void InitiateFilter()
+    {
+        filteredTransactions = _transactionService.Filter(allTransactions, transactionFilter);
+        // Refreshes the stats given the new list of transactions
+        stats.Transactions = filteredTransactions;
+        stats.SingleTransaction = null;
+        selectedTransaction = null;
+        filterStatus = "filtered";
+
+        StateHasChanged();
+    }
+
+    void ResetFilter()
+    {
+        filteredTransactions = allTransactions;
+        stats.Transactions = filteredTransactions;
+        stats.SingleTransaction = null;
+        selectedTransaction = null;
+        filterStatus = "all";
+        transactionFilter.Reset();
+
+        StateHasChanged();
+    }
+}

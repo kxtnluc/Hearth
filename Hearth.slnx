@@ -15,5 +15,8 @@
     <File Path="notes.md" />
     <File Path="README.md" />
   </Folder>
+  <Folder Name="/_root/todo/">
+    <File Path="9-11-26.txt" />
+  </Folder>
   <Project Path="../../01 Pyre/Pyre/Pyre.Element/Pyre.Element.csproj" />
 </Solution>

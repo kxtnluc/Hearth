@@ -162,15 +162,21 @@ namespace Hearth.Integrations.APIs.Plaid.Services
             return bank;
         }
 
-        public async Task MajorSync(PlaidSyncOptions? plaidSyncOptions = null)
+        /// <summary>
+        /// Performs a Hearth Finance-App-Wide Sync, depending on passed options. Generally, syncs transactions and bank accounts.
+        /// </summary>
+        /// <param name="plaidSyncOptions"></param>
+        /// <returns></returns>
+        public async Task<PlaidMajorSyncSummary> MajorSync(PlaidMajorSyncOptions? plaidSyncOptions = null, IProgress<PlaidSyncProgress>? progress = null)
         {
-            var options = plaidSyncOptions ?? new PlaidSyncOptions();
+            var options = plaidSyncOptions ?? new PlaidMajorSyncOptions();
+            var majorSyncSummary = new PlaidMajorSyncSummary();
 
             if (options.SyncTransactions)
             {
                 try
                 {
-                    await _plaidTransactionService.SyncAllBanksTransactions(options.NumberOfTransactionToSync);
+                    majorSyncSummary.Transaction = await _plaidTransactionService.SyncAllBanksTransactions(options.NumberOfTransactionToSync, true, progress);
                 }
                 catch 
                 { 
@@ -180,15 +186,18 @@ namespace Hearth.Integrations.APIs.Plaid.Services
 
             if(options.SyncAccounts)
             {
+
                 try
                 {
-                    await _plaidAccountService.CreateAndUpdateAllAccounts();
+                    majorSyncSummary.Account = await _plaidAccountService.CreateAndUpdateAllAccounts(false, progress);
                 }
                 catch
                 {
                     // TODO
                 }
             }
+
+            return majorSyncSummary;
         }
     }
 }

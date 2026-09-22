@@ -9,7 +9,7 @@ namespace Hearth.Services.Interfaces.Finance
     {
         Task<AccountDTO?> GetByAccountId(string accountId);
         Task<List<AccountDTO>?> GetByUserId(int userId);
-        Task<AccountDTO?> GetByIdWithTransactions(int id);
         Task<AccountCTO?> GenerateAccountCTO(AccountDTO account, AccountCTO_Options options);
+        Task<AccountDTO?> GetByIdWithTransactions(int id);
     }
 }

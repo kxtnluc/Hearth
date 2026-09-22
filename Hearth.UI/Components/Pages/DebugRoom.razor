@@ -79,7 +79,6 @@
             statusText = $"{p.Stage} - {p.CurrentInstitution}";
         });
 
-        BankDTO bank = await _bankService.GetById(2); //hardcoded for now
-        await _plaidTransactionService.SyncBankTransactions(bank.Item_Id, 250, true, progress);
+        await _plaidTransactionService.SyncAllBanksTransactions(250);
     }
 }

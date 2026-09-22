@@ -96,33 +96,32 @@ namespace Hearth.Services.DTOs.Finance.Account
         /// the unofficial code, defaults to USD if neither is present.
         /// </summary>
         [MapperIgnore]
-        public string CurrencyCode_C => Iso_Currency_Code?.ToUpper() ?? Unofficial_Currency_Code?.ToUpper() ?? "USD";
+        public string CurrencyCode_S => Iso_Currency_Code?.ToUpper() ?? Unofficial_Currency_Code?.ToUpper() ?? "USD";
 
         [MapperIgnore]
-        public string? Current_C
+        public string? Current_S
         {
             get
             {
-                if (Current is null) return null;
+                if (Current != null)
+                {
+                    return CurrencySymbolHelper.ConvertDecimalToCurrency(Current.Value, CurrencyCode_S);
+                }
+                return null;
 
-                var format = (System.Globalization.NumberFormatInfo)System.Globalization.CultureInfo.InvariantCulture.NumberFormat.Clone();
-                format.CurrencySymbol = CurrencySymbolHelper.GetCurrencySymbol(CurrencyCode_C);
-
-                return Current.Value.ToString("C", format);
             }
         }
 
         [MapperIgnore]
-        public string? Available_C
+        public string? Available_S
         {
             get
             {
-                if (Available is null) return null;
-
-                var format = (System.Globalization.NumberFormatInfo)System.Globalization.CultureInfo.InvariantCulture.NumberFormat.Clone();
-                format.CurrencySymbol = CurrencySymbolHelper.GetCurrencySymbol(CurrencyCode_C);
-
-                return Available.Value.ToString("C", format);
+                if (Available != null)
+                {
+                    return CurrencySymbolHelper.ConvertDecimalToCurrency(Available.Value, CurrencyCode_S);
+                }
+                return null;
             }
         }
     }

@@ -1,0 +1,15 @@
+﻿@using Hearth.Services.DTOs.Finance.Transaction
+
+<div class="transaction-card-list-element-wraper">
+    @foreach (TransactionDTO transaction in Transactions)
+    {
+        <TransactionCardElement Transaction="@transaction" OnSelect="OnSelect" />
+    }
+</div>
+
+@code {
+    // - List DTO -
+    [Parameter] public List<TransactionDTO> Transactions { get; set; } = default!;
+
+    [Parameter] public EventCallback<TransactionDTO> OnSelect { get; set; }
+}

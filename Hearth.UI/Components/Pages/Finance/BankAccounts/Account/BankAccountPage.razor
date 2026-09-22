@@ -72,26 +72,26 @@
 
                         @* Row 2: Data *@
                         <div class="outgoing-data-container">
-                            <div class="outgoing-num">$200*</div>
+                            <div class="outgoing-num">@accountReport.Formated.Average_OutgoingPerPeriod_Num_S</div>
                             <div class="outgoing-percent-container">
                                 <ArrowIcon DirectionPoint="E_DIRECTION_EIGHT_POINT.DownRight" Size="26" />
-                                <div class="outgoing-percent">4.1%*</div>
+                                <div class="outgoing-percent">@accountReport.Formated.Average_OutgoingPerPeriod_Percent_S</div>
                             </div>
                         </div>
 
                         @* Balance in the middle column *@
                         <div class="debit-grid__balance">
                             <Title Size="E_SIZE.xl">
-                                @account.Balances.Current_C
+                                @account.Balances.Current_S
                             </Title>
                         </div>
 
                         <div class="incoming-data-container">
                             <div class="incoming-percent-container">
                                 <ArrowIcon DirectionPoint="E_DIRECTION_EIGHT_POINT.UpRight" Size="26" />
-                                <div class="incoming-percent">4.1%*</div>
+                                <div class="incoming-percent">@accountReport.Formated.Average_IncomingPerPeriod_Percent_S</div>
                             </div>
-                            <div class="incoming-num">$200*</div>
+                            <div class="incoming-num">@accountReport.Formated.Average_IncomingPerPeriod_Num_S</div>
                         </div>
                     </div>
                 </div>

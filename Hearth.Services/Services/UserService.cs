@@ -105,10 +105,24 @@ namespace Hearth.Services.Services
                 throw new FormatException("Session token is not in the expected format.");
             }
 
-            // TODO ERROR HANDLING (actually maybe this should be in the GetById function itself
             var currentUser = await this.GetById(userId);
 
             return currentUser;
+        }
+        // This runs to see if the app is being installed for the first time, and if so, it clears any existing session token to ensure a clean state.
+        public async Task<bool> ValidateNewInstall()
+        {
+            bool isNewInstall = false;
+
+            __TableDataDTO tableData = await this.GetTableData();
+            isNewInstall = tableData.IsEmpty;
+
+            if(isNewInstall)
+            {
+                _secureStorage.Remove(SessionTokenKey);
+            }
+
+            return isNewInstall;
         }
         #endregion
     }

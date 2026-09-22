@@ -1,0 +1,7 @@
+.transaction-card-list-element-wraper {
+    margin-top: 1rem;
+    display: flex;
+    flex-flow: column;
+    border: 3px solid var(--color-primary-faded);
+    border-radius: var(--radius-md);
+}

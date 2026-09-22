@@ -63,6 +63,9 @@ namespace Hearth.Core.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Account_Id")
+                        .IsUnique();
+
                     b.ToTable("Accounts");
                 });
 
@@ -292,7 +295,6 @@ namespace Hearth.Core.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Personal_Finance_Category_Icon_Url")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Transaction_Code")
@@ -312,6 +314,8 @@ namespace Hearth.Core.Migrations
 
                     b.HasIndex("Account_Id");
 
+                    b.HasIndex("CategoryId");
+
                     b.ToTable("Transactions");
                 });
 
@@ -324,7 +328,7 @@ namespace Hearth.Core.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Hex_Color")
+                    b.Property<string>("HexColor")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
@@ -334,7 +338,7 @@ namespace Hearth.Core.Migrations
                     b.Property<bool>("Income")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("Is_Need")
+                    b.Property<bool>("IsNeed")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
@@ -548,6 +552,10 @@ namespace Hearth.Core.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Hearth.Core.Models.Finance.TransactionCategory", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId");
+
                     b.OwnsMany("Hearth.Core.Models.Finance.ValueObjects.TransactionCounterparty", "Counterparties", b1 =>
                         {
                             b1.Property<int>("Id")
@@ -705,6 +713,8 @@ namespace Hearth.Core.Migrations
                         });
 
                     b.Navigation("Account");
+
+                    b.Navigation("Category");
 
                     b.Navigation("Counterparties");
 

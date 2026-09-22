@@ -1,0 +1,76 @@
+.transaction-card-element-wraper {
+    /*    background-color: lightgoldenrodyellow;*/
+    border-bottom: 3px solid var(--color-primary-faded);
+}
+
+.section-01-card {
+
+    .s01-article-01-date-and-category {
+        /*        background-color: lightblue;*/
+        display: flex;
+        justify-content: space-between;
+
+        .s01-a01-date-container {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+            padding-top: 0.25rem;
+            padding-bottom: 0.25rem;
+            background-color: var(--color-primary-faded-2);
+            border-bottom-right-radius: var(--radius-sm);
+            /*            border-top-left-radius: var(--radius-sm); this should only apply to the first list item */
+        }
+
+        .s01-a01-category-container {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+            padding-top: 0.25rem;
+            padding-bottom: 0.25rem;
+            border-bottom-left-radius: var(--radius-sm);
+            background-color: var(--color-primary-faded-2);
+        }
+    }
+
+    .s01-article-01-name-and-amount {
+        /*        background-color: lightcoral;*/
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-left: 0.5rem;
+        margin-bottom: 0.75rem;
+
+        .s01-a01-name-and-icon-container {
+            margin-top: 0.75rem;
+            display: flex;
+            align-items: center;
+
+            .plaid-icon-container {
+                margin-left: 1rem;
+                .plaid-icon {
+                    aspect-ratio: 1;
+                    border-radius: 100rem;
+                    width: 4rem;
+                }
+            }
+
+            .name {
+                margin-left: 1rem;
+                font-size: 1.5rem;
+            }
+        }
+
+        .s01-a01-amount{
+            font-size: 2rem;
+            font-weight: 700;
+            margin-right: 4rem;
+            .amount-expense {
+            }
+
+            .amount-income {
+                color: var(--color-positive);
+                font-size: 2rem;
+                font-weight: 700;
+            }
+        }
+
+    }
+}

@@ -7,8 +7,8 @@ namespace Hearth.Services.Interfaces
 {
     public interface ISqliteTableService<TDto, TFilter>
     {
-        Task<TDto?> GetById(int id);
-        Task<List<TDto>> GetAll();
+        Task<TDto?> GetById(int id, string[]? inclusions = null);
+        Task<List<TDto>> GetAll(string[]? inclusions = null);
         Task<TDto> Create(TDto payload, bool saveChanges = true);
         Task<List<TDto>> CreateRange(List<TDto> payload, bool saveChanges = true);
         Task Update(TDto payload, bool saveChanges = true);

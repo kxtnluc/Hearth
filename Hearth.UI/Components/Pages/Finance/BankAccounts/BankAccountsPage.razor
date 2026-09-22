@@ -4,9 +4,11 @@
 @using Hearth.Services.Filters.Finance
 @using Hearth.Integrations.APIs.Plaid.Enums
 @using Hearth.UI.Interfaces.Plaid
+@using Hearth.Integrations.APIs.Plaid.Interfaces
 @inject IUserService _userService
 @inject IAccountService _accountService
-@inject IPlaidLinkService PlaidLink
+@inject IJSRuntime JS
+@inject IPlaidService _plaidService
 
 @* Loading *@
 
@@ -25,17 +27,29 @@
     </section>
     @if(allUserAccounts.Count >= 1)
     {
-        <section>
-            <div>
-                filters and stuff prolly
-            </div>
-            <div>
-                <BankAccountCardListElement Accounts="filteredAccounts" />
-            </div>
-            <div>
+        @if(filteredAccounts.Count >= 1)
+        {
+            <section>
+                <div>
+                    filters and stuff prolly
+                </div>
+                <div>
+                    <BankAccountCardListElement Accounts="filteredAccounts" />
+                </div>
+                <div>
 
-            </div>
-        </section>
+                </div>
+            </section>
+            
+        }
+        else
+        {
+            <section class="section-no-records">
+                <div class="title-container">
+                    <Title>No Accounts Found ¯\_(ツ)_/¯</Title>
+                </div>
+            </section>
+        }
     }
     else
     {
@@ -55,7 +69,7 @@
     HasManageBtn="false"
     HasSettingsBtn="false"
     HasLinkBtn="true"
-    OnLink="LinkBank"
+    OnLink="StartLinkFlow"
     OnSearch="OpenToolbarSearchModal"
     Position="E_TOOLBAR_POSITION.BottomRight"
     Size="E_SIZE.lg"
@@ -130,12 +144,43 @@
 
     // - Toolbar -
         // Add
+    private DotNetObjectReference<BankAccountsPage>? _dotNetRef;
     private string? statusMessage;
-
-    private async Task LinkBank()
+    // - PLAID LINK STUFF -
+    private async Task StartLinkFlow()
     {
-        var result = await PlaidLink.LinkBankAccount(currentUser.Id);
-        statusMessage = result.Success ? "Linked!" : result.ErrorMessage;
+        statusMessage = null;
+
+        var linkToken = await _plaidService.CreateLinkTokenAsync(currentUser.Id);
+        if (string.IsNullOrEmpty(linkToken))
+        {
+            statusMessage = "Failed to create link token.";
+            return;
+        }
+
+        _dotNetRef = DotNetObjectReference.Create(this);
+        await JS.InvokeVoidAsync("openPlaidLinkModal", linkToken, _dotNetRef);
+    }
+
+    [JSInvokable]
+    public async Task OnPlaidLinkSuccess(string publicToken)
+    {
+        var accessToken = await _plaidService.StoreAccessTokenAsync(publicToken, currentUser.Id);
+        statusMessage = accessToken is not null ? "Linked!" : "Something went wrong.";
+        StateHasChanged();
+    }
+
+    [JSInvokable]
+    public Task OnPlaidLinkError(string errorDetails)
+    {
+        System.Diagnostics.Debug.WriteLine($"Plaid Link error: {errorDetails}");
+        return Task.CompletedTask;
+    }
+
+    public ValueTask DisposeAsync()
+    {
+        _dotNetRef?.Dispose();
+        return ValueTask.CompletedTask;
     }
         // Seach
     bool showToolbarSearchModal;

@@ -15,5 +15,13 @@ namespace Hearth.Services.Utility.Finance
             "CAD" => "$",
             _ => currencyCode + " "
         };
+
+        public static string ConvertDecimalToCurrency(decimal number, string currencyCode = "USD")
+        {
+            var format = (System.Globalization.NumberFormatInfo)System.Globalization.CultureInfo.InvariantCulture.NumberFormat.Clone();
+            format.CurrencySymbol = GetCurrencySymbol(currencyCode);
+
+            return number.ToString("C", format);
+        }
     }
 }

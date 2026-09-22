@@ -37,5 +37,10 @@ namespace Hearth.Services.Interfaces
         /// <param name="username"></param>
         /// <returns></returns>
         Task<UserDTO?> GetByUsername(string username);
+        /// <summary>
+        /// Checks if the application is being run for the first time by checking if there are any users in the database. If no users exist, it returns true, indicating that this is a new install.
+        /// </summary>
+        /// <returns></returns>
+        Task<bool> ValidateNewInstall();
     }
 }

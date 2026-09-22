@@ -11,6 +11,6 @@ namespace Hearth.Integrations.APIs.Plaid.Interfaces
     {
         Task<string?> CreateLinkTokenAsync(int userId);
         Task<BankDTO?> StoreAccessTokenAsync(string publicToken, int userId);
-        Task MajorSync(PlaidSyncOptions? plaidSyncOptions = null);
+        Task<PlaidMajorSyncSummary> MajorSync(PlaidMajorSyncOptions? plaidSyncOptions = null, IProgress<PlaidSyncProgress>? progress = null);
     }
 }

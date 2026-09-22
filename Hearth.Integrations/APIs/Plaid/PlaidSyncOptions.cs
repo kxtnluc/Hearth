@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Hearth.Integrations.APIs.Plaid
 {
-    public class PlaidSyncOptions
+    public class PlaidMajorSyncOptions
     {
         public bool SyncTransactions { get; set; } = true;
         public bool SyncAccounts { get; set; } = true;

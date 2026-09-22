@@ -41,10 +41,11 @@
 
 @code {
     #region Variables
+    bool isNewUser = false;
     bool isLoggedIn = false;
     bool newAppUser = false;
 
-    private UserDTO? loggedInUser = new UserDTO { };
+    private UserDTO? loggedInUser = null;
 
     private string nameInput = string.Empty;
     private string pinInput = string.Empty;
@@ -58,13 +59,15 @@
     // On Load
     protected override async Task OnInitializedAsync()
     {
-        // Fetch Session Data
-        isLoggedIn = await _userService.IsLoggedIn();
-        loggedInUser = await _userService.GetCurrentUser();
-        if(loggedInUser == null)
+        isNewUser = await _userService.ValidateNewInstall();
+        if(isNewUser == false)
         {
-            __TableDataDTO tableData = await _userService.GetTableData();
-            newAppUser = tableData.IsEmpty;
+            // Fetch Session Data
+            isLoggedIn = await _userService.IsLoggedIn();
+            if (isLoggedIn)
+            {
+                loggedInUser = await _userService.GetCurrentUser();
+            }
         }
     }
 

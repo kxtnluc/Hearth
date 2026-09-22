@@ -76,9 +76,20 @@ namespace Hearth.Services.Services.Finance
         {
             var account = await _context.Accounts
                 .Include(a => a.Transactions)
-                .FirstOrDefaultAsync(a => a.Id == id);
+                    .ThenInclude(t => t.Category)
+                .SingleOrDefaultAsync(a => a.Id == id);
 
-            return account?.ToDto();
+            if (account is null) return null;
+
+            // Break the Transaction -> Account -> Transactions cycle before mapping
+            foreach (var t in account.Transactions)
+            {
+                t.Account = null;
+            }
+
+            var dto = account.ToDto();
+
+            return dto;
         }
         #endregion
         #region CTO Generation
