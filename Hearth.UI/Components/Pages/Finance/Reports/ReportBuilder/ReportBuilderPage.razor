@@ -1,0 +1,182 @@
+﻿@page "/finance/reports/builder/{reportId}"
+@using Hearth.Services.DTOs.Finance.Report
+@using Hearth.UI.Components.Elements.Finance.Rules.RuleConditions
+@inject IUserService _userService
+@inject IReportService _reportService
+@inject IReportTransactionRuleService _reportTranRuleService
+@inject IJSRuntime JS
+
+@* Loading *@
+
+@if (initialRenderComplete == false)
+{
+    <LoadingCircleIcon AutoCenter="true" />
+}
+else
+{
+    @* Page *@
+
+    <main class="main-report-builder" hidden="@(initialRenderComplete ? false : true)">
+        <section class="section-page-title">
+            <Title>
+                Report Builder
+            </Title>
+        </section>
+        @* - Actual Page Content - *@
+        <section class="section-01">
+            <article class="s01-article-01">
+                <div class="s01-a01-form-container">
+                    <Form>
+                        <FormHeader>
+                            <FormTitle>
+                                @draftReport?.Name
+                            </FormTitle>
+                            <FormDescription>
+                                @draftReport?.Description
+                            </FormDescription>
+                        </FormHeader>
+                        <FormContent>
+                            <FormRow>
+                                <FormCell Ratio="2/5">
+                                    <Input Label="Report Name" @bind-Value="draftReport?.Name" />
+                                </FormCell>
+                                <FormCell Ratio="3/5">
+                                    <Input Label="Description" @bind-Value="draftReport?.Description" />
+                                </FormCell>
+                            </FormRow>
+                            @foreach (var tr in draftReport.TransactionRules)
+                            {
+                                <FormRow>
+                                    <FormCell Ratio="1">
+                                        <RuleConditionsTableElement Rule="tr" IsHidden="false" />
+                                    </FormCell>
+                                </FormRow>
+                            }
+                        </FormContent>
+                    </Form>
+                </div>
+            </article>
+        </section>
+
+    </main>
+
+}
+
+
+@* Toolbar *@
+
+<Toolbar HasAddBtn="true"
+         OnAdd="HandleAddRule"
+         HasSaveBtn="true"
+         OnSave="HandleSaveReport"
+         Position="E_TOOLBAR_POSITION.BottomRight"
+         Size="E_SIZE.lg"
+         TooltipSubject="Report Rule" />
+
+@* Add Rule Modal *@
+<Modal Title="Add Rule to Report"
+       Open="showAddRuleModal"
+       OnClose="CloseAddRuleModal"
+       Variant="E_MODAL.Unset">
+    <Form>
+        <FormContent>
+            <FormRow>
+                <FormCell Ratio="2/7">
+                    <Input Label="Name" @bind-Value="draftTransactionRule.Name" />
+                </FormCell>
+                <FormCell Ratio="2/7">
+                    <Input Label="Priority" InputType="E_INPUT_TYPE.Number" @bind-Value="draftTransactionRule.Priority" />
+                </FormCell>
+                <FormCell Ratio="3/7" AlignRight="true" CenterVertically="true">
+                    <Checkbox Label="Active" @bind-Value="draftTransactionRule.Active" FlipLabel="true" />
+                </FormCell>
+            </FormRow>
+        </FormContent>
+        <FormFooter>
+            <Button OnClick="HandleCancelAddRule">Cancel</Button>
+            <Button OnClick="HandleCreateRule" Color="E_COLOR_BASIC.Info">Add</Button>
+        </FormFooter>
+    </Form>
+</Modal>
+
+@code {
+    // - Loading -
+    [Parameter] public string reportId { get; set; } = default!;
+    int _reportId;
+    bool initialRenderComplete = false;
+    bool resizeInitialized = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (initialRenderComplete == false && draftReport != null)
+            {
+                initialRenderComplete = true;
+                StateHasChanged(); // Trigger re-render to hide the spinner
+            }
+
+        }
+    }
+
+
+    // - Page -
+    UserDTO? currentUser = null;
+
+    ReportDTO? draftReport = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _reportId = int.Parse(reportId);
+        try
+        {
+            currentUser = await _userService.GetCurrentUser();
+            draftReport = await _reportService.GetByIdWithAll(_reportId);
+        }
+        catch (HearthRecordNotFoundException ex)
+        {
+            // TODO show error toast
+        }
+    }
+
+    // - Save -
+    async void HandleSaveReport()
+    {
+        try
+        {
+            await _reportService.Update(draftReport);
+        }
+        catch
+        {
+            // TODO
+        }
+    }
+
+    // -- Modals --
+    // Add Rule Modal
+    bool showAddRuleModal = false;
+    ReportTransactionRuleDTO? draftTransactionRule = null;
+    void OpenAddRuleModal() => showAddRuleModal = true;
+    void CloseAddRuleModal() => showAddRuleModal = false;
+    void HandleAddRule()
+    {
+        OpenAddRuleModal();
+        draftTransactionRule = new();
+    }
+    void HandleCancelAddRule()
+    {
+        CloseAddRuleModal();
+        draftTransactionRule = null;
+    }
+    async Task HandleCreateRule()
+    {
+        if (draftReport is null) return;
+
+        draftTransactionRule.ReportId = draftReport.Id;
+        var created = await _reportTranRuleService.Create(draftTransactionRule);
+
+        draftReport.Rules.Add(created);   // shows up in TransactionRules immediately
+        CloseAddRuleModal();
+    }
+
+}

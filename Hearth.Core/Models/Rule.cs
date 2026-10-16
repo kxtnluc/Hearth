@@ -12,7 +12,6 @@ namespace Hearth.Core.Models
         public string Name { get; set; } = default!;
         public bool Active { get; set; } = true;
         public int Priority { get; set; }
-
         public List<RuleCondition> RuleConditions { get; set; } = new();
     }
 }

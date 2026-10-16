@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Hearth.Core.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate2 : Migration
+    public partial class InitalCreate3 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -140,36 +140,18 @@ namespace Hearth.Core.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Rules",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(type: "TEXT", nullable: false),
-                    Active = table.Column<bool>(type: "INTEGER", nullable: false),
-                    Priority = table.Column<int>(type: "INTEGER", nullable: false),
-                    RuleType = table.Column<string>(type: "TEXT", maxLength: 34, nullable: false),
-                    BankCategoryId = table.Column<int>(type: "INTEGER", nullable: true),
-                    TransactionCategoryId = table.Column<int>(type: "INTEGER", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Rules", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "TransactionCategories",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Name = table.Column<string>(type: "TEXT", nullable: false),
-                    IsNeed = table.Column<bool>(type: "INTEGER", nullable: false),
                     Description = table.Column<string>(type: "TEXT", nullable: true),
                     Weight = table.Column<decimal>(type: "TEXT", nullable: true),
                     HexColor = table.Column<string>(type: "TEXT", nullable: false),
-                    Ignore = table.Column<bool>(type: "INTEGER", nullable: false),
-                    Income = table.Column<bool>(type: "INTEGER", nullable: false)
+                    IconName = table.Column<string>(type: "TEXT", nullable: true),
+                    IsNeed = table.Column<bool>(type: "INTEGER", nullable: false),
+                    Ignore = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -216,23 +198,25 @@ namespace Hearth.Core.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "RuleConditions",
+                name: "Rules",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    RuleId = table.Column<int>(type: "INTEGER", nullable: false),
-                    Field = table.Column<string>(type: "TEXT", nullable: false),
-                    Condition = table.Column<string>(type: "TEXT", nullable: false),
-                    Match = table.Column<string>(type: "TEXT", nullable: false)
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
+                    Active = table.Column<bool>(type: "INTEGER", nullable: false),
+                    Priority = table.Column<int>(type: "INTEGER", nullable: false),
+                    RuleType = table.Column<string>(type: "TEXT", maxLength: 34, nullable: false),
+                    BankCategoryId = table.Column<int>(type: "INTEGER", nullable: true),
+                    TransactionCategoryId = table.Column<int>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RuleConditions", x => x.Id);
+                    table.PrimaryKey("PK_Rules", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_RuleConditions_Rules_RuleId",
-                        column: x => x.RuleId,
-                        principalTable: "Rules",
+                        name: "FK_Rules_TransactionCategories_TransactionCategoryId",
+                        column: x => x.TransactionCategoryId,
+                        principalTable: "TransactionCategories",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -282,9 +266,9 @@ namespace Hearth.Core.Migrations
                     PaymentMeta_Ppd_Id = table.Column<string>(type: "TEXT", nullable: true),
                     PaymentMeta_Reason = table.Column<string>(type: "TEXT", nullable: true),
                     PaymentMeta_Reference_Number = table.Column<string>(type: "TEXT", nullable: true),
-                    PersonalFinanceCategory_Confidence_Level = table.Column<string>(type: "TEXT", nullable: true),
-                    Personal_Finance_Category_Detailed = table.Column<string>(type: "TEXT", nullable: true),
-                    Personal_Finance_Category_Confidence_Level = table.Column<string>(type: "TEXT", nullable: true)
+                    PersonalFinanceCategory_Primary = table.Column<string>(type: "TEXT", nullable: true),
+                    PersonalFinanceCategory_Detailed = table.Column<string>(type: "TEXT", nullable: true),
+                    PersonalFinanceCategory_Confidence_Level = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -300,6 +284,28 @@ namespace Hearth.Core.Migrations
                         column: x => x.CategoryId,
                         principalTable: "TransactionCategories",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RuleConditions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    RuleId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Field = table.Column<string>(type: "TEXT", nullable: false),
+                    Condition = table.Column<string>(type: "TEXT", nullable: false),
+                    Match = table.Column<string>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RuleConditions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RuleConditions_Rules_RuleId",
+                        column: x => x.RuleId,
+                        principalTable: "Rules",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -337,6 +343,11 @@ namespace Hearth.Core.Migrations
                 name: "IX_RuleConditions_RuleId",
                 table: "RuleConditions",
                 column: "RuleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Rules_TransactionCategoryId",
+                table: "Rules",
+                column: "TransactionCategoryId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TransactionCounterparties_TransactionId",

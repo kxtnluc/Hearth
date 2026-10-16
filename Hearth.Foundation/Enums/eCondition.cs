@@ -26,7 +26,9 @@ namespace Hearth.Foundation.Enums
         [Description("Ends With")]
         EndsWith,
         [Description("Contains")]
-        Contains,
+        Contains, 
+        [Description("Is Not")]
+        IsNot,
         //[Description("Regex")]
         //Regex
     }

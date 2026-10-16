@@ -1,6 +1,8 @@
 A: Fix the recursion on the transaction and account, making it flow account -> transaction
 just remove the accountDTO from the transactionDTO, and always grab going account -> transaction..... maybe
 
+THIS NEEDS TO BE DONE ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 B: Finish up filters for Transaction page
 
 C: Finish up stats for the transaction page

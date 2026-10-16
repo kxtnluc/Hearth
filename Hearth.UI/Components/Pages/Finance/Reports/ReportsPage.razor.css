@@ -1,0 +1,12 @@
+.main-reports {
+    .section-01 {
+        margin-top: 1rem;
+        .s01-article-01 {
+            display: flex;
+            flex-flow: column nowrap;
+            gap: 1rem;
+            .s01-a01-card-container {
+            }
+        }
+    }
+}

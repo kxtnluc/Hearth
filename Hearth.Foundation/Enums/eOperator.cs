@@ -22,7 +22,7 @@ namespace Hearth.Foundation.Enums
         [Description("<=")]
         LessThanOrEqualTo = 4,
 
-        [Description(">= <=")]
+        [Description(">=-<=")]
         Between = 5,
 
         [Description("+/-")]

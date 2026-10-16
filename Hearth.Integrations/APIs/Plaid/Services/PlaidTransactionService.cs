@@ -86,7 +86,8 @@ namespace Hearth.Integrations.APIs.Plaid.Services
                 progress?.Report(new PlaidSyncProgress
                 {
                     Stage = $"Syncing transactions (page {page})",
-                    CurrentInstitution = foundBank?.Institution_Id
+                    CurrentInstitution = foundBank?.Institution_Id,
+                    PercentComplete = Math.Min(50, page * 10)
                 });
 
                 var requestBody = new
@@ -198,6 +199,7 @@ namespace Hearth.Integrations.APIs.Plaid.Services
                         p.CurrentBankIndex = i + 1;
                         p.TotalBanks = banks.Count;
                         p.Phase = "Transactions";
+                        p.PercentComplete = ((i + (p.PercentComplete / 100.0)) / banks.Count) * 45;
                         progress.Report(p);
                     });
 

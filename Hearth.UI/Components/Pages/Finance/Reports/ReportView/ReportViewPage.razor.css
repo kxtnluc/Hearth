@@ -1,0 +1,90 @@
+.main-reports {
+
+    .section-page-title {
+    }
+
+    .section-01 {
+        /*        background-color: lightgoldenrodyellow;*/
+        justify-content: space-around;
+        align-items: center;
+        display: flex;
+
+        .s01-article-01-primary-year, .s01-article-02-secondary-year {
+            text-align: center;
+
+            .s01-a01-header, .s01-a02-header {
+                font-size: 1.5rem;
+                letter-spacing: 1.75px;
+                margin-bottom: 1rem;
+            }
+
+            .s01-a01-body, .s01-a02-body {
+
+                .s01-a01-sum, .s01-a02-sum {
+                    min-width: 20rem;
+                }
+
+                .s01-a01-rate, .s01-a02-rate {
+                    margin-top: 0.5rem;
+                    font-weight: 700;
+                    background-color: var(--color-primary-faded-2);
+                    border-radius: var(--radius-md);
+                }
+            }
+
+            .s01-a01-footer, .s01-a02-footer {
+                margin-top: 0.5rem;
+            }
+        }
+
+        .s01-article-02-secondary-year {
+
+            .s01-a02-header {
+            }
+
+            .s01-a02-body {
+
+                .s01-a01-sum {
+                }
+
+                .s01-a01-rate {
+                }
+            }
+
+            .s01-a02-footer {
+            }
+        }
+    }
+
+    .section-02 {
+
+        .s02-article-01-graph {
+
+            .s02-a01-grand-totals {
+
+                .sum {
+                }
+
+                .rate {
+                }
+            }
+
+            .s02-a01-graph-container {
+            }
+        }
+
+        .s02-article-02- {
+        }
+    }
+}
+
+
+.vertical-line-break {
+    display: flex;
+    align-self: stretch; /* stretches to match sibling height */
+}
+
+.line-break{
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}

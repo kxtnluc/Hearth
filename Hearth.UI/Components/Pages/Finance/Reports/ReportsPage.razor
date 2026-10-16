@@ -1,0 +1,151 @@
+﻿@page "/finance/reports"
+@using Hearth.Services.DTOs.Finance.Report
+@using Hearth.Services.CTOs.Finance.Report
+@inject IUserService _userService
+@inject IReportService _reportService
+@inject IJSRuntime JS
+@inject NavigationManager _nav
+
+@* Loading *@
+
+@if (initialRenderComplete == false)
+{
+    <LoadingCircleIcon AutoCenter="true" />
+}
+
+@* Page *@
+
+<main class="main-reports" hidden="@(initialRenderComplete ? false : true)">
+    <section class="section-page-title">
+        <Title>
+            Reports
+        </Title>
+    </section>
+    @if (Reports?.Count >= 1 && Reports != null)
+    {
+        @* - Actual Page Content - *@
+        <section class="section-01">
+            <article class="s01-article-01">
+                @foreach (var report in Reports)
+                {
+                    <div class="s01-a01-card-container" @onclick="() => HandleSelectReport(report.Id)">
+                        <Card HoverEffects="true">
+                            <CardHeader>
+                                <CardTitle>
+                                    <Text>@report.Name</Text>
+                                </CardTitle>
+                                <CardDescription>
+                                    @report.Description
+                                </CardDescription>
+                            </CardHeader>
+                        </Card>
+                    </div>
+                }
+            </article>
+        </section>
+    }
+    else
+    {
+        <section class="section-no-records">
+            <div class="title-container">
+                <Title>No Reports Found...</Title>
+            </div>
+        </section>
+    }
+</main>
+
+@* Toolbar *@
+
+<Toolbar HasAddBtn="true"
+         OnAdd="HandleAddReport"
+         HasSearchBtn="false"
+         HasManageBtn="false"
+         HasSettingsBtn="true"
+         Position="E_TOOLBAR_POSITION.BottomRight"
+         Size="E_SIZE.lg"
+         TooltipSubject="Report" />
+
+@* Modal *@
+
+<Modal
+    Title="Create a new Report?"
+    Open="showConfirmAddReportModal"
+    OnClose="CloseConfirmAddReportModal"
+>
+    <div>
+        <div>
+            <p>Create a new Report and enter the Report Builder?</p>
+        </div>
+        <div>
+            <Button Variant="E_VARIANT.Outline">Cancel</Button>
+            <Button Color="E_COLOR_BASIC.Info" OnClick="HandleConfirmAddReport">Create</Button>
+        </div>
+    </div>
+</Modal>
+
+@code {
+    // - Loading -
+    bool initialRenderComplete = false;
+    bool resizeInitialized = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (initialRenderComplete == false && Reports != null)
+            {
+                initialRenderComplete = true;
+                StateHasChanged(); // Trigger re-render to hide the spinner
+            }
+
+        }
+    }
+
+
+    // - Page -
+    UserDTO? currentUser = null;
+
+    List<ReportDTO>? Reports = new();
+    ReportCTO cto = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            currentUser = await _userService.GetCurrentUser();
+            Reports = await _reportService.GetAll();
+        }
+        catch (HearthRecordNotFoundException ex)
+        {
+            // TODO show error toast
+        }
+    }
+
+    // - CTO -
+
+
+
+    // - Filter -
+
+    // - Select Report -
+    void HandleSelectReport(int reportId)
+    {
+        _nav.NavigateTo($"/finance/reports/{reportId}");
+    }
+
+    // - Add Report -
+    bool showConfirmAddReportModal = false;
+    void OpenConfirmAddReportModal() => showConfirmAddReportModal = true;
+    void CloseConfirmAddReportModal() => showConfirmAddReportModal = false;
+
+    void HandleAddReport()
+    {
+        OpenConfirmAddReportModal();
+    }
+
+    async void HandleConfirmAddReport()
+    {
+        int draftReportId = await _reportService.CreateBuilderDraft();
+        _nav.NavigateTo($"/finance/reports/builder/{draftReportId}");
+    }
+}

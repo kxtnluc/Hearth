@@ -59,6 +59,7 @@
     // On Load
     protected override async Task OnInitializedAsync()
     {
+        // TODO: This works, but only on second loadup?
         isNewUser = await _userService.ValidateNewInstall();
         if(isNewUser == false)
         {

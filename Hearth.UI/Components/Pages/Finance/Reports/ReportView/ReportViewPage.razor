@@ -1,0 +1,233 @@
+﻿@page "/finance/reports/{reportId}"
+@using Hearth.Services.DTOs.Finance.Report
+@using Hearth.Services.CTOs.Finance.Report
+@using Hearth.Services.CTOs.Finance
+@inject IUserService _userService
+@inject IReportService _reportService
+@inject IJSRuntime JS
+@inject NavigationManager _nav
+
+@* Loading *@
+
+@if (initialRenderComplete == false)
+{
+    <LoadingCircleIcon AutoCenter="true" />
+}
+
+@* Page *@
+
+<main class="main-reports" hidden="@(initialRenderComplete ? false : true)">
+    <section class="section-page-title">
+        <Title>
+            @report?.Name
+        </Title>
+        <p>@report?.Description Matches: @cto?.TransactionMatchCount_C</p>
+
+    </section>
+    @if (cto != null)
+    {
+        @* - Actual Page Content - *@
+        <section class="section-01">
+            <article class="s01-article-01-primary-year">
+                <div class="s01-a01-header">
+                    @cto.Options.PrimaryYear
+                </div>
+                <div class="s01-a01-body">
+                    <div class="s01-a01-sum">
+                        @* Total Amount for the Primary Calendar/Fiscal year *@
+                        @* eg. This would be the total amount of money spent at Dollywood this Calendar year of 2026*@
+                        <Card>
+                            <CardContent Variant="E_CARD_CONTENT.DataPoint">
+                                @cto.TransactionStats.Formated.Sum_Primary_Outgoing_Num_S
+                            </CardContent>
+                            <CardFooter Variant="E_CARD_FOOTER.DoubleDataPoint" PrimaryDataPoint="@(cto.TransactionStats.Formated.Average_Primary_OutgoingPerPeriod_Num_S + $" / {_frequency_S}")" SecondaryDataPoint="@(cto.TransactionStats.Formated.Average_Primary_OutgoingPerPeriod_Num_S + $" / {_frequency_S}")" />
+                        </Card>
+                    </div>
+                </div>
+                <div class="s01-a01-footer">
+                    <div class="graph-container">
+                        <ApexChart TItem="CategoryAmountPoint"
+                                   Title="Spending by Category"
+                                   Options="primaryChartOptions"
+                        >
+
+                            <ApexPointSeries TItem="CategoryAmountPoint"
+                                             Items="cto.TransactionStats.PieChart_Primary_Outgoing_CategoryAmount_C"
+                                             Name="Spending"
+                                             SeriesType="SeriesType.Donut"
+                                             XValue="e => e.Name"
+                                             YValue="e => e.Amount"
+                                             OrderByDescending="e => e.Y" />
+                        </ApexChart>
+                    </div>
+                </div>
+            </article>
+            <div class="vertical-line-break">
+                <LineBreak Vertical="true" Color="E_COLOR_BASIC.Primary" Length="100%" Size="E_SIZE.md" />
+            </div>
+            <article class="s01-article-02-secondary-year">
+                <div class="s01-a02-header">
+                    @cto.Options.SecondaryYear
+                </div>
+                <div class="s01-a02-body">
+                    <div class="s01-a02-sum">
+                        @* Total Amount for the Secondary Calendar/Fiscal year *@
+                        @* eg. This would be the total amount of money spent at Dollywood the comparison Calendar year of 2026, so 2025*@
+                        <Card>
+                            <CardContent Variant="E_CARD_CONTENT.DataPoint">
+                                @cto.TransactionStats.Formated.Sum_Secondary_Outgoing_Num_S
+                            </CardContent>
+                            <CardFooter Variant="E_CARD_FOOTER.DoubleDataPoint" PrimaryDataPoint="@(cto.TransactionStats.Formated.Average_Secondary_OutgoingPerPeriod_Num_S + $" / {_frequency_S}")" SecondaryDataPoint="@(cto.TransactionStats.Formated.Average_Secondary_OutgoingPerPeriod_Num_S + $" / {_frequency_S}")" />
+                        </Card>
+                    </div>
+                </div>
+                <div class="s01-a02-footer">
+                    <div class="graph-container">
+                        <ApexChart TItem="CategoryAmountPoint"
+                                   Title="Spending by Category"
+                                    Options="secondaryChartOptions"
+                        >
+
+                            <ApexPointSeries TItem="CategoryAmountPoint"
+                                             Items="cto.TransactionStats.PieChart_Secondary_Outgoing_CategoryAmount_C"
+                                             Name="Spending"
+                                             SeriesType="SeriesType.Donut"
+                                             XValue="e => e.Name"
+                                             YValue="e => e.Amount"
+                                             OrderByDescending="e => e.Y" 
+                                            
+                            />
+                        </ApexChart>
+                    </div>
+                </div>
+            </article>
+        </section>
+        <div class="line-break">
+            <LineBreak Length="100%" Size="E_SIZE.md" />
+        </div>
+        <section class="section-page-title">
+            <Title>
+                Grand Totals
+            </Title>
+            <p>Set of stats that Compiles all transactions togeather into one group, seperated by the reports Frequency</p>
+
+        </section>
+        <section class="section-02">
+            <article class="s02-article-01-graph">
+                <div class="s02-a01-grand-totals">
+                    <div class="sum">
+                        @cto.TransactionStats.Formated.Sum_Outgoing_Num_S
+                    </div>
+                    <div class="rate">
+                        @cto.TransactionStats.Formated.Average_OutgoingPerPeriod_Num_S
+                    </div>
+                </div>
+                <div class="s02-a01-graph-container">
+                </div>
+            </article>
+
+            <article class="s02-article-02-">
+            </article>
+        </section>
+    }
+    else
+    {
+        <section class="section-no-records">
+            <div class="title-container">
+                <Title>No Reports Found...</Title>
+            </div>
+        </section>
+    }
+</main>
+
+@* Toolbar *@
+
+<Toolbar HasAddBtn="true"
+         HasSearchBtn="true"
+         HasManageBtn="true"
+         OnManage="HandleManageReport"
+         HasSettingsBtn="false"
+         Position="E_TOOLBAR_POSITION.BottomRight"
+         Size="E_SIZE.lg"
+         TooltipSubject="Report" />
+
+@code {
+    // - Main Object -
+    [Parameter] public string reportId { get; set; } = default!;
+    int _reportId;
+    ReportDTO? report = null;
+    // - Report Object -
+    ReportCTO? cto = null;
+    ReportCTO_O ctoOptions = new ReportCTO_O { Frequency = E_CALENDAR_FREQUENCY.Monthly };
+    string _frequency_S = "n/a";
+
+    #region - Loading -
+    // - Loading -
+    bool initialRenderComplete = false;
+    bool resizeInitialized = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (initialRenderComplete == false && report != null)
+            {
+                initialRenderComplete = true;
+                StateHasChanged(); // Trigger re-render to hide the spinner
+            }
+
+        }
+    }
+    #endregion
+
+
+    // - Page -
+    UserDTO? currentUser = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _reportId = int.Parse(reportId);
+        try
+        {
+            currentUser = await _userService.GetCurrentUser();
+            report = await _reportService.GetById(_reportId);
+            RefreshReportCto();
+        }
+        catch (HearthRecordNotFoundException ex)
+        {
+            // TODO show error toast
+        }
+    }
+
+    // - CTO -
+    private async void RefreshReportCto()
+    {
+        if (report != null)
+        {
+            cto = await _reportService.GenerateReportCTO(report.Id);
+            _frequency_S = EnumDisplayHelper.ToDisplayString<E_CALENDAR_FREQUENCY>(cto.Options.Frequency);
+        }
+    }
+
+    // - Apex Graphs -
+    ApexChartOptions<CategoryAmountPoint> primaryChartOptions = new();
+    ApexChartOptions<CategoryAmountPoint> secondaryChartOptions = new();
+
+    void BuildChartOptions()
+    {
+        primaryChartOptions.Colors = cto.TransactionStats.PieChart_Outgoing_CategoryAmount_C
+            .Select(p => p.HexColor is not null && p.HexColor.StartsWith("#") ? p.HexColor : "#9E9E9E")
+            .ToList();
+
+        secondaryChartOptions.Colors = cto.TransactionStats.PieChart_Outgoing_CategoryAmount_C
+        .Select(p => p.HexColor is not null && p.HexColor.StartsWith("#") ? p.HexColor : "#9E9E9E")
+        .ToList();
+    }
+
+    // - Manage -
+    void HandleManageReport()
+    {
+        _nav.NavigateTo($"/finance/reports/builder/{report?.Id}");
+    }
+
+}

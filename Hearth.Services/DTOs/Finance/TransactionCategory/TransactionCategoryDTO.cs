@@ -15,21 +15,16 @@ namespace Hearth.Services.DTOs.Finance.TransactionCategory
         public string Name { get; set; } = default!;
         #endregion
         #region Model Specific Props
-        public bool IsNeed { get; set; }
         public string? Description { get; set; }
         public decimal? Weight { get; set; }
-        public string HexColor { get; set; } = "var(--color-info-faded)"; // Pyre.Element/wwwroot/token.css
+        public string HexColor { get; set; } = "var(--color-info-faded-2)"; // Pyre.Element/wwwroot/token.css
+        public string? IconName { get; set; } = null; // In case i want to add assignable icons later on.
+        public bool IsNeed { get; set; }
         public bool Ignore { get; set; } = false;
-        public bool Income { get; set; } = false;
         #endregion
+        // Joined Props
+        public List<TransactionCategoryRuleDTO>? Rules { get; set; }
         [MapperIgnore]
         public string HexColorText_C => ColorHelper.HexColorTextEvaluator(HexColor);
-        // Joined Props
-        //public List<TransactionDTO>? Transactions { get; set; }
-        //public List<TransactionCategoryDTO> CategoryRules { get; set; } = default!;
-
-        // Future Addition
-        //[NotMapped]
-        //public Transaction Example_Transaction { get; set; }
     }
 }

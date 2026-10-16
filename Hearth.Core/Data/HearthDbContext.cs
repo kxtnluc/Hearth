@@ -28,6 +28,8 @@ public class HearthDbContext : DbContext
     public DbSet<TransactionSyncRecord> TransactionSyncRecords => Set<TransactionSyncRecord>();
     public DbSet<BankCategory> BankCategories => Set<BankCategory>();
     public DbSet<BankCategoryRule> BankCategoryRules => Set<BankCategoryRule>();
+    public DbSet<Report> Reports => Set<Report>();
+    public DbSet<ReportTransactionRule> ReportTransactionRules => Set<ReportTransactionRule>();
     #endregion
 
     // Custom EFC Building stuff.
@@ -35,18 +37,40 @@ public class HearthDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
+        // --- Rules & Conditions & Categories & Reports ---
         modelBuilder.Entity<Rule>()
             .HasDiscriminator<string>("RuleType")
             .HasValue<TransactionCategoryRule>("TransactionCategoryRule")
-            .HasValue<BankCategoryRule>("BankCategoryRule");
+            .HasValue<BankCategoryRule>("BankCategoryRule")
+            .HasValue<ReportTransactionRule>("ReportTransactionRule")
+            .HasValue<ReportAccountRule>("ReportAccountRule")
+            .HasValue<ReportUserRule>("ReportUserRule");
 
+        // Tell EF how TransactionCategoryRule relates to TransactionCategory
+        modelBuilder.Entity<TransactionCategoryRule>()
+            .HasOne<TransactionCategory>()
+            .WithMany(c => c.Rules)
+            .HasForeignKey(r => r.TransactionCategoryId);
+
+        // Tell EF how RuleCondition relates to Rule
+        modelBuilder.Entity<RuleCondition>()
+            .HasOne<Rule>()
+            .WithMany(r => r.RuleConditions)
+            .HasForeignKey(rc => rc.RuleId);
+
+        modelBuilder.Entity<ReportRule>()
+            .HasOne<Report>()
+            .WithMany(r => r.Rules)
+            .HasForeignKey(r => r.ReportId);
+
+        // --- Other ---
         modelBuilder.Entity<Account>()
             .HasIndex(a => a.Account_Id)
             .IsUnique();
 
         modelBuilder.Entity<Account>()
             .HasMany(a => a.Transactions)
-            .WithOne(t => t.Account)
+            .WithOne()
             .HasForeignKey(t => t.Account_Id)
             .HasPrincipalKey(a => a.Account_Id);
 
@@ -108,8 +132,8 @@ public class HearthDbContext : DbContext
             builder.OwnsOne(t => t.Personal_Finance_Category, pfc =>
             {
                 pfc.Property(p => p.Primary).HasColumnName("PersonalFinanceCategory_Primary");
-                pfc.Property(p => p.Primary).HasColumnName("PersonalFinanceCategory_Detailed");
-                pfc.Property(p => p.Primary).HasColumnName("PersonalFinanceCategory_Confidence_Level");
+                pfc.Property(p => p.Detailed).HasColumnName("PersonalFinanceCategory_Detailed");
+                pfc.Property(p => p.Confidence_Level).HasColumnName("PersonalFinanceCategory_Confidence_Level");
             });
         });
 

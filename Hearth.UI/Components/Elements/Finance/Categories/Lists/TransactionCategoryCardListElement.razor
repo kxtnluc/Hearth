@@ -1,0 +1,15 @@
+﻿@using Hearth.Services.DTOs.Finance.TransactionCategory
+
+<div class="trancat-card-list-element-wraper">
+    @foreach (TransactionCategoryDTO tranCat in TransactionCategories)
+    {
+        <TransactionCategoryCardElement TranCat="@tranCat" OnSelect="OnSelect" />
+    }
+</div>
+
+@code {
+    // - List DTO -
+    [Parameter] public List<TransactionCategoryDTO> TransactionCategories { get; set; } = default!;
+
+    [Parameter] public EventCallback<TransactionCategoryDTO> OnSelect { get; set; }
+}

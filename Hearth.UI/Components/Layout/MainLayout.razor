@@ -37,14 +37,19 @@
         <div class="sync-progress">
             <div class="sync-progress__status">@statusText</div>
 
-            <div class="sync-progress__bar-track">
-                <div class="sync-progress__bar-fill" style="width: @(percentComplete)%;"></div>
-            </div>
-
             @if (totalBanks > 0)
             {
                 <div class="sync-progress__count">Bank @currentBankIndex of @totalBanks</div>
             }
+
+            <div>
+                <ProgressBar
+                    Size="E_SIZE.md"
+                    CompleteColor="E_COLOR_BASIC.Info"
+                    Complete="@percentComplete"
+                    Total="100"
+                />
+            </div>
         </div>
     }
     else
@@ -145,16 +150,7 @@
             statusText = string.IsNullOrEmpty(p.CurrentInstitution)
                 ? p.Stage
                 : $"{p.Stage} — {p.CurrentInstitution}";
-
-            // Coarse two-phase weighting: Transactions covers 0-70%, Accounts covers 70-100%
-            if (p.Phase == "Accounts")
-            {
-                percentComplete = 70;
-            }
-            else if (totalBanks > 0)
-            {
-                percentComplete = (currentBankIndex - 1.0) / totalBanks * 70;
-            }
+            percentComplete = p.PercentComplete;
 
             StateHasChanged();
         });

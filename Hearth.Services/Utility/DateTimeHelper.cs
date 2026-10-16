@@ -98,5 +98,27 @@ namespace Hearth.Services.Utility
             var week = System.Globalization.ISOWeek.GetWeekOfYear(date);
             return (year * 52) + week;
         }
+
+        /// <summary>
+        /// Returns the start and end (inclusive) of the fiscal year containing the reference date.
+        /// With startMonth = 1 and startDay = 1 this is the calendar year.
+        /// </summary>
+        public static (DateTime Start, DateTime End) GetFiscalYearRange(int startMonth, int startDay, DateTime reference)
+        {
+            DateTime StartForYear(int year) =>
+                new DateTime(year, startMonth, Math.Min(startDay, DateTime.DaysInMonth(year, startMonth)));
+
+            var start = StartForYear(reference.Year);
+
+            // Before this year's start date, so we're still in the fiscal year that began last year
+            if (reference.Date < start)
+            {
+                start = StartForYear(reference.Year - 1);
+            }
+
+            var end = StartForYear(start.Year + 1).AddDays(-1);
+
+            return (start, end);
+        }
     }
 }

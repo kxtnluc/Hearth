@@ -11,5 +11,6 @@ namespace Hearth.Integrations.APIs.Plaid
         public int CurrentBankIndex { get; set; }
         public string? CurrentInstitution { get; set; }
         public int TotalBanks { get; set; }
+        public double PercentComplete { get; set; }
     }
 }

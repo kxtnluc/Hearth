@@ -5,3 +5,95 @@
     border: 3px solid var(--color-primary-faded);
     border-radius: var(--radius-md);
 }
+
+/* View Modal */
+
+.section-01 {
+
+    .s01-article-01 {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .s01-a01-date-container {
+            background-color: var(--color-primary-faded-2);
+            font-weight: 700;
+            border-radius: var(--radius-md);
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+            padding-top: 0.20rem;
+            padding-bottom: 0.20rem;
+        }
+
+        .s01-a01-category-container {
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
+    }
+
+    .s01-article-01-name-and-amount {
+        margin-top: 0.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .s01-a01-name-and-icon-container {
+            display: flex;
+            align-items: center;
+
+            .plaid-icon-container {
+                .plaid-icon {
+                    aspect-ratio: 1;
+                    border-radius: 100rem;
+                    width: 5.5rem;
+                }
+            }
+
+            .name {
+                margin-left: 1rem;
+                font-size: 2rem;
+                font-weight: 700;
+            }
+        }
+
+        .s01-a01-amount {
+            font-weight: 700;
+            font-size: 2rem;
+            margin-right: 1rem;
+
+            .amount-income {
+                color: var(--color-positive);
+            }
+
+            .amount-expense {
+            }
+        }
+    }
+}
+
+.section-02 {
+    margin-top: 1.5rem;
+    .s02-a01-header {
+        font-size: 1.3rem;
+        font-weight: 700;
+    }
+
+    .s02-a02-body {
+        margin-top: 0.5rem;
+        .s02-a02-row {
+            display: flex;
+            flex-flow: wrap row;
+            justify-content: space-between;
+            .s02-a02-label {
+            }
+
+            .s02-a02-value {
+                font-weight: 700;
+            }
+        }
+    }
+}

@@ -8,13 +8,22 @@
                 <div>@Transaction.DateShort_S</div>
             </div>
             <div class="s01-a01-category-container" style="background-color: @(Transaction.Category?.HexColor ?? "var(--color-primary-faded-2)")">
-                <div style="color: @(Transaction.Category?.HexColorText_C ?? "white")">@(Transaction.Category?.Name ?? "N/A")</div>
+                <div style="color: @(Transaction.Category?.HexColorText_C ?? "black")">@(Transaction.Category?.Name ?? "N/A")</div>
             </div>
         </article>
         <article class="s01-article-01-name-and-amount">
-            <div class="s01-a01-name-and-icon-container">
+            <div class="s01-a01-name-and-icon-container" @onclick="HandleViewClick">
                 <div class="plaid-icon-container">
-                    <img class="plaid-icon" src="@Transaction.Logo_Url" />
+                    @if(Transaction.Logo_Url == null)
+                    {
+                        <div class="default-icon">
+                            <CreditCardIcon Size="24" />
+                        </div>
+                    }
+                    else
+                    {
+                        <img class="plaid-icon" src="@Transaction.Logo_Url" />
+                    }
                 </div>
                 <div class="name">
                     @Transaction.DisplayName_S
@@ -38,16 +47,23 @@
     </section>
 </div>
 
+
+
 @code {
     // - DTO -
     [Parameter] public TransactionDTO Transaction { get; set; } = default!;
 
     // - On Select -
     [Parameter] public EventCallback<TransactionDTO> OnSelect { get; set; }
-
-    // - Logic -
     async Task HandleClick()
     {
         await OnSelect.InvokeAsync(Transaction);
+    }
+
+    // - View Modal -
+    [Parameter] public EventCallback<TransactionDTO> OnView { get; set; }
+    async Task HandleViewClick()
+    {
+        await OnView.InvokeAsync(Transaction);
     }
 }

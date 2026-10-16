@@ -183,8 +183,14 @@ namespace Hearth.Integrations.APIs.Plaid.Services
                     // TODO
                 }
             }
+            // This whole progress bar thing doesn't work very well, but its whatever. fine for now
+            progress?.Report(new PlaidSyncProgress
+            {
+                PercentComplete = 50,
+                Stage = "50%"
+            });
 
-            if(options.SyncAccounts)
+            if (options.SyncAccounts)
             {
 
                 try

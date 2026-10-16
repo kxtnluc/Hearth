@@ -31,7 +31,7 @@
         <MauiXamlInflator>SourceGen</MauiXamlInflator>
 
         <!-- Display name -->
-        <ApplicationTitle>Hearth.UI</ApplicationTitle>
+        <ApplicationTitle>Hearth</ApplicationTitle>
 
         <!-- App Identifier -->
         <ApplicationId>com.companyname.hearth.ui</ApplicationId>
@@ -81,6 +81,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="Blazor-ApexCharts-MAUI" Version="7.0.0" />
         <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="$(MauiVersion)" />
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
@@ -97,8 +98,8 @@
       <Folder Include="Components\Elements\Automotive\" />
       <Folder Include="Components\Pages\Finance\Debts\" />
       <Folder Include="Components\Pages\Finance\Assets\" />
-      <Folder Include="Components\Pages\Finance\Reports\" />
       <Folder Include="Components\Pages\Automotive\" />
+      <Folder Include="Components\Pages\Finance\Settings\" />
     </ItemGroup>
 
 </Project>

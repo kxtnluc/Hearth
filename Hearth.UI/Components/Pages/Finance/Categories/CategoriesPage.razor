@@ -1,0 +1,668 @@
+﻿@page "/finance/categories"
+@using Hearth.Services.DTOs.Finance.TransactionCategory
+@using Hearth.Services.Interfaces.Finance
+@using Hearth.Services.Interfaces
+@using Hearth.UI.Components.Elements.Finance.Categories.Lists
+@using Hearth.Services.Utility
+@inject ITransactionCategoryService _trancatService
+@inject IUserService _userService
+@inject ITransactionCategoryRuleService _trancatRuleService
+@inject IRuleConditionService _conditionService
+
+@* Loading *@
+
+@if (initialRenderComplete == false)
+{
+    <LoadingCircleIcon AutoCenter="true" />
+}
+
+@* Page *@
+
+<main class="main-categories" hidden="@(initialRenderComplete ? false : true)">
+    <section class="section-page-title">
+        <Title>
+            Categories
+        </Title>
+    </section>
+    @if (allCategories.Count >= 1 || allCategories != null)
+    {
+        @* - Actual Page Content - *@
+        <section class="section-01">
+            <article class="s01-article-01-category-list-container">
+                <TransactionCategoryCardListElement TransactionCategories="allCategories" OnSelect="HandleSelectTranCat" />
+            </article>
+        </section>
+    }
+    else
+    {
+        <section class="section-no-records">
+            <div class="title-container">
+                <Title>No Categories Yet...</Title>
+            </div>
+        </section>
+    }
+</main>
+
+@* Toolbar *@
+
+<Toolbar HasAddBtn="true"
+         HasManageBtn="false"
+         HasSearchBtn="false"
+         HasSettingsBtn="true"
+         OnAdd="OpenAddModal"
+         Position="E_TOOLBAR_POSITION.BottomRight"
+         Size="E_SIZE.lg"
+         TooltipSubject="Categories" />
+
+@* - Modals - *@
+@* Add Category Modal *@
+
+<Modal Title="Create Category"
+       Size="E_SIZE.lg"
+       Open="showAddModal"
+       OnClose="CloseAddModal"
+       HelpBtn="true"
+       Variant="E_MODAL.AddEdit">
+    <Form>
+        <FormContent>
+            <FormRow>
+                <FormCell Ratio="1/4">
+                    <Input InputType="E_INPUT_TYPE.Text" Label="Name" Placeholder="Food" @bind-Value="draftTranCat!.Name" />
+                </FormCell>
+                <FormCell Ratio="1/2">
+                    <Input InputType="E_INPUT_TYPE.Text" Label="Description" @bind-Value="draftTranCat!.Description" />
+                </FormCell>
+                <FormCell Ratio="1/4" CenterVertically="true" AlignRight="true">
+                    <Checkbox @bind-Value="draftTranCat!.IsNeed" Label="Need" FlipLabel="true" />
+                </FormCell>
+            </FormRow>
+            <FormRow>
+                <FormCell Ratio="2/4">
+                    <Input InputType="E_INPUT_TYPE.Number" Label="Weight" Placeholder="0.75" @bind-Value="draftTranCat!.Weight" />
+                </FormCell>
+                <FormCell Ratio="2/4">
+                    <HexColorPicker Size="E_SIZE.xs" Label="Category Color" @bind-Value="draftTranCat!.HexColor" />
+                </FormCell>
+            </FormRow>
+        </FormContent>
+        <FormFooter>
+            <Button Variant="E_VARIANT.Secondary" Color="E_COLOR_BASIC.OffWhite" Onclick="CloseAddModal">Cancel</Button>
+            <Button Variant="E_VARIANT.Primary" Color="E_COLOR_BASIC.Info" Onclick="AddTranCat">Create</Button>
+        </FormFooter>
+    </Form>
+</Modal>
+
+
+
+@* Select Category Modal *@
+
+<Modal Title="Manage Category"
+       Size="E_SIZE.lg"
+       Open="showSelectModal"
+       OnClose="CloseSelectModal"
+       HelpBtn="true"
+       Variant="E_MODAL.Unset">
+    <div class="select-card-container">
+        <Card Variant="E_CARD.FlatNoBorder">
+            <CardHeader>
+                <CardTitle>
+                    <Text><span class="select-card-title" style="background-color: @selectedTranCat?.HexColor; color: @selectedTranCat?.HexColorText_C;">@selectedTranCat?.Name</span></Text>
+                </CardTitle>
+                <CardDescription>
+                    @selectedTranCat?.Description
+                </CardDescription>
+                <CardAction>
+                    <ButtonIconOnly Color="E_COLOR_BASIC.Remove" OnClick="OpenRemoveCategoryModal" Disabled="@(selectedTranCat.Rules != null && selectedTranCat.Rules.Count != 0)"><TrashIcon Size="20" /></ButtonIconOnly>
+                    <ButtonIconOnly Color="E_COLOR_BASIC.Info" OnClick="@(() => HandleSelectManageCategory(selectedTranCat))"><EditIcon Size="20" /></ButtonIconOnly>
+                </CardAction>
+            </CardHeader>
+            <CardContent>
+                <div class="select-card-content-container">
+                    <div class="scc-header">
+                        <div class="scc-h-title">Rules</div>
+                        <div class="scc-h-add-btn">
+                            <ButtonIconOnly Color="E_COLOR_BASIC.Info" OnClick="HandleAddRule"><PlusIcon Size="20" /></ButtonIconOnly>
+                        </div>
+                    </div>
+                    <ul class="rule-list">
+                        @foreach (TransactionCategoryRuleDTO rule in selectedTranCat!.Rules!)
+                        {
+                            <li class="rule-list-item">
+                                <div class="item-title">
+                                    <div class="label-container">
+                                        <div class="text">
+                                            @rule.Name
+                                        </div>
+                                        <div class="add-btn">
+                                            <ButtonIconOnly Disabled="@(rule.RuleConditions?.Count == 0 || rule.RuleConditions == null ? (false) : (true))" Color="E_COLOR_BASIC.Remove" OnClick="@(() => HandleRemoveRule(rule.Id))">
+                                                <TrashIcon Size="20" />
+                                            </ButtonIconOnly>
+                                            <ButtonIconOnly Color="E_COLOR_BASIC.Info" OnClick="@(() => HandleAddCondition(rule.Id))">
+                                                <PlusIcon Size="18" />
+                                            </ButtonIconOnly>
+                                        </div>
+                                    </div>
+                                    <div class="toggle-btn">
+                                        <ButtonIconOnly OnClick="@(() => ToggleRule(rule.Id))">
+                                            <ArrowCarrotIcon DirectionPoint="@(IsRuleHidden(rule.Id) ? E_DIRECTION_EIGHT_POINT.Right : E_DIRECTION_EIGHT_POINT.Down)" Size="22" />
+                                        </ButtonIconOnly>
+                                    </div>
+                                </div>
+                                <TableCompact HasActionColumn="true" IsHidden="@IsRuleHidden(rule.Id)">
+                                    <TableCompactHeader>
+                                        <TableCompactCell Ratio="1/1">Field</TableCompactCell>
+                                        <TableCompactCell Ratio="3/8">Condition</TableCompactCell>
+                                        <TableCompactCell Ratio="2/4">Match</TableCompactCell>
+                                        <TableCompactCell IsActionCell="true" Width="6rem">Actions</TableCompactCell>
+                                    </TableCompactHeader>
+
+                                    @for (int i = 0; i < rule.RuleConditions.Count; i++)
+                                    {
+                                        var condition = rule.RuleConditions[i];
+                                        var isOdd = i % 2 != 0;
+                                        var isLast = i == rule.RuleConditions.Count - 1;
+
+                                        <TableCompactRow IsOdd="isOdd" IsLast="isLast">
+                                            <TableCompactCell Ratio="1/1">
+                                                @condition.Field
+                                            </TableCompactCell>
+                                            <TableCompactCell Ratio="3/8">
+                                                @if (condition.Condition == "exact" || condition.Condition == "starts-with" || condition.Condition == "ends-with" || condition.Condition == "contains" || condition.Condition == "is-not")
+                                                {
+                                                    @(EnumDisplayHelper.ConvertDisplayString<E_STRING_OPERATOR, E_CONDITION>(condition.Condition))
+                                                }
+                                                else
+                                                {
+                                                    @(EnumDisplayHelper.ConvertDisplayString<E_OPERATOR, E_CONDITION>(condition.Condition))
+                                                }
+                                            </TableCompactCell>
+                                            <TableCompactCell Ratio="2/4">
+                                                @condition.Match
+                                            </TableCompactCell>
+                                            <TableCompactCell IsActionCell="true" Width="6rem">
+                                                <ButtonIconOnly Color="E_COLOR_BASIC.Remove" OnClick="@(() => HandleSelectRemoveCondition(condition))">
+                                                    <TrashIcon Size="19" />
+                                                </ButtonIconOnly>
+                                                <ButtonIconOnly Color="E_COLOR_BASIC.Primary" OnClick="@(() => HandleSelectManageCondition(condition))">
+                                                    <EditIcon Size="19" />
+                                                </ButtonIconOnly>
+                                            </TableCompactCell>
+                                        </TableCompactRow>
+                                    }
+                                </TableCompact>
+                            </li>
+                        }
+                    </ul>
+                </div>
+                <div>
+                </div>
+            </CardContent>
+        </Card>
+        <div class="edit-trancat-details-form-container" hidden>
+            <Form>
+                <FormContent>
+                    <FormRow>
+                        <FormCell Ratio="1/4">
+                            <Input InputType="E_INPUT_TYPE.Text" Label="Name" Placeholder="Food" @bind-Value="draftSelectedTranCat!.Name" />
+                        </FormCell>
+                        <FormCell Ratio="1/2">
+                            <Input InputType="E_INPUT_TYPE.Text" Label="Description" @bind-Value="draftSelectedTranCat!.Description" />
+                        </FormCell>
+                        <FormCell Ratio="1/4" CenterVertically="true" AlignRight="true">
+                            <Checkbox @bind-Value="draftSelectedTranCat!.IsNeed" Label="Need" FlipLabel="true" />
+                        </FormCell>
+                    </FormRow>
+                    <FormRow>
+                        <FormCell Ratio="2/4">
+                            <Input InputType="E_INPUT_TYPE.Number" Label="Weight" Placeholder="0.75" @bind-Value="draftSelectedTranCat!.Weight" />
+                        </FormCell>
+                        <FormCell Ratio="2/4">
+                            <HexColorPicker Size="E_SIZE.xs" Label="Category Color" @bind-Value="draftSelectedTranCat!.HexColor" />
+                        </FormCell>
+                    </FormRow>
+                </FormContent>
+                <FormFooter>
+                    <Button Variant="E_VARIANT.Secondary" Color="E_COLOR_BASIC.OffWhite" Onclick="CloseAddModal">Cancel</Button>
+                    <Button Variant="E_VARIANT.Primary" Color="E_COLOR_BASIC.Info" Onclick="AddTranCat">Create</Button>
+                </FormFooter>
+            </Form>
+        </div>
+    </div>
+</Modal>
+
+@* Manage Category Modal *@
+<Modal Title="Manage Category"
+       Size="E_SIZE.lg"
+       Open="showManageCategoryModal"
+       OnClose="CloseManageCategoryModal"
+       HelpBtn="true"
+       Variant="E_MODAL.AddEdit">
+    <Form>
+        <FormContent>
+            <FormRow>
+                <FormCell Ratio="1/4">
+                    <Input InputType="E_INPUT_TYPE.Text" Label="Name" Placeholder="Food" @bind-Value="draftSelectedCategory!.Name" />
+                </FormCell>
+                <FormCell Ratio="1/2">
+                    <Input InputType="E_INPUT_TYPE.Text" Label="Description" @bind-Value="draftSelectedCategory!.Description" />
+                </FormCell>
+                <FormCell Ratio="1/4" CenterVertically="true" AlignRight="true">
+                    <Checkbox @bind-Value="draftSelectedCategory!.IsNeed" Label="Need" FlipLabel="true" />
+                </FormCell>
+            </FormRow>
+            <FormRow>
+                <FormCell Ratio="2/4">
+                    <Input InputType="E_INPUT_TYPE.Number" Label="Weight" Placeholder="0.75" @bind-Value="draftSelectedCategory!.Weight" />
+                </FormCell>
+                <FormCell Ratio="2/4">
+                    <HexColorPicker Size="E_SIZE.xs" Label="Category Color" @bind-Value="draftSelectedCategory!.HexColor" />
+                </FormCell>
+            </FormRow>
+        </FormContent>
+        <FormFooter>
+            <Button Variant="E_VARIANT.Secondary" Color="E_COLOR_BASIC.OffWhite" Onclick="CloseAddModal">Cancel</Button>
+            <Button Variant="E_VARIANT.Primary" Color="E_COLOR_BASIC.Info" Onclick="HandleSaveCategory">Save</Button>
+        </FormFooter>
+    </Form>
+</Modal>
+
+@* Manage Condition Modal *@
+<Modal Title="Manage Condition"
+       Size="E_SIZE.md"
+       Open="showManageConditionModal"
+       OnClose="CloseManageConditionModal"
+       HelpBtn="true"
+       Variant="E_MODAL.Unset">
+    <Form>
+        <FormContent>
+            <FormRow>
+                <FormCell Ratio="2/7">
+                    <Dropdown Label="Field" @bind-Value="draftSelectedCondition.Field" Options="@_fieldOptions" />
+                </FormCell>
+                <FormCell Ratio="2/7">
+                    <Dropdown Label="Condition" @bind-Value="draftSelectedCondition.Condition" Options="@_conditionOptions" />
+                </FormCell>
+                <FormCell Ratio="3/7">
+                    <Input Label="Match" @bind-Value="draftSelectedCondition.Match" />
+                </FormCell>
+            </FormRow>
+        </FormContent>
+        <FormFooter>
+            <Button OnClick="CloseManageConditionModal">Cancel</Button>
+            <Button OnClick="HandleSaveCondition" Color="E_COLOR_BASIC.Info">Save</Button>
+        </FormFooter>
+    </Form>
+</Modal>
+
+@* Add Rule Modal *@
+<Modal Title="Add Rule to Category"
+       Open="showAddRuleModal"
+       OnClose="CloseAddRuleModal"
+       Variant="E_MODAL.Unset">
+    <Form>
+        <FormContent>
+            <FormRow>
+                <FormCell Ratio="2/7">
+                    <Input Label="Name" @bind-Value="draftRule.Name" />
+                </FormCell>
+                <FormCell Ratio="2/7">
+                    <Input Label="Priority" InputType="E_INPUT_TYPE.Number" @bind-Value="draftRule.Priority" />
+                </FormCell>
+                <FormCell Ratio="3/7" AlignRight="true" CenterVertically="true">
+                    <Checkbox Label="Active" @bind-Value="draftRule.Active" FlipLabel="true" />
+                </FormCell>
+            </FormRow>
+        </FormContent>
+        <FormFooter>
+            <Button OnClick="HandleCancelAddRule">Cancel</Button>
+            <Button OnClick="HandleCreateRule" Color="E_COLOR_BASIC.Info">Add</Button>
+        </FormFooter>
+    </Form>
+</Modal>
+
+@* Add Condition Modal *@
+<Modal Title="Add Condition to Rule"
+       Open="showAddConditionModal"
+       OnClose="CloseAddConditionModal"
+       Variant="E_MODAL.AddEdit">
+    <Form>
+        <FormContent>
+            <FormRow>
+                <FormCell Ratio="2/7">
+                    <Dropdown Label="Field" @bind-Value="draftCondition.Field" Options="@_fieldOptions" />
+                </FormCell>
+                <FormCell Ratio="2/7">
+                    <Dropdown Label="Condition" @bind-Value="draftCondition.Condition" Options="@_conditionOptions" />
+                </FormCell>
+                <FormCell Ratio="3/7">
+                    <Input Label="Match" @bind-Value="draftCondition.Match" />
+                </FormCell>
+            </FormRow>
+        </FormContent>
+        <FormFooter>
+            <Button OnClick="CloseManageConditionModal">Cancel</Button>
+            <Button OnClick="HandleCreateCondition" Color="E_COLOR_BASIC.Info">Save</Button>
+        </FormFooter>
+    </Form>
+</Modal>
+
+@* Remove Category Modal *@
+<DeleteConfirmationModal Open="showRemoveCategoryModal"
+                         OnClose="CloseRemoveCategoryModal"
+                         OnRemove="HandleRemoveCategory"
+                         ObjectName="Category"
+                         ItemName="@(selectedTranCat?.Name)"
+                         FromName="Hearth" />
+
+@* Remove Condition Modal *@
+<DeleteConfirmationModal Open="showRemoveConditionModal"
+                         OnClose="CloseRemoveConditionModal"
+                         OnRemove="HandleRemoveCondition"
+                         ObjectName="Rule Condition"
+                         ItemName="@($"{selectedCondition?.Field} - {selectedCondition?.Condition} - {selectedCondition?.Match}")"
+                         FromName="Hearth" />
+
+
+@code {
+    #region Loading
+    // - Loading -
+    bool initialRenderComplete = false;
+    bool resizeInitialized = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (initialRenderComplete == false && allCategories != null)
+            {
+                initialRenderComplete = true;
+                StateHasChanged(); // Trigger re-render to hide the spinner
+            }
+
+        }
+    }
+    #endregion
+
+    #region Page
+    // - Page -
+    UserDTO? currentUser = null;
+
+    List<TransactionCategoryDTO>? allCategories = new();
+    string? __selectedPageObject = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            currentUser = await _userService.GetCurrentUser();
+            allCategories = await _trancatService.GetAll();
+        }
+        catch (HearthRecordNotFoundException ex)
+        {
+            // TODO show error toast
+        }
+    }
+    #endregion
+
+    #region Modals
+    // - Modals -
+    #region Category Modals
+
+    #region Select Category
+    // Select Category Modal
+    bool showSelectModal = false;
+    TransactionCategoryDTO? selectedTranCat = null;
+    TransactionCategoryDTO? draftSelectedTranCat = null;
+    void OpenSelectModal()
+    {
+        selectedTranCat = new();
+        draftSelectedTranCat = new();
+        showSelectModal = true;
+    }
+    void CloseSelectModal()
+    {
+        selectedTranCat = null;
+        draftSelectedTranCat = null;
+        showSelectModal = false;
+    }
+
+    async void HandleSelectTranCat(TransactionCategoryDTO tranCat)
+    {
+        OpenSelectModal();
+        selectedTranCat = await _trancatService.GetByIdWithRules(tranCat.Id);
+        draftSelectedTranCat = selectedTranCat;
+    }
+
+    private Dictionary<int, bool> _hiddenRules = new();
+
+    private bool IsRuleHidden(int ruleId) =>
+        _hiddenRules.TryGetValue(ruleId, out var hidden) && hidden;
+
+    private void ToggleRule(int ruleId)
+    {
+        if (_hiddenRules.ContainsKey(ruleId))
+            _hiddenRules[ruleId] = !_hiddenRules[ruleId];
+        else
+            _hiddenRules[ruleId] = true;
+    }
+    #endregion
+
+    #region Add Category
+    // Add Category Modal
+    bool showAddModal = false;
+    TransactionCategoryDTO? draftTranCat = null;
+    void OpenAddModal()
+    {
+        draftTranCat = new()
+        {
+            HexColor = "#000000"
+        };
+        showAddModal = true;
+    }
+    void CloseAddModal() => showAddModal = false;
+    async void AddTranCat()
+    {
+        if (draftTranCat != null)
+        {
+            await _trancatService.Create(draftTranCat);
+            allCategories = await _trancatService.GetAll();
+        }
+        CloseAddModal();
+        StateHasChanged();
+    }
+    #endregion
+
+    #region Remove Category
+
+    bool showRemoveCategoryModal = false;
+    void OpenRemoveCategoryModal() => showRemoveCategoryModal = true;
+    void CloseRemoveCategoryModal() => showRemoveCategoryModal = false;
+
+    async void HandleRemoveCategory()
+    {
+        if (selectedTranCat != null)
+        {
+            await _trancatService.Delete(selectedTranCat.Id);
+            CloseRemoveCategoryModal();
+            CloseSelectModal();
+            allCategories = await _trancatService.GetAll();
+        }
+        selectedTranCat = null;
+    }
+
+    #endregion
+
+    #region Manage Category
+    // Manage Category Modal
+    bool showManageCategoryModal = false;
+    TransactionCategoryDTO? draftSelectedCategory = null;
+    void OpenManageCategoryModal() => showManageCategoryModal = true;
+    void CloseManageCategoryModal() => showManageCategoryModal = false;
+
+    async void HandleSelectManageCategory(TransactionCategoryDTO tranCat)
+    {
+        OpenManageCategoryModal();
+        selectedTranCat = tranCat;
+        draftSelectedCategory = tranCat;
+    }
+
+    async void HandleSaveCategory()
+    {
+        if (draftSelectedCategory != null)
+        {
+            await _trancatService.Update(draftSelectedCategory);
+            allCategories = await _trancatService.GetAll();
+        }
+        draftSelectedCategory = null;
+        CloseManageCategoryModal();
+    }
+    #endregion
+
+    #endregion
+
+    #region Rule Modals
+
+    #region Add Rule
+    // Add Rule Modal
+    bool showAddRuleModal = false;
+    TransactionCategoryRuleDTO? draftRule = null;
+    void OpenAddRuleModal() => showAddRuleModal = true;
+    void CloseAddRuleModal() => showAddRuleModal = false;
+    void HandleAddRule()
+    {
+        OpenAddRuleModal();
+        draftRule = new();
+    }
+    void HandleCancelAddRule()
+    {
+        CloseAddRuleModal();
+        draftRule = null;
+    }
+    async void HandleCreateRule()
+    {
+        if (draftRule != null)
+        {
+            draftRule.TransactionCategoryId = selectedTranCat.Id;
+            await _trancatRuleService.Create(draftRule);
+        }
+        draftRule = null;
+        selectedTranCat = await _trancatService.GetByIdWithRules(selectedTranCat.Id);
+        CloseAddRuleModal();
+    }
+    #endregion
+
+    #region Remove Rule
+    // Remove Rule
+    async void HandleRemoveRule(int ruleId = 0)
+    {
+        if (ruleId != 0)
+        {
+            await _trancatRuleService.Delete(ruleId);
+        }
+        selectedTranCat = await _trancatService.GetByIdWithRules(selectedTranCat.Id);
+    }
+    #endregion
+
+    #region Manage Rule
+    #endregion
+
+    #endregion
+
+    #region Condition Modals
+
+    #region Add Condition
+    // Add Condition Modal
+    bool showAddConditionModal = false;
+    RuleConditionDTO? draftCondition = null;
+    void OpenAddConditionModal() => showAddConditionModal = true;
+    void CloseAddConditionModal() => showAddConditionModal = false;
+
+    void HandleAddCondition(int ruleId)
+    {
+        OpenAddConditionModal();
+        draftCondition = new()
+        {
+            RuleId = ruleId
+        };
+    }
+
+    void HandleCancelAddCondition()
+    {
+        CloseAddConditionModal();
+    }
+
+    async void HandleCreateCondition()
+    {
+        if (draftCondition != null)
+        {
+            await _conditionService.Create(draftCondition);
+        }
+        draftCondition = null;
+        selectedTranCat = await _trancatService.GetByIdWithRules(selectedTranCat.Id);
+        CloseAddConditionModal();
+    }
+    #endregion
+
+    #region Remove Condition
+    // Remove Condition Modal
+    bool showRemoveConditionModal = false;
+    void OpenRemoveConditionModal() => showRemoveConditionModal = true;
+    void CloseRemoveConditionModal() => showRemoveConditionModal = false;
+
+    async void HandleSelectRemoveCondition(RuleConditionDTO condition)
+    {
+        OpenRemoveConditionModal();
+        selectedCondition = condition;
+    }
+
+    async void HandleRemoveCondition()
+    {
+        if (selectedCondition != null)
+        {
+            await _conditionService.Delete(selectedCondition.Id);
+        }
+        selectedCondition = null;
+        selectedTranCat = await _trancatService.GetByIdWithRules(selectedTranCat.Id);
+        CloseRemoveConditionModal();
+    }
+    #endregion
+
+    #region Manage Condition
+    // Manage Condition Modal
+    bool showManageConditionModal = false;
+    RuleConditionDTO? selectedCondition = null;
+    RuleConditionDTO? draftSelectedCondition = null;
+    void OpenManageConditionModal() => showManageConditionModal = true;
+    void CloseManageConditionModal() => showManageConditionModal = false;
+
+    string[] _fieldOptions = EnumDisplayHelper.ToDisplayStringArray<E_TRANSACTION_CONDITION_FIELDS>();
+    string[] _conditionOptions = EnumDisplayHelper.ToDisplayStringArray<E_STRING_OPERATOR>();
+
+    async void HandleSelectManageCondition(RuleConditionDTO condition)
+    {
+        OpenManageConditionModal();
+        selectedCondition = condition;
+        draftSelectedCondition = condition;
+    }
+
+    async void HandleSaveCondition()
+    {
+        if (draftSelectedCondition != null)
+        {
+            await _conditionService.Update(draftSelectedCondition);
+        }
+        draftSelectedCondition = null;
+        CloseManageConditionModal();
+    }
+    #endregion
+
+    #endregion
+    #endregion
+
+    // - CTO -
+
+    
+ 
+    // - Filter -
+
+}

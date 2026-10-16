@@ -1,12 +1,9 @@
-﻿using Hearth.Services.DTOs.Finance.Account;
-using Hearth.Services.DTOs.Finance.TransactionCategory;
+﻿using Hearth.Services.DTOs.Finance.TransactionCategory;
 using Hearth.Services.Interfaces;
 using Hearth.Services.Utility;
 using Hearth.Services.Utility.Finance;
 using Riok.Mapperly.Abstractions;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Globalization;
 
 namespace Hearth.Services.DTOs.Finance.Transaction
 {
@@ -20,7 +17,6 @@ namespace Hearth.Services.DTOs.Finance.Transaction
         public string Date { get; set; } = default!;
         public decimal Amount { get; set; }
         public string Account_Id { get; set; } = default!;
-        public AccountDTO? Account { get; set; }
         public string? Account_Owner { get; set; }
         public string? Authorized_Date { get; set; }
         public string? Authorized_Datetime { get; set; }
@@ -52,6 +48,8 @@ namespace Hearth.Services.DTOs.Finance.Transaction
                 return result;
             }
         }
+        [MapperIgnore]
+        public DateTime Date_C => DateTime.ParseExact(Date, "yyyy-MM-dd", CultureInfo.InvariantCulture);
         [MapperIgnore]
         public string DateLong_S => DateTimeHelper.ToLongDateWithOrdinal(Date);
         [MapperIgnore]

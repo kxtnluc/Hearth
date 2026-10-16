@@ -3,17 +3,6 @@
     /*        background-color: palegoldenrod;*/
 }
 
-.section-no-records {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 95%;
-
-    .title-container {
-        align-self: center;
-    }
-}
-
 
 .section-01 {
     margin-top: 0.75rem;
@@ -116,6 +105,7 @@
                 overflow-y: visible;
 
                 .s01-a02-card--bottom-content {
+                    margin-top: 1.5rem;
                     .card-section-01 {
                         .cs01-icon-name-and-amount-container {
                             display: flex;

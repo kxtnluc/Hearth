@@ -6,6 +6,7 @@ using Hearth.Services.Filters;
 using Hearth.Services.Filters.Finance;
 using Hearth.Services.Interfaces.Finance;
 using Hearth.Services.Mapping.Finance;
+using Hearth.Services.Utility;
 using Microsoft.EntityFrameworkCore;
 namespace Hearth.Services.Services.Finance
 {
@@ -71,41 +72,34 @@ namespace Hearth.Services.Services.Finance
             return result;
         }
 
-        public async Task<List<TransactionDTO>?> GetAllWithAccountAndCategory()
+        public async Task<List<TransactionDTO>> GetAllWithCategory(int[]? transactionIds = null)
         {
-            var transactions = await _context.Transactions
-                .Include(t => t.Account)
-                .Include(t => t.Category)
-                .ToListAsync();
+            IQueryable<Transaction> query = _context.Transactions
+                .AsNoTracking()
+                .Include(t => t.Category!)
+                    .ThenInclude(c => c.Rules)
+                        .ThenInclude(r => r.RuleConditions);
 
-            if (transactions == null) return null;
+            query = query.OrderByDescending(t => t.Date);
 
-            // TODO this is probably not the way to fix this recursion issue, but im tired and i dont care. this works for now.
-            foreach (var t in transactions)
+            if (transactionIds is not null)
             {
-                if (t.Account is not null)
-                {
-                    t.Account.Transactions = new();
-                }
+                query = query.Where(t => transactionIds.Contains(t.Id));
             }
-            // SAME as above just rewriten with Linq, i think it might be slower though, idk
-            //transactions
-            //    .Where(t => t.Account is not null)
-            //    .Select(t => t.Account!)
-            //    .ToList()
-            //    .ForEach(a => a.Transactions = new());
 
-            var dtos = transactions.ToDtoList();
+            var transactions = await query.ToListAsync();
 
-            var result = transactions
-                .Zip(dtos, (entity, dto) =>
-                {
-                    dto.Account = entity.Account?.ToDto();
-                    return dto;
-                })
-                .ToList();
+            return transactions.ToDtoList();
+        }
 
-            return result;
+        public async Task UpdateCategoryId(int transactionId, int categoryId, bool saveChanges = true)
+        {
+            var transaction = await DbSet.FindAsync(transactionId)
+            ?? throw new HearthRecordNotFoundException(transactionId.ToString());
+
+            transaction.CategoryId = categoryId;
+            if(saveChanges) await _context.SaveChangesAsync();
+            return;
         }
         #endregion
     }

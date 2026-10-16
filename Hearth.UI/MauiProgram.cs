@@ -1,4 +1,5 @@
-﻿using Hearth.Core.Data;
+﻿using ApexCharts;
+using Hearth.Core.Data;
 using Hearth.Integrations.APIs.Plaid;
 using Hearth.Integrations.DependencyInjection;
 using Hearth.Services.Data;
@@ -49,6 +50,15 @@ namespace Hearth.UI
             builder.Services.AddMauiBlazorWebView();
             builder.Services.AddSingleton<ISecureStorageProvider, MauiSecureStorageProvider>();
 
+            // Apex Charts
+            builder.Services.AddApexCharts(e =>
+            {
+                e.GlobalOptions = new ApexChartBaseOptions
+                {
+                    Debug = true,
+                    Theme = new Theme { Palette = PaletteType.Palette6 }
+                };
+            });
 #if DEBUG
             builder.Services.AddBlazorWebViewDeveloperTools();
             builder.Logging.AddDebug();

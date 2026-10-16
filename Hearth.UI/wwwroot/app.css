@@ -7,6 +7,20 @@ html, body {
     height:100%;
 }
 
+.section-no-records {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 95%;
+
+    .title-container {
+        align-self: center;
+    }
+}
+
+ul{
+    padding: 0;
+}
 
 
 #blazor-error-ui {

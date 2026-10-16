@@ -230,6 +230,51 @@ namespace Hearth.Core.Migrations
                     b.ToTable("Loans");
                 });
 
+            modelBuilder.Entity("Hearth.Core.Models.Finance.Report", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("CustomFiscalEnd")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("CustomFiscalStart")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("HideAllTime")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("HideBudget")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("HideCategoryGraphsRates")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("HidePeriodRates")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsByFiscalYear")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("LockPrimaryYear")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("LockSecondaryYear")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Reports");
+                });
+
             modelBuilder.Entity("Hearth.Core.Models.Finance.Transaction", b =>
                 {
                     b.Property<int>("Id")
@@ -332,10 +377,10 @@ namespace Hearth.Core.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<bool>("Ignore")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("IconName")
+                        .HasColumnType("TEXT");
 
-                    b.Property<bool>("Income")
+                    b.Property<bool>("Ignore")
                         .HasColumnType("INTEGER");
 
                     b.Property<bool>("IsNeed")
@@ -493,6 +538,18 @@ namespace Hearth.Core.Migrations
                     b.HasDiscriminator().HasValue("BankCategoryRule");
                 });
 
+            modelBuilder.Entity("Hearth.Core.Models.Finance.ReportRule", b =>
+                {
+                    b.HasBaseType("Hearth.Core.Models.Rule");
+
+                    b.Property<int>("ReportId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasIndex("ReportId");
+
+                    b.HasDiscriminator().HasValue("ReportRule");
+                });
+
             modelBuilder.Entity("Hearth.Core.Models.Finance.TransactionCategoryRule", b =>
                 {
                     b.HasBaseType("Hearth.Core.Models.Rule");
@@ -500,7 +557,30 @@ namespace Hearth.Core.Migrations
                     b.Property<int>("TransactionCategoryId")
                         .HasColumnType("INTEGER");
 
+                    b.HasIndex("TransactionCategoryId");
+
                     b.HasDiscriminator().HasValue("TransactionCategoryRule");
+                });
+
+            modelBuilder.Entity("Hearth.Core.Models.Finance.ReportAccountRule", b =>
+                {
+                    b.HasBaseType("Hearth.Core.Models.Finance.ReportRule");
+
+                    b.HasDiscriminator().HasValue("ReportAccountRule");
+                });
+
+            modelBuilder.Entity("Hearth.Core.Models.Finance.ReportTransactionRule", b =>
+                {
+                    b.HasBaseType("Hearth.Core.Models.Finance.ReportRule");
+
+                    b.HasDiscriminator().HasValue("ReportTransactionRule");
+                });
+
+            modelBuilder.Entity("Hearth.Core.Models.Finance.ReportUserRule", b =>
+                {
+                    b.HasBaseType("Hearth.Core.Models.Finance.ReportRule");
+
+                    b.HasDiscriminator().HasValue("ReportUserRule");
                 });
 
             modelBuilder.Entity("Hearth.Core.Models.Finance.Account", b =>
@@ -545,7 +625,7 @@ namespace Hearth.Core.Migrations
 
             modelBuilder.Entity("Hearth.Core.Models.Finance.Transaction", b =>
                 {
-                    b.HasOne("Hearth.Core.Models.Finance.Account", "Account")
+                    b.HasOne("Hearth.Core.Models.Finance.Account", null)
                         .WithMany("Transactions")
                         .HasForeignKey("Account_Id")
                         .HasPrincipalKey("Account_Id")
@@ -695,14 +775,16 @@ namespace Hearth.Core.Migrations
                                 .HasColumnType("INTEGER");
 
                             b1.Property<string>("Confidence_Level")
-                                .HasColumnType("TEXT");
+                                .HasColumnType("TEXT")
+                                .HasColumnName("PersonalFinanceCategory_Confidence_Level");
 
                             b1.Property<string>("Detailed")
-                                .HasColumnType("TEXT");
+                                .HasColumnType("TEXT")
+                                .HasColumnName("PersonalFinanceCategory_Detailed");
 
                             b1.Property<string>("Primary")
                                 .HasColumnType("TEXT")
-                                .HasColumnName("PersonalFinanceCategory_Confidence_Level");
+                                .HasColumnName("PersonalFinanceCategory_Primary");
 
                             b1.HasKey("TransactionId");
 
@@ -711,8 +793,6 @@ namespace Hearth.Core.Migrations
                             b1.WithOwner()
                                 .HasForeignKey("TransactionId");
                         });
-
-                    b.Navigation("Account");
 
                     b.Navigation("Category");
 
@@ -745,9 +825,37 @@ namespace Hearth.Core.Migrations
                     b.Navigation("Role");
                 });
 
+            modelBuilder.Entity("Hearth.Core.Models.Finance.ReportRule", b =>
+                {
+                    b.HasOne("Hearth.Core.Models.Finance.Report", null)
+                        .WithMany("Rules")
+                        .HasForeignKey("ReportId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Hearth.Core.Models.Finance.TransactionCategoryRule", b =>
+                {
+                    b.HasOne("Hearth.Core.Models.Finance.TransactionCategory", null)
+                        .WithMany("Rules")
+                        .HasForeignKey("TransactionCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Hearth.Core.Models.Finance.Account", b =>
                 {
                     b.Navigation("Transactions");
+                });
+
+            modelBuilder.Entity("Hearth.Core.Models.Finance.Report", b =>
+                {
+                    b.Navigation("Rules");
+                });
+
+            modelBuilder.Entity("Hearth.Core.Models.Finance.TransactionCategory", b =>
+                {
+                    b.Navigation("Rules");
                 });
 
             modelBuilder.Entity("Hearth.Core.Models.Rule", b =>

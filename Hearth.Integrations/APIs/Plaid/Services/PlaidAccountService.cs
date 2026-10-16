@@ -133,7 +133,8 @@ namespace Hearth.Integrations.APIs.Plaid.Services
                     CurrentBankIndex = i + 1,
                     TotalBanks = allBanks.Count,
                     CurrentInstitution = bank.Institution_Id,
-                    Stage = "Fetching accounts"
+                    Stage = "Fetching accounts",
+                    PercentComplete = Math.Min(50, ((i + 1) * 10))
                 });
 
                 var bankAccounts = await GetBankAccounts(bank.Item_Id);
@@ -162,7 +163,8 @@ namespace Hearth.Integrations.APIs.Plaid.Services
                         CurrentBankIndex = i + 1,
                         TotalBanks = allBanks.Count,
                         CurrentInstitution = bank.Institution_Id,
-                        Stage = $"Creating {newAccounts.Count} new accounts from {bank.Item_Id}"
+                        Stage = $"Creating {newAccounts.Count} new accounts from {bank.Item_Id}",
+                        PercentComplete = Math.Min(50, ((i + 1) * 15))
                     });
                     await _accountService.CreateRange(newAccounts, false);
                     summary.TotalAdded += newAccounts.Count;
@@ -175,7 +177,8 @@ namespace Hearth.Integrations.APIs.Plaid.Services
                         CurrentBankIndex = i + 1,
                         TotalBanks = allBanks.Count,
                         CurrentInstitution = bank.Institution_Id,
-                        Stage = $"Updating {updateAccounts.Count} accounts from {bank.Item_Id}"
+                        Stage = $"Updating {updateAccounts.Count} accounts from {bank.Item_Id}",
+                        PercentComplete = Math.Min(50, ((i + 1) * 20))
                     });
                     await _accountService.UpdateRange(updateAccounts, false);
                     summary.TotalModified += updateAccounts.Count;

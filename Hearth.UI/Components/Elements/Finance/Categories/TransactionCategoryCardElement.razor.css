@@ -1,0 +1,10 @@
+.trancat-card-element-wraper {
+    cursor: pointer;
+    .section-01-card-container {
+        .trancat-name{
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+            border-radius: var(--radius-lg);
+        }
+    }
+}

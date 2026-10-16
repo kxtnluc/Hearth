@@ -2,6 +2,7 @@
 @using Hearth.Services.DTOs.Finance.Account
 @using Hearth.Services.CTOs.Finance.Account
 @using Hearth.Services.DTOs.Finance.Transaction
+@using Hearth.UI.Components.Elements.Finance.Transactions.Lists
 @inject IAccountService _accountService
 @inject ITransactionService _transactionService
 
@@ -55,43 +56,54 @@
                     <div class="account-and-routing-numbers">
                         <div class="num-account">
                             <span>Account #</span>
-                            <span class="num">@(string.IsNullOrWhiteSpace(account.AccountNumber) ? ("unset...") : (account.AccountNumber))</span>
+                            <span class="num">@(string.IsNullOrWhiteSpace(account.AccountNumber) ? (" - ") : (account.AccountNumber))</span>
                         </div>
                         <div class="num-routing">
                             <span>Routing #</span>
-                            <span class="num">@(string.IsNullOrWhiteSpace(account.AccountNumber) ? ("unset...") : (account.AccountRoutingNumber))</span>
+                            <span class="num">@(string.IsNullOrWhiteSpace(account.AccountNumber) ? (" - ") : (account.AccountRoutingNumber))</span>
                         </div>
                     </div>
                 </div>
                 <div class="balance-container">
                     <div class="debit-grid">
-                        @* Row 1: Headers — middle cell is empty *@
-                        <div class="debit-grid__header">Outgoing per Month</div>
-                        <div></div>  @* empty middle header *@
-                        <div class="debit-grid__header">Incoming per Month</div>
-
-                        @* Row 2: Data *@
-                        <div class="outgoing-data-container">
-                            <div class="outgoing-num">@accountReport.Formated.Average_OutgoingPerPeriod_Num_S</div>
-                            <div class="outgoing-percent-container">
-                                <ArrowIcon DirectionPoint="E_DIRECTION_EIGHT_POINT.DownRight" Size="26" />
-                                <div class="outgoing-percent">@accountReport.Formated.Average_OutgoingPerPeriod_Percent_S</div>
+                        <div class="grid-in">
+                            <div class="header">
+                                Avg. Incoming / mo
+                            </div>
+                            <div class="body">
+                                <div class="num">
+                                    @accountReport.Formated.Average_IncomingPerPeriod_Num_S
+                                </div>
+                                <div class="perc">
+                                    <div class="icon-container">
+                                        <ArrowIcon DirectionPoint="E_DIRECTION_EIGHT_POINT.UpRight" Size="26" />
+                                    </div>
+                                    <div class="value">
+                                        @accountReport.Formated.Average_IncomingPerPeriod_Percent_S
+                                    </div>
+                                </div>
                             </div>
                         </div>
-
-                        @* Balance in the middle column *@
-                        <div class="debit-grid__balance">
-                            <Title Size="E_SIZE.xl">
-                                @account.Balances.Current_S
-                            </Title>
+                        <div class="grid-bal">
+                            @account.Balances!.Current_S
                         </div>
-
-                        <div class="incoming-data-container">
-                            <div class="incoming-percent-container">
-                                <ArrowIcon DirectionPoint="E_DIRECTION_EIGHT_POINT.UpRight" Size="26" />
-                                <div class="incoming-percent">@accountReport.Formated.Average_IncomingPerPeriod_Percent_S</div>
+                        <div class="grid-out">
+                            <div class="header">
+                                Avg. Outgoing / mo
                             </div>
-                            <div class="incoming-num">@accountReport.Formated.Average_IncomingPerPeriod_Num_S</div>
+                            <div class="body">
+                                <div class="perc">
+                                    <div class="icon-container">
+                                        <ArrowIcon DirectionPoint="E_DIRECTION_EIGHT_POINT.DownRight" Size="26" />
+                                    </div>
+                                    <div class="value">
+                                        @accountReport.Formated.Average_OutgoingPerPeriod_Percent_S
+                                    </div>
+                                </div>
+                                <div class="num">
+                                    @accountReport.Formated.Average_OutgoingPerPeriod_Num_S
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -102,7 +114,20 @@
     </section>
     <section class="section-02-stats">
     </section>
+    <div class="section-break">
+        <LineBreak Size="E_SIZE.lg" Width="33%" />
+    </div>
     <section class="section-03-transactions">
+        <article class="s03-article-01">
+            <div class="s03-a01-header">
+                <Title>@account.Name_C Transactions</Title>
+            </div>
+        </article>
+        <article class="s03-article-02">
+            <div class="s03-a02-list-container">
+                <TransactionCardListElement Transactions="@account.Transactions" />
+            </div>
+        </article>
     </section>
 </main>
 
@@ -231,7 +256,7 @@
 
     async void InitiateUpdate()
     {
-        if(account != null)
+        if(account != null && accountDraft != null)
         {
             try
             {

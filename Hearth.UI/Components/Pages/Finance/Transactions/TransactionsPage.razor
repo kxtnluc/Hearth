@@ -40,7 +40,7 @@
                                 <Input @onblur="InitiateFilter" InputType="E_INPUT_TYPE.Text" Label="Transaction Id" @bind-Value="transactionFilter.Transaction_Id" />
                             </FormCell>
                             <FormCell Ratio="1/8" CenterVertically="true" AlignCenter="true">
-                                <Checkbox FlipLabel="true" Label="Income Only" @bind-Value="transactionFilter.IncomeOnly" />
+                                <Checkbox FlipLabel="true" Label="Income Only" @bind-Value="transactionFilter.IncomeOnly" OnChange="@(() => InitiateFilter())" />
                             </FormCell>
                             <FormCell Ratio="1/8" CenterVertically="true" AlignCenter="true">
                                 <Button OnClick="ResetFilter" Color="E_COLOR_BASIC.Info" Variant="E_VARIANT.Primary">Reset</Button>
@@ -192,10 +192,9 @@
 @* Toolbar *@
 
 <Toolbar HasAddBtn="false"
-         HasSearchBtn="true"
+         HasSearchBtn="false"
          HasManageBtn="false"
-         HasSettingsBtn="false"
-         HasLinkBtn="true"
+         HasSettingsBtn="true"
          Position="E_TOOLBAR_POSITION.BottomRight"
          Size="E_SIZE.lg"
          TooltipSubject="Transaction" />
@@ -235,7 +234,7 @@
         try
         {
             currentUser = await _userService.GetCurrentUser();
-            allTransactions = await _transactionService.GetAllWithAccountAndCategory();
+            allTransactions = await _transactionService.GetAllWithCategory();
             filteredTransactions = allTransactions;
             stats.Transactions = filteredTransactions;
         }

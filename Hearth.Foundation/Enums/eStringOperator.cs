@@ -10,16 +10,16 @@ namespace Hearth.Foundation.Enums
         [Description("exact")]
         Exact = 0,
 
-        [Description("starts_with")]
+        [Description("starts-with")]
         StartsWith = 1,
 
-        [Description("ends_with")]
+        [Description("ends-with")]
         EndsWith = 2,
 
         [Description("contains")]
         Contains = 3,
 
-        [Description("is_not")]
+        [Description("is-not")]
         IsNot = 4,
     }
 }

@@ -1,15 +1,144 @@
 ﻿@using Hearth.Services.DTOs.Finance.Transaction
+@using Hearth.Services.Utility
+@using Hearth.Services.DTOs.Finance.TransactionCategory
+@inject ITransactionCategoryService _categoryService
+@inject ITransactionService _transactionService
 
 <div class="transaction-card-list-element-wraper">
     @foreach (TransactionDTO transaction in Transactions)
     {
-        <TransactionCardElement Transaction="@transaction" OnSelect="OnSelect" />
+        <TransactionCardElement Transaction="@transaction" OnSelect="OnSelect" OnView="@(() => HandleViewModal(transaction))" />
     }
 </div>
+
+<Modal Title="Transaction"
+       Open="showViewModal"
+       OnClose="CloseViewModal"
+       Variant="E_MODAL.Unset"
+       Size="E_SIZE.lg">
+       <div>
+
+            <section class="section-01">
+
+                <article class="s01-article-01">
+                    <div class="s01-a01-date-container">
+                        <div>@viewTransaction?.DateLong_S</div>
+                    </div>
+                    @* <div class="s01-a01-category-container" style="background-color: @(viewTransaction.Category?.HexColor ?? "var(--color-primary-faded-2)")">
+                        <div style="color: @(viewTransaction.Category?.HexColorText_C ?? "black")">@(viewTransaction.Category?.Name ?? "N/A")</div>
+                    </div> *@
+                    <div class="s02-a01-category-dropdown-container">
+                        <DropdownDynamic 
+                            @bind-Value="selectedCategoryId" 
+                            Options="_categoryOptions" 
+                            IncludeEmptyOption="true" 
+                            OnChange="HandleUpdateCategory" 
+                            TValue="int" 
+                            HexColor="@viewTransaction?.Category?.HexColor" 
+                            HexTextColor="@viewTransaction?.Category?.HexColorText_C" 
+                     />
+                    </div>
+                </article>
+            
+                <article class="s01-article-01-name-and-amount">
+                    <div class="s01-a01-name-and-icon-container">
+                        <div class="plaid-icon-container">
+                            <img class="plaid-icon" src="@viewTransaction?.Logo_Url" />
+                        </div>
+                        <div class="name">
+                            @viewTransaction?.DisplayName_S
+                        </div>
+                    </div>
+                    <div class="s01-a01-amount">
+                        @if (viewTransaction.IsIncome_C)
+                        {
+                            <div class="amount-income">
+                                @viewTransaction?.Amount_S
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="amount-expense">
+                                @viewTransaction?.Amount_S
+                            </div>
+                        }
+                    </div>
+                </article>
+            </section>
+            <section class="section-02">
+                <article class="s02-a01-header">
+                    Details
+                </article>
+                <article class="s02-a02-body">
+                    @foreach (var (prop, displayValue) in TableDisplayHelper.GetDisplayableProperties(viewTransaction!))
+                    {
+                        <div class="s02-a02-row">
+                            <span class="s02-a02-label">@prop.Name</span>
+                            <span class="s02-a02-value">@displayValue</span>
+                        </div>
+                    }
+                </article>
+            </section>
+       </div>
+</Modal>
 
 @code {
     // - List DTO -
     [Parameter] public List<TransactionDTO> Transactions { get; set; } = default!;
-
     [Parameter] public EventCallback<TransactionDTO> OnSelect { get; set; }
+    [Parameter] public EventCallback<TransactionDTO> OnTransactionUpdated { get; set; }
+
+    // - Categories -
+    Dictionary<int, TransactionCategoryDTO> _categoriesById = new();
+    List<DropdownDynamicOption<int>> _categoryOptions = new();
+
+    // - View Modal -
+    bool showViewModal = false;
+    TransactionDTO? viewTransaction = null;
+    int selectedCategoryId;
+    void OpenViewModal() => showViewModal = true;
+    void CloseViewModal() => showViewModal = false;
+
+    void HandleViewModal(TransactionDTO transaction)
+    {
+        if (transaction is null) return;
+
+        viewTransaction = transaction;
+        selectedCategoryId = transaction.CategoryId ?? 0;   // sync the dropdown to THIS transaction
+        OpenViewModal();
+    }
+
+
+    async Task HandleUpdateCategory(int newValue)
+    {
+        if (newValue == 0) return;
+        if (viewTransaction is null) return;
+
+        await _transactionService.UpdateCategoryId(viewTransaction.Id, newValue);
+
+        // Update the one DTO in place. Every list holding it sees the change.
+        viewTransaction.CategoryId = newValue;
+        viewTransaction.Category = newValue is int id && _categoriesById.TryGetValue(id, out var category)
+            ? category
+            : null;
+
+        // Not nessesary, but the parent can set it if it wants something to happen here.
+        await OnTransactionUpdated.InvokeAsync(viewTransaction);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var categories = await _categoryService.GetAll();
+            _categoriesById = categories.ToDictionary(c => c.Id);
+            _categoryOptions = categories
+                .Select(c => new DropdownDynamicOption<int> { Label = c.Name, Value = c.Id })
+                .ToList();
+        }
+        catch (HearthRecordNotFoundException)
+        {
+            // TODO show error toast
+        }
+    }
 }

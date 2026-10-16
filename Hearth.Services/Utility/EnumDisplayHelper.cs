@@ -8,6 +8,12 @@ namespace Hearth.Services.Utility
 {
     public static class EnumDisplayHelper
     {
+        /// <summary>
+        /// Takes in an Enum, spits out its description string
+        /// </summary>
+        /// <typeparam name="TEnum"></typeparam>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public static string ToDisplayString<TEnum>(this TEnum value) where TEnum : struct, Enum
         {
             var field = typeof(TEnum).GetField(value.ToString());
@@ -33,6 +39,34 @@ namespace Hearth.Services.Utility
             if (withAnyOption) result = result.Prepend("any");
 
             return result.ToArray();
+        }
+        /// <summary>
+        /// Converts a string description on the "Source" ENUM, usually eStringOperator, into its "Target" enum description, usually E_CONDITION
+        /// EnumDisplayHelper.ConvertDisplayString<E_STRING_OPERATOR, E_CONDITION>("starts-with");
+        /// "starts-with" → "Starts With"
+        /// </summary>
+        /// <typeparam name="TSource"></typeparam>
+        /// <typeparam name="TTarget"></typeparam>
+        /// <param name="sourceDisplay"></param>
+        /// <returns></returns>
+        public static string? ConvertDisplayString<TSource, TTarget>(string sourceDisplay)
+            where TSource : struct, Enum
+            where TTarget : struct, Enum
+        {
+            // Find the source enum value that matches the input display string
+            var sourceValue = FromDisplayString<TSource>(sourceDisplay);
+            if (sourceValue == null) return null;
+
+            // Get the name of that enum value (e.g. "StartsWith")
+            var sourceName = sourceValue.Value.ToString();
+
+            // Find a matching enum value in TTarget with the same name
+            if (Enum.TryParse<TTarget>(sourceName, out var targetValue))
+            {
+                return targetValue.ToDisplayString();
+            }
+
+            return null;
         }
     }
 }

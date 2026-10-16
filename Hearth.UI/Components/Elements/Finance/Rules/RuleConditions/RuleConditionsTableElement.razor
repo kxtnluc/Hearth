@@ -1,0 +1,184 @@
+﻿@using Hearth.Services.DTOs
+@using Hearth.Services.Utility
+@inject IRuleConditionService _conditionService
+
+<TableCompact HasActionColumn="true" IsHidden="@IsHidden">
+    <TableCompactHeader>
+        <TableCompactCell Ratio="1/1">Field</TableCompactCell>
+        <TableCompactCell Ratio="3/8">Condition</TableCompactCell>
+        <TableCompactCell Ratio="2/4">Match</TableCompactCell>
+        <TableCompactCell IsActionCell="true" Width="6rem">Actions</TableCompactCell>
+    </TableCompactHeader>
+
+    @for (int i = 0; i < Conditions.Count; i++)
+    {
+        var condition = Conditions[i];
+        var isOdd = i % 2 != 0;
+        var isLast = i == Conditions.Count - 1;
+
+        <TableCompactRow IsOdd="isOdd" IsLast="isLast">
+            <TableCompactCell Ratio="1/1">@condition.Field</TableCompactCell>
+            <TableCompactCell Ratio="3/8">@DisplayCondition(condition.Condition)</TableCompactCell>
+            <TableCompactCell Ratio="2/4">@condition.Match</TableCompactCell>
+            <TableCompactCell IsActionCell="true" Width="6rem">
+                <ButtonIconOnly Color="E_COLOR_BASIC.Remove" OnClick="@(() => OpenRemove(condition))">
+                    <TrashIcon Size="19" />
+                </ButtonIconOnly>
+                <ButtonIconOnly Color="E_COLOR_BASIC.Primary" OnClick="@(() => OpenEdit(condition))">
+                    <EditIcon Size="19" />
+                </ButtonIconOnly>
+            </TableCompactCell>
+        </TableCompactRow>
+    }
+</TableCompact>
+
+@if (!IsHidden)
+{
+    <Button Variant="E_VARIANT.Outline" Color="E_COLOR_BASIC.Info" Size="E_SIZE.sm" OnClick="OpenAdd">
+        Add Condition
+    </Button>
+}
+
+@* Add / Edit Modal *@
+<Modal Title="@(editingCondition is null ? "Add Condition" : "Edit Condition")"
+       Size="E_SIZE.md"
+       Open="showEditModal"
+       OnClose="CloseEdit"
+       Variant="E_MODAL.AddEdit">
+    <Form>
+        <FormContent>
+            <FormRow>
+                <FormCell Ratio="1/3">
+                    <Dropdown TValue="string" Label="Field" Options="FieldOptions" IncludeEmptyOption="true" @bind-Value="draft.Field" />
+                </FormCell>
+                <FormCell Ratio="1/3">
+                    <Dropdown TValue="string" Label="Condition" Options="ConditionOptions" IncludeEmptyOption="true" @bind-Value="draft.Condition" />
+                </FormCell>
+                <FormCell Ratio="1/3">
+                    <Input InputType="E_INPUT_TYPE.Text" Label="Match" @bind-Value="draft.Match" />
+                </FormCell>
+            </FormRow>
+        </FormContent>
+        <FormFooter>
+            <Button Variant="E_VARIANT.Secondary" Color="E_COLOR_BASIC.OffWhite" OnClick="CloseEdit">Cancel</Button>
+            <Button Variant="E_VARIANT.Primary" Color="E_COLOR_BASIC.Info" OnClick="SaveCondition">Save</Button>
+        </FormFooter>
+    </Form>
+</Modal>
+
+@* Remove Modal *@
+<Modal Title="Remove Condition"
+       Size="E_SIZE.sm"
+       Open="showRemoveModal"
+       OnClose="CloseRemove">
+    <div>Remove "@removingCondition?.Field @DisplayCondition(removingCondition?.Condition) @removingCondition?.Match"?</div>
+    <FormFooter>
+        <Button Variant="E_VARIANT.Secondary" Color="E_COLOR_BASIC.OffWhite" OnClick="CloseRemove">Cancel</Button>
+        <Button Variant="E_VARIANT.Primary" Color="E_COLOR_BASIC.Remove" OnClick="RemoveCondition">Remove</Button>
+    </FormFooter>
+</Modal>
+
+@code {
+    // - Parameters -
+    /// <summary>The rule whose conditions this table shows and edits. Updated in place.</summary>
+    [Parameter, EditorRequired] public RuleDTO Rule { get; set; } = default!;
+    /// <summary>Field names conditions can target. Differs per rule type (transaction vs account fields).</summary>
+    [Parameter] public string[] FieldOptions { get; set; } = EnumDisplayHelper.ToDisplayStringArray<E_TRANSACTION_CONDITION_FIELDS>();
+    [Parameter] public string[] ConditionOptions { get; set; } = EnumDisplayHelper.ToDisplayStringArray<E_STRING_OPERATOR>();
+    [Parameter] public bool IsHidden { get; set; } = false;
+    /// <summary>Fires after any add, edit, or remove, so the parent can react (stats, re-render, etc).</summary>
+    [Parameter] public EventCallback<RuleDTO> OnChanged { get; set; }
+
+    List<RuleConditionDTO> Conditions => Rule.RuleConditions ??= new();
+
+    // - Add / Edit -
+    bool showEditModal = false;
+    RuleConditionDTO? editingCondition = null;   // the real row being edited, null when adding
+    RuleConditionDTO draft = new();               // what the form binds to
+
+    void OpenAdd()
+    {
+        editingCondition = null;
+        draft = new RuleConditionDTO { RuleId = Rule.Id };
+        showEditModal = true;
+    }
+
+    void OpenEdit(RuleConditionDTO condition)
+    {
+        editingCondition = condition;
+        draft = Copy(condition);   // edit a copy, so Cancel leaves the table untouched
+        showEditModal = true;
+    }
+
+    void CloseEdit()
+    {
+        showEditModal = false;
+        editingCondition = null;
+    }
+
+    async Task SaveCondition()
+    {
+        if (editingCondition is null)
+        {
+            var created = await _conditionService.Create(draft);
+            Conditions.Add(created);
+        }
+        else
+        {
+            await _conditionService.Update(draft);
+            editingCondition.Field = draft.Field;
+            editingCondition.Condition = draft.Condition;
+            editingCondition.Match = draft.Match;
+        }
+
+        CloseEdit();
+        await OnChanged.InvokeAsync(Rule);
+    }
+
+    // - Remove -
+    bool showRemoveModal = false;
+    RuleConditionDTO? removingCondition = null;
+
+    void OpenRemove(RuleConditionDTO condition)
+    {
+        removingCondition = condition;
+        showRemoveModal = true;
+    }
+
+    void CloseRemove()
+    {
+        showRemoveModal = false;
+        removingCondition = null;
+    }
+
+    async Task RemoveCondition()
+    {
+        if (removingCondition is not null)
+        {
+            await _conditionService.Delete(removingCondition.Id);
+            Conditions.Remove(removingCondition);
+        }
+
+        CloseRemove();
+        await OnChanged.InvokeAsync(Rule);
+    }
+
+    // - Helpers -
+    static RuleConditionDTO Copy(RuleConditionDTO c) => new()
+    {
+        Id = c.Id,
+        RuleId = c.RuleId,
+        Field = c.Field,
+        Condition = c.Condition,
+        Match = c.Match
+    };
+
+    static string DisplayCondition(string? condition)
+    {
+        if (string.IsNullOrWhiteSpace(condition)) return string.Empty;
+
+        return EnumDisplayHelper.FromDisplayString<E_STRING_OPERATOR>(condition) is not null
+            ? EnumDisplayHelper.ConvertDisplayString<E_STRING_OPERATOR, E_CONDITION>(condition)
+            : EnumDisplayHelper.ConvertDisplayString<E_OPERATOR, E_CONDITION>(condition);
+    }
+}

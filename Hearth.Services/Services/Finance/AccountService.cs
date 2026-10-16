@@ -79,17 +79,30 @@ namespace Hearth.Services.Services.Finance
                     .ThenInclude(t => t.Category)
                 .SingleOrDefaultAsync(a => a.Id == id);
 
-            if (account is null) return null;
+            return account?.ToDto();
+        }
 
-            // Break the Transaction -> Account -> Transactions cycle before mapping
-            foreach (var t in account.Transactions)
+        public async Task<List<AccountDTO>> GetRangeWithAll(int[]? accountIds = null, bool track = false)
+        {
+            IQueryable<Account> query = _context.Accounts
+                .Include(a => a.Transactions)
+                    .ThenInclude(t => t.Category!)
+                        .ThenInclude(c => c.Rules)
+                            .ThenInclude(r => r.RuleConditions);
+
+            if (!track)
             {
-                t.Account = null;
+                query = query.AsNoTracking();
             }
 
-            var dto = account.ToDto();
+            if (accountIds is not null)
+            {
+                query = query.Where(a => accountIds.Contains(a.Id));
+            }
 
-            return dto;
+            var accounts = await query.ToListAsync();
+
+            return accounts.ToDtoList();
         }
         #endregion
         #region CTO Generation

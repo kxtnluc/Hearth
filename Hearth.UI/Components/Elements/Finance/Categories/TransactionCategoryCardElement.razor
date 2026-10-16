@@ -1,0 +1,31 @@
+﻿@using Hearth.Services.DTOs.Finance.TransactionCategory
+@inject NavigationManager _nav
+
+<div class="trancat-card-element-wraper" @onclick="HandleClick">
+    <section class="section-01-card-container">
+        <Card HoverEffects="true">
+            <CardHeader>
+                <CardTitle>
+                    <Text><span class="trancat-name" style="background-color: @TranCat.HexColor; color: @TranCat.HexColorText_C;">@TranCat.Name</span></Text>
+                </CardTitle>
+                <CardDescription>
+                    @TranCat.Description
+                </CardDescription>
+            </CardHeader>
+        </Card>
+    </section>
+</div>
+
+@code {
+    // - DTO -
+    [Parameter] public TransactionCategoryDTO TranCat { get; set; } = default!;
+
+    // - On Select -
+    [Parameter] public EventCallback<TransactionCategoryDTO> OnSelect { get; set; }
+
+    // - Logic -
+    async Task HandleClick()
+    {
+        await OnSelect.InvokeAsync(TranCat);
+    }
+}

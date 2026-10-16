@@ -15,13 +15,13 @@ namespace Hearth.Services.DTOs.Finance.Account
         public int Id { get; set; }
         #region Plaid
         public string Account_Id { get; set; } = default!;
-        public BalancesDTO? Balances { get; set; }
-        public string? Mask { get; set; }
-        public string? Name { get; set; }
-        public string? Official_Name { get; set; }
-        public string? Type { get; set; }
-        public string? Subtype { get; set; }
-        public List<TransactionDTO>? Transactions { get; set; } = new();
+        public BalancesDTO? Balances { get; set; } = null;
+        public string? Mask { get; set; } = null;
+        public string? Name { get; set; } = null;
+        public string? Official_Name { get; set; } = null;
+        public string? Type { get; set; } = null;
+        public string? Subtype { get; set; } = null;
+        public List<TransactionDTO>? Transactions { get; set; } = null;
         #endregion
         #region Hearth
         /// <summary>
@@ -31,7 +31,7 @@ namespace Hearth.Services.DTOs.Finance.Account
         /// <summary>
         /// The PLAID Item_Id of the bank this account is assosiated with. The user should not interfere with this.
         /// </summary>
-        public string? Bank_Item_Id { get; set; }
+        public string? Bank_Item_Id { get; set; } = null;
         /// <summary>
         /// User Set. Gives the account a color. Effects banners and other things. Default is "Hearth Red"
         /// </summary>
@@ -81,15 +81,15 @@ namespace Hearth.Services.DTOs.Finance.Account
 
     public class BalancesDTO
     {
-        public decimal? Available { get; set; }
+        public decimal? Available { get; set; } = null;
 
-        public decimal? Current { get; set; }
+        public decimal? Current { get; set; } = null;
 
-        public string? Iso_Currency_Code { get; set; } = string.Empty;
+        public string? Iso_Currency_Code { get; set; } = null;
 
-        public decimal? Limit { get; set; }
+        public decimal? Limit { get; set; } = null;
 
-        public string? Unofficial_Currency_Code { get; set; } = string.Empty;
+        public string? Unofficial_Currency_Code { get; set; } = null;
 
         /// <summary>
         /// The effective currency code for this balance — prefers ISO code, falls back to

@@ -13,10 +13,18 @@ namespace Hearth.Services.Interfaces.Finance
         Task<TransactionDTO?> GetByTransactionId(string transactionId);
         Task<List<TransactionDTO>?> GetByAccountId(string accountId);
         /// <summary>
-        /// Gets all transactions with their associated account and category information. This must be a unique method, instead of just GetAll with some inclusions, because that would cause recursion
+        /// Gets all transactions with their associated category information.
         /// </summary>
         /// <returns></returns>
-        Task<List<TransactionDTO>?> GetAllWithAccountAndCategory();
+        Task<List<TransactionDTO>> GetAllWithCategory(int[]? transactionIds = null);
         Task DeleteTransactionsFromPlaidSyncRemoval(List<(string Account_Id, string Transaction_Id)> removed, bool saveChanges = true);
+        /// <summary>
+        /// Updates just the category id of a single transaction. This was made since this is called often, and don't need to update the whole row all the time.
+        /// </summary>
+        /// <param name="transactionId"></param>
+        /// <param name="categoryid"></param>
+        /// <param name="saveChanges"></param>
+        /// <returns></returns>
+        Task UpdateCategoryId(int transactionId, int categoryid, bool saveChanges = true);
     }
 }

@@ -14,14 +14,10 @@ namespace Hearth.Services.Mapping.Finance
         /// <summary>
         /// Turns a Model (entity) into its DTO
         /// </summary>
-        [MapperIgnoreSource(nameof(Transaction.Account))]
-        [MapperIgnoreTarget(nameof(Transaction.Account))]
         public static partial TransactionDTO ToDto(this Transaction entity);
         /// <summary>
         /// Turns a DTO back into its Model (entity)
         /// </summary>
-        [MapperIgnoreSource(nameof(Transaction.Account))]
-        [MapperIgnoreTarget(nameof(Transaction.Account))]
         public static partial Transaction ToEntity(this TransactionDTO dto);
         /// <summary>
         /// Turns a Model List into its DTO List counterpart
@@ -31,8 +27,6 @@ namespace Hearth.Services.Mapping.Finance
         /// Applies non-null values from the DTO onto an existing tracked entity.
         /// Any property that's null on the DTO is left untouched on the entity.
         /// </summary>
-        [MapperIgnoreSource(nameof(Transaction.Account))]
-        [MapperIgnoreTarget(nameof(Transaction.Account))]
         public static partial void ApplyUpdate(this TransactionDTO dto, Transaction entity);
     }
 }

@@ -11,5 +11,6 @@ namespace Hearth.Services.Interfaces.Finance
         Task<List<AccountDTO>?> GetByUserId(int userId);
         Task<AccountCTO?> GenerateAccountCTO(AccountDTO account, AccountCTO_Options options);
         Task<AccountDTO?> GetByIdWithTransactions(int id);
+        Task<List<AccountDTO>?> GetRangeWithAll(int[]? accountIds = null, bool track = false);
     }
 }
