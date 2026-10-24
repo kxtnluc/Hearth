@@ -1,59 +1,46 @@
-﻿@page "/finance/reports/builder/{reportId}"
+﻿@page "/finance/reports/builder/{ReportId:int}"
+@using Hearth.Services.DTOs
 @using Hearth.Services.DTOs.Finance.Report
 @using Hearth.UI.Components.Elements.Finance.Rules.RuleConditions
 @inject IUserService _userService
 @inject IReportService _reportService
 @inject IReportTransactionRuleService _reportTranRuleService
-@inject IJSRuntime JS
 
-@* Loading *@
-
-@if (initialRenderComplete == false)
+@if (draftReport is null)
 {
     <LoadingCircleIcon AutoCenter="true" />
 }
 else
 {
-    @* Page *@
-
-    <main class="main-report-builder" hidden="@(initialRenderComplete ? false : true)">
+    <main class="main-report-builder">
         <section class="section-page-title">
-            <Title>
-                Report Builder
-            </Title>
+            <Title>Report Builder</Title>
         </section>
-        @* - Actual Page Content - *@
+
         <section class="section-01">
             <article class="s01-article-01">
                 <div class="s01-a01-form-container">
                     <Form>
                         <FormHeader>
-                            <FormTitle>
-                                @draftReport?.Name
-                            </FormTitle>
-                            <FormDescription>
-                                @draftReport?.Description
-                            </FormDescription>
+                            <FormTitle>@draftReport.Name</FormTitle>
+                            <FormDescription>@draftReport.Description</FormDescription>
                         </FormHeader>
                         <FormContent>
                             <FormRow>
                                 <FormCell Ratio="2/5">
-                                    <Input Label="Report Name" @bind-Value="draftReport?.Name" />
+                                    <Input Label="Report Name" @bind-Value="draftReport.Name" />
                                 </FormCell>
                                 <FormCell Ratio="3/5">
-                                    <Input Label="Description" @bind-Value="draftReport?.Description" />
+                                    <Input Label="Description" @bind-Value="draftReport.Description" />
                                 </FormCell>
                             </FormRow>
-                            @foreach (var tr in draftReport.TransactionRules)
+
+                            @foreach (var rule in draftReport.TransactionRules)
                             {
-                                <FormRow>
+                                <FormRow @key="rule.Id">
                                     <FormCell Ratio="1">
-                                        <span class="rule-title">@tr.Name</span>
-                                    </FormCell>
-                                </FormRow>
-                                <FormRow>
-                                    <FormCell Ratio="1">
-                                        <RuleConditionsTableElement Rule="tr" IsHidden="false" />
+                                        <RuleConditionsTableElement Rule="rule"
+                                                                    OnRemoveRule="HandleRemoveRule" />
                                     </FormCell>
                                 </FormRow>
                             }
@@ -62,16 +49,12 @@ else
                 </div>
             </article>
         </section>
-
     </main>
-
 }
 
-
 @* Toolbar *@
-
 <Toolbar HasAddBtn="true"
-         OnAdd="HandleAddRule"
+         OnAdd="OpenAddRuleModal"
          HasSaveBtn="true"
          OnSave="HandleSaveReport"
          Position="E_TOOLBAR_POSITION.BottomRight"
@@ -98,81 +81,57 @@ else
             </FormRow>
         </FormContent>
         <FormFooter>
-            <Button OnClick="HandleCancelAddRule">Cancel</Button>
+            <Button OnClick="CloseAddRuleModal">Cancel</Button>
             <Button OnClick="HandleCreateRule" Color="E_COLOR_BASIC.Info">Add</Button>
         </FormFooter>
     </Form>
 </Modal>
 
 @code {
-    // - Loading -
-    [Parameter] public string reportId { get; set; } = default!;
-    int _reportId;
-    bool initialRenderComplete = false;
-    bool resizeInitialized = false;
+    #region Parameters
+    [Parameter] public int ReportId { get; set; }
+    #endregion
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            if (initialRenderComplete == false && draftReport != null)
-            {
-                initialRenderComplete = true;
-                StateHasChanged(); // Trigger re-render to hide the spinner
-            }
-
-        }
-    }
-
-
-    // - Page -
+    #region Page State
     UserDTO? currentUser = null;
+    ReportDTO? draftReport = null;   // null until loaded. The markup waits for it.
+    #endregion
 
-    ReportDTO? draftReport = null;
-
-    protected override async Task OnInitializedAsync()
+    #region Lifecycle
+    protected override async Task OnParametersSetAsync()
     {
-        _reportId = int.Parse(reportId);
         try
         {
             currentUser = await _userService.GetCurrentUser();
-            draftReport = await _reportService.GetByIdWithAll(_reportId);
+            draftReport = await _reportService.GetByIdWithAll(ReportId);
         }
-        catch (HearthRecordNotFoundException ex)
+        catch (HearthRecordNotFoundException)
         {
             // TODO show error toast
         }
     }
+    #endregion
 
-    // - Save -
-    async void HandleSaveReport()
+    #region Save Report
+    async Task HandleSaveReport()
     {
-        try
-        {
-            await _reportService.Update(draftReport);
-        }
-        catch
-        {
-            // TODO
-        }
+        if (draftReport is null) return;
+        await _reportService.Update(draftReport);
     }
+    #endregion
 
-    // -- Modals --
-    // Add Rule Modal
+    #region Add Rule
     bool showAddRuleModal = false;
-    ReportTransactionRuleDTO? draftTransactionRule = null;
-    void OpenAddRuleModal() => showAddRuleModal = true;
+    ReportTransactionRuleDTO draftTransactionRule = new();
+
+    void OpenAddRuleModal()
+    {
+        draftTransactionRule = new() { Active = true };
+        showAddRuleModal = true;
+    }
+
     void CloseAddRuleModal() => showAddRuleModal = false;
-    void HandleAddRule()
-    {
-        OpenAddRuleModal();
-        draftTransactionRule = new();
-    }
-    void HandleCancelAddRule()
-    {
-        CloseAddRuleModal();
-        draftTransactionRule = null;
-    }
+
     async Task HandleCreateRule()
     {
         if (draftReport is null) return;
@@ -183,5 +142,20 @@ else
         draftReport.Rules.Add(created);   // shows up in TransactionRules immediately
         CloseAddRuleModal();
     }
+    #endregion
+
+    #region Remove Rule
+    /// <summary>
+    /// Called by a RuleConditionsTableElement after the user confirms removal.
+    /// Its conditions are deleted along with it by the database cascade.
+    /// </summary>
+    async Task HandleRemoveRule(RuleDTO rule)
+    {
+        if (draftReport is null) return;
+
+        await _reportTranRuleService.Delete(rule.Id);
+        draftReport.Rules.RemoveAll(r => r.Id == rule.Id);
+    }
+    #endregion
 
 }

@@ -5,6 +5,7 @@
 @using Hearth.Foundation.Enums.Finance.ConditionFields
 @using Hearth.UI.Components.Elements.Finance.Categories.Lists
 @using Hearth.Services.Utility
+@using Hearth.UI.Components.Elements.Finance.Rules.RuleConditions
 @inject ITransactionCategoryService _trancatService
 @inject IUserService _userService
 @inject ITransactionCategoryRuleService _trancatRuleService
@@ -129,68 +130,10 @@
                         @foreach (TransactionCategoryRuleDTO rule in selectedTranCat!.Rules!)
                         {
                             <li class="rule-list-item">
-                                <div class="item-title">
-                                    <div class="label-container">
-                                        <div class="text">
-                                            @rule.Name
-                                        </div>
-                                        <div class="add-btn">
-                                            <ButtonIconOnly Disabled="@(rule.RuleConditions?.Count == 0 || rule.RuleConditions == null ? (false) : (true))" Color="E_COLOR_BASIC.Remove" OnClick="@(() => HandleRemoveRule(rule.Id))">
-                                                <TrashIcon Size="20" />
-                                            </ButtonIconOnly>
-                                            <ButtonIconOnly Color="E_COLOR_BASIC.Info" OnClick="@(() => HandleAddCondition(rule.Id))">
-                                                <PlusIcon Size="18" />
-                                            </ButtonIconOnly>
-                                        </div>
-                                    </div>
-                                    <div class="toggle-btn">
-                                        <ButtonIconOnly OnClick="@(() => ToggleRule(rule.Id))">
-                                            <ArrowCarrotIcon DirectionPoint="@(IsRuleHidden(rule.Id) ? E_DIRECTION_EIGHT_POINT.Right : E_DIRECTION_EIGHT_POINT.Down)" Size="22" />
-                                        </ButtonIconOnly>
-                                    </div>
-                                </div>
-                                <TableCompact HasActionColumn="true" IsHidden="@IsRuleHidden(rule.Id)">
-                                    <TableCompactHeader>
-                                        <TableCompactCell Ratio="1/1">Field</TableCompactCell>
-                                        <TableCompactCell Ratio="3/8">Condition</TableCompactCell>
-                                        <TableCompactCell Ratio="2/4">Match</TableCompactCell>
-                                        <TableCompactCell IsActionCell="true" Width="6rem">Actions</TableCompactCell>
-                                    </TableCompactHeader>
-
-                                    @for (int i = 0; i < rule.RuleConditions.Count; i++)
-                                    {
-                                        var condition = rule.RuleConditions[i];
-                                        var isOdd = i % 2 != 0;
-                                        var isLast = i == rule.RuleConditions.Count - 1;
-
-                                        <TableCompactRow IsOdd="isOdd" IsLast="isLast">
-                                            <TableCompactCell Ratio="1/1">
-                                                @condition.Field
-                                            </TableCompactCell>
-                                            <TableCompactCell Ratio="3/8">
-                                                @if (condition.Condition == "exact" || condition.Condition == "starts-with" || condition.Condition == "ends-with" || condition.Condition == "contains" || condition.Condition == "is-not")
-                                                {
-                                                    @(EnumDisplayHelper.ConvertDisplayString<E_STRING_OPERATOR, E_CONDITION>(condition.Condition))
-                                                }
-                                                else
-                                                {
-                                                    @(EnumDisplayHelper.ConvertDisplayString<E_OPERATOR, E_CONDITION>(condition.Condition))
-                                                }
-                                            </TableCompactCell>
-                                            <TableCompactCell Ratio="2/4">
-                                                @condition.Match
-                                            </TableCompactCell>
-                                            <TableCompactCell IsActionCell="true" Width="6rem">
-                                                <ButtonIconOnly Color="E_COLOR_BASIC.Remove" OnClick="@(() => HandleSelectRemoveCondition(condition))">
-                                                    <TrashIcon Size="19" />
-                                                </ButtonIconOnly>
-                                                <ButtonIconOnly Color="E_COLOR_BASIC.Primary" OnClick="@(() => HandleSelectManageCondition(condition))">
-                                                    <EditIcon Size="19" />
-                                                </ButtonIconOnly>
-                                            </TableCompactCell>
-                                        </TableCompactRow>
-                                    }
-                                </TableCompact>
+                                <RuleConditionsTableElement 
+                                    Rule="rule"
+                                    Fields="ConditionFieldHelper.GetFields<E_TRANSACTION_CONDITION_FIELDS>()"
+                                    OnRemoveRule="@(() => HandleRemoveRule(rule.Id))" />
                             </li>
                         }
                     </ul>
@@ -317,32 +260,6 @@
         <FormFooter>
             <Button OnClick="HandleCancelAddRule">Cancel</Button>
             <Button OnClick="HandleCreateRule" Color="E_COLOR_BASIC.Info">Add</Button>
-        </FormFooter>
-    </Form>
-</Modal>
-
-@* Add Condition Modal *@
-<Modal Title="Add Condition to Rule"
-       Open="showAddConditionModal"
-       OnClose="CloseAddConditionModal"
-       Variant="E_MODAL.AddEdit">
-    <Form>
-        <FormContent>
-            <FormRow>
-                <FormCell Ratio="2/7">
-                    <Dropdown Label="Field" @bind-Value="draftCondition.Field" Options="@_fieldOptions" />
-                </FormCell>
-                <FormCell Ratio="2/7">
-                    <Dropdown Label="Condition" @bind-Value="draftCondition.Condition" Options="@_conditionOptions" />
-                </FormCell>
-                <FormCell Ratio="3/7">
-                    <Input Label="Match" @bind-Value="draftCondition.Match" />
-                </FormCell>
-            </FormRow>
-        </FormContent>
-        <FormFooter>
-            <Button OnClick="CloseManageConditionModal">Cancel</Button>
-            <Button OnClick="HandleCreateCondition" Color="E_COLOR_BASIC.Info">Save</Button>
         </FormFooter>
     </Form>
 </Modal>
@@ -575,15 +492,17 @@
     // Add Condition Modal
     bool showAddConditionModal = false;
     RuleConditionDTO? draftCondition = null;
+    TransactionCategoryRuleDTO? selectedRule = null;
     void OpenAddConditionModal() => showAddConditionModal = true;
     void CloseAddConditionModal() => showAddConditionModal = false;
 
-    void HandleAddCondition(int ruleId)
+    async void HandleAddCondition(int ruleId)
     {
+        selectedRule = await _trancatRuleService.GetById(ruleId);
         OpenAddConditionModal();
         draftCondition = new()
         {
-            RuleId = ruleId
+            RuleId = selectedRule.Id
         };
     }
 

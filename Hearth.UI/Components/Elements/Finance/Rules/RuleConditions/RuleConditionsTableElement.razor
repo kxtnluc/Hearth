@@ -5,10 +5,43 @@
 @inject ITransactionCategoryService _tranCatService
 
 @* ============================================================================
+   RULE HEADER
+   ============================================================================ *@
+
+<div class="rule-header">
+    <div class="name-container">
+        <div class="name">
+            @Rule.Name
+        </div>
+        <div class="btn-container">
+            <div class="add-btn">
+                <ButtonIconOnly Color="E_COLOR_BASIC.Info" OnClick="OpenAdd">
+                    <PlusIcon Size="18" />
+                </ButtonIconOnly>
+            </div>
+            @if (OnRemoveRule.HasDelegate)
+            {
+                <div class="remove-btn">
+                    <ButtonIconOnly Color="E_COLOR_BASIC.Remove" OnClick="OpenRemoveRule">
+                        <TrashIcon Size="18" />
+                    </ButtonIconOnly>
+                </div>
+            }
+        </div>
+    </div>
+    <div class="colapse-container">
+        <ButtonIconOnly OnClick="ToggleCollapsed">
+            <ArrowCarrotIcon Size="22"
+                             DirectionPoint="@(_isCollapsed ? E_DIRECTION_EIGHT_POINT.Right : E_DIRECTION_EIGHT_POINT.Down)" />
+        </ButtonIconOnly>
+    </div>
+</div>
+
+@* ============================================================================
    CONDITIONS TABLE
    ============================================================================ *@
 
-<TableCompact HasActionColumn="true" IsHidden="@IsHidden">
+<TableCompact HasActionColumn="true" IsHidden="@_isCollapsed">
     <TableCompactHeader>
         <TableCompactCell Ratio="1/1">Field</TableCompactCell>
         <TableCompactCell Ratio="3/8">Condition</TableCompactCell>
@@ -35,13 +68,6 @@
         </TableCompactRow>
     }
 </TableCompact>
-
-@if (!IsHidden)
-{
-    <Button Variant="E_VARIANT.Outline" Color="E_COLOR_BASIC.Info" Size="E_SIZE.sm" OnClick="OpenAdd">
-        Add Condition
-    </Button>
-}
 
 @* ============================================================================
    ADD / EDIT MODAL
@@ -127,22 +153,43 @@
     </FormFooter>
 </Modal>
 
+@* ============================================================================
+   REMOVE RULE MODAL
+   ============================================================================ *@
+
+<Modal Title="Remove Rule"
+       Size="E_SIZE.sm"
+       Open="showRemoveRuleModal"
+       OnClose="CloseRemoveRule">
+    <div>Remove the rule "@Rule.Name" and all of its conditions?</div>
+    <FormFooter>
+        <Button Variant="E_VARIANT.Secondary" Color="E_COLOR_BASIC.OffWhite" OnClick="CloseRemoveRule">Cancel</Button>
+        <Button Variant="E_VARIANT.Primary" Color="E_COLOR_BASIC.Remove" OnClick="ConfirmRemoveRule">Remove</Button>
+    </FormFooter>
+</Modal>
+
 @code {
-        #region Parameters
-        /// <summary>The rule whose conditions this table shows and edits. Updated in place.</summary>
-        [Parameter, EditorRequired] public RuleDTO Rule { get; set; } = default!;
+    #region Parameters
+    /// <summary>The rule whose conditions this element shows and edits. Updated in place.</summary>
+    [Parameter, EditorRequired] public RuleDTO Rule { get; set; } = default!;
 
-        /// <summary>Fields conditions can target. Differs per rule type (transaction vs account fields).</summary>
-        [Parameter]
-        public List<ConditionFieldInfo> Fields { get; set; } =
-            ConditionFieldHelper.GetFields<E_REPORT_TRANSACTION_CONDITION_FIELDS>();
+    /// <summary>Fields conditions can target. Differs per rule type (transaction vs account fields).</summary>
+    [Parameter]
+    public List<ConditionFieldInfo> Fields { get; set; } =
+        ConditionFieldHelper.GetFields<E_REPORT_TRANSACTION_CONDITION_FIELDS>();
 
-        /// <summary>Hides the table and the Add button.</summary>
-        [Parameter] public bool IsHidden { get; set; } = false;
+    /// <summary>Whether the conditions table starts collapsed.</summary>
+    [Parameter] public bool StartCollapsed { get; set; } = false;
 
-        /// <summary>Fires after any add, edit, or remove, so the parent can react (stats, re-render, etc).</summary>
-        [Parameter] public EventCallback<RuleDTO> OnChanged { get; set; }
-        #endregion
+    /// <summary>Fires after any condition add, edit, or remove, so the parent can react.</summary>
+    [Parameter] public EventCallback<RuleDTO> OnChanged { get; set; }
+
+    /// <summary>
+    /// Fires when the user confirms removing the rule. The parent deletes it with its own
+    /// rule service and removes it from its list. The trash button only shows if this is set.
+    /// </summary>
+    [Parameter] public EventCallback<RuleDTO> OnRemoveRule { get; set; }
+    #endregion
 
         #region Constants
         /// <summary>
@@ -151,7 +198,6 @@
         /// </summary>
         const string CategoryFieldPath = "Category.Name";
 
-        /// <summary>Which input the Match cell shows for the selected field.</summary>
         #endregion
 
         #region State
@@ -346,6 +392,30 @@
         Condition = c.Condition,
         Match = c.Match
     };
+    #endregion
+
+    #region Collapse
+    bool _isCollapsed;
+
+    protected override void OnInitialized()
+    {
+        _isCollapsed = StartCollapsed;
+    }
+
+    void ToggleCollapsed() => _isCollapsed = !_isCollapsed;
+    #endregion
+
+    #region Remove Rule
+    bool showRemoveRuleModal = false;
+
+    void OpenRemoveRule() => showRemoveRuleModal = true;
+    void CloseRemoveRule() => showRemoveRuleModal = false;
+
+    async Task ConfirmRemoveRule()
+    {
+        CloseRemoveRule();
+        await OnRemoveRule.InvokeAsync(Rule);
+    }
     #endregion
 
 }

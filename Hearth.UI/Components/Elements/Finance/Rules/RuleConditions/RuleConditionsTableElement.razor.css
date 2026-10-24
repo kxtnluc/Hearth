@@ -1,0 +1,17 @@
+.rule-header{
+    display: flex;
+    justify-content: space-between;
+    .name-container{
+        display: flex;
+        justify-content: start;
+        align-items: center;
+        gap: 0.75rem;
+        .name{
+            font-weight: 700;
+            font-size: 1rem;
+        }
+        .btn-container{
+            display: flex;
+        }
+    }
+}
