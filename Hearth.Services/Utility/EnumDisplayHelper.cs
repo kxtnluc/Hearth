@@ -68,5 +68,12 @@ namespace Hearth.Services.Utility
 
             return null;
         }
+
+        public static TAttribute? GetAttribute<TAttribute>(this Enum value) where TAttribute : Attribute
+        {
+            return value.GetType()
+                .GetField(value.ToString())?
+                .GetCustomAttribute<TAttribute>();
+        }
     }
 }

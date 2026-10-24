@@ -23,3 +23,9 @@
     margin-left: 3.8rem;
     width: calc(100% - 3.8rem);
 }
+
+
+.layout__main--has-topbar {
+    margin-top: var(--topbar-height);
+    height: calc(100% - var(--topbar-height));
+}

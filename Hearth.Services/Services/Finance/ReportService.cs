@@ -6,6 +6,7 @@ using Hearth.Services.DTOs.Finance.Bank;
 using Hearth.Services.DTOs.Finance.Report;
 using Hearth.Services.Filters;
 using Hearth.Services.Filters.Finance;
+using Hearth.Services.Interfaces;
 using Hearth.Services.Interfaces.Finance;
 using Hearth.Services.Mapping.Finance;
 using Hearth.Services.Utility;
@@ -16,13 +17,19 @@ namespace Hearth.Services.Services.Finance
     public class ReportService : ASqliteTableService<Report, ReportDTO, SqliteTableFilter>, IReportService
     {
         private readonly ITransactionService _transactionService;
+        private readonly IReportTransactionRuleService _reportTranCatRuleService;
+        private readonly IRuleConditionService _ruleConditionService;
         public ReportService(
             HearthDbContext context,
-            ITransactionService transactionService
+            ITransactionService transactionService,
+            IReportTransactionRuleService reportTranCatRuleService,
+            IRuleConditionService ruleConditionService
         )
         : base(context)
         {
             _transactionService = transactionService;
+            _reportTranCatRuleService = reportTranCatRuleService;
+            _ruleConditionService = ruleConditionService;
         }
         #region Abstract Class Setup
         protected override DbSet<Report> DbSet => _context.Reports;
@@ -80,20 +87,47 @@ namespace Hearth.Services.Services.Finance
             return createdDraft.Id;
         }
 
+        public async Task DeleteWithAll(int reportId)
+        {
+            // - Fetching Ids -
+            var allRulesOnReport = await _reportTranCatRuleService.GetAllByReportId(reportId);
+
+            int[] ruleConIds = allRulesOnReport
+                .SelectMany(rule => rule.RuleConditions)
+                .Select(condition => condition.Id)
+                .ToArray();
+
+            int[] ruleIds = allRulesOnReport
+                .Select(r => r.Id)
+                .ToArray();
+
+            // - Deleting Rule Conditions -
+            if(ruleConIds is not null) await _ruleConditionService.DeleteRange(ruleConIds, false);
+            // - Deleting Rules -
+            if(ruleIds is not null) await _reportTranCatRuleService.DeleteRange(ruleIds, false);
+            // - Deleting Report -
+            await this.Delete(reportId, true);
+
+            return;
+
+        }
+
         #endregion
         #region CTO Generation
         public async Task<ReportCTO> GenerateReportCTO(int reportId, ReportCTO_O? options = null)
         {
-            var report = await GetByIdWithAll(reportId)
-                ?? throw new HearthRecordNotFoundException(reportId.ToString());
+            var report = await GetByIdWithAll(reportId);
 
             var rules = report.TransactionRules.Where(r => r.Active).ToList();
             var allTransactions = await _transactionService.GetAllWithCategory();
 
-            // A transaction belongs in the report if it passes every condition of ANY active rule
-            var matched = allTransactions
-                .Where(t => rules.Any(rule => RuleHelper.PassesAll(rule.RuleConditions, t)))
-                .ToList();
+            // No active rules: the report covers everything.
+            // Otherwise a transaction belongs if it passes every condition of ANY active rule.
+            var matched = rules.Count == 0
+                ? allTransactions
+                : allTransactions
+                    .Where(t => rules.Any(rule => RuleHelper.PassesAll(rule.RuleConditions, t)))
+                    .ToList();
 
             return new ReportCTO
             {

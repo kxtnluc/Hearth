@@ -10,6 +10,7 @@ using Hearth.UI.Platform;
 using Hearth.UI.Services.Plaid;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Pyre.Element.Navbar;
 
 namespace Hearth.UI
 {
@@ -59,6 +60,9 @@ namespace Hearth.UI
                     Theme = new Theme { Palette = PaletteType.Palette6 }
                 };
             });
+
+            // Pyre Nav Service
+            builder.Services.AddScoped<NavigationHistoryService>();
 #if DEBUG
             builder.Services.AddBlazorWebViewDeveloperTools();
             builder.Logging.AddDebug();

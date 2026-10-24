@@ -30,14 +30,30 @@
                 {
                     <div class="s01-a01-card-container" @onclick="() => HandleSelectReport(report.Id)">
                         <Card HoverEffects="true">
-                            <CardHeader>
-                                <CardTitle>
-                                    <Text>@report.Name</Text>
-                                </CardTitle>
-                                <CardDescription>
-                                    @report.Description
-                                </CardDescription>
-                            </CardHeader>
+                            <CardContent>
+                                <div class="report-card-content">
+                                    <div class="report-card-header">
+                                        <div class="name">
+                                            @report.Name
+                                        </div>
+                                        <div class="description">
+                                            @report.Description
+                                        </div>
+                                    </div>
+                                    <div class="report-card-body" @onclick:stopPropagation>
+                                        <div class="delete-btn">
+                                            <ButtonIconOnly Color="E_COLOR_BASIC.Secondary" OnClick="@(() => OpenRemoveReportModal(report.Id))">
+                                                <TrashIcon Size="32" />
+                                            </ButtonIconOnly>
+                                        </div>
+                                        <div class="edit-btn">
+                                            <ButtonIconOnly OnClick="@(() => HandleEditReport(report.Id))">
+                                                <EditIcon Size="32" />
+                                            </ButtonIconOnly>
+                                        </div>
+                                    </div>
+                                </div>
+                            </CardContent>
                         </Card>
                     </div>
                 }
@@ -74,14 +90,23 @@
 >
     <div>
         <div>
-            <p>Create a new Report and enter the Report Builder?</p>
+            <p>Create a new <strong>Report</strong> and enter the <strong>Report Builder</strong>?</p>
         </div>
-        <div>
+        <div class="create-report-modal-footer">
             <Button Variant="E_VARIANT.Outline">Cancel</Button>
             <Button Color="E_COLOR_BASIC.Info" OnClick="HandleConfirmAddReport">Create</Button>
         </div>
     </div>
 </Modal>
+
+@* Delete Report Modal *@
+
+<DeleteConfirmationModal Open="showRemoveReportModal"
+                         OnClose="CloseRemoveReportModal"
+                         OnRemove="HandleRemoveReport"
+                         ObjectName="Report"
+                         ItemName="@(selectedReport?.Name)"
+                         FromName="Hearth" />
 
 @code {
     // - Loading -
@@ -147,5 +172,34 @@
     {
         int draftReportId = await _reportService.CreateBuilderDraft();
         _nav.NavigateTo($"/finance/reports/builder/{draftReportId}");
+    }
+
+    // - Edit Report -
+
+    void HandleEditReport(int reportId)
+    {
+        _nav.NavigateTo($"/finance/reports/builder/{reportId}");
+    }
+
+    // - Delete Report -
+    bool showRemoveReportModal = false;
+    async void OpenRemoveReportModal(int reportId)
+    {
+        showRemoveReportModal = true;
+        selectedReport = await _reportService.GetById(reportId);
+    }
+    void CloseRemoveReportModal()
+    {
+        showRemoveReportModal = false;
+    }
+    ReportDTO? selectedReport = null;
+
+    async void HandleRemoveReport()
+    {
+        // Need to do a special delete that also deletes rules and conditions assosiated
+        await _reportService.DeleteWithAll(selectedReport.Id);
+        CloseRemoveReportModal();
+        // TODO in the future, i could probably replace all these re-fetches with just simple Reports.RemoveAt(index). But for now this is fine.
+        Reports = await _reportService.GetAll();
     }
 }

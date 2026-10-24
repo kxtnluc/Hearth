@@ -14,7 +14,8 @@ public static class RuleHelper
 
         var numericOp = EnumDisplayHelper.FromDisplayString<E_OPERATOR>(condition.Condition);
         var stringOp = EnumDisplayHelper.FromDisplayString<E_STRING_OPERATOR>(condition.Condition);
-        if (numericOp is null && stringOp is null) return false;
+        var boolOp = EnumDisplayHelper.FromDisplayString<E_BOOLEAN_OPERATOR>(condition.Condition);
+        if (numericOp is null && stringOp is null && boolOp is null) return false;
 
         // This is here because Enums cannot have a . in them, so when a enum needs to represent a nested field
         // I mark the nest with a __
@@ -22,9 +23,11 @@ public static class RuleHelper
 
         string value = GetValueByPath(item, _field)?.ToString() ?? string.Empty;
 
-        return numericOp is not null
-            ? EvaluateNumeric(numericOp.Value, value, condition.Match)
-            : EvaluateString(stringOp!.Value, value, condition.Match);
+        if (numericOp is not null) return EvaluateNumeric(numericOp.Value, value, condition.Match);
+        else if (stringOp is not null) return EvaluateString(stringOp!.Value, value, condition.Match);
+        else if (boolOp is not null) return EvaluateBool(boolOp!.Value, value, condition.Match);
+
+        return false;
     }
 
     /// <summary>
@@ -75,8 +78,21 @@ public static class RuleHelper
             E_STRING_OPERATOR.StartsWith => value.StartsWith(match, StringComparison.OrdinalIgnoreCase),
             E_STRING_OPERATOR.EndsWith => value.EndsWith(match, StringComparison.OrdinalIgnoreCase),
             E_STRING_OPERATOR.Contains => value.Contains(match, StringComparison.OrdinalIgnoreCase),
-            E_STRING_OPERATOR.IsNot => !string.Equals(value, match, StringComparison.OrdinalIgnoreCase),
+            E_STRING_OPERATOR.IsNotExact => !string.Equals(value, match, StringComparison.OrdinalIgnoreCase),
             _ => false,
+        };
+    }
+
+    private static bool EvaluateBool(E_BOOLEAN_OPERATOR op, string value, string match)
+    {
+        bool _value = bool.Parse(value);
+        bool _match = bool.Parse(match);
+
+        return op switch
+        {
+            E_BOOLEAN_OPERATOR.Is => _value == _match,
+            E_BOOLEAN_OPERATOR.IsNot => _value != _match,
+            _ => false
         };
     }
 

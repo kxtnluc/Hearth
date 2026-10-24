@@ -1,12 +1,63 @@
 .main-reports {
+    height: 100%;
+
     .section-01 {
         margin-top: 1rem;
+
         .s01-article-01 {
             display: flex;
             flex-flow: column nowrap;
             gap: 1rem;
+
             .s01-a01-card-container {
+                .report-card-content {
+                    display: flex;
+                    justify-content: space-between;
+                    padding-top: 0.4rem;
+
+                    .report-card-header {
+                        .name {
+                            font-size: 1.5rem;
+                            font-weight: 700;
+                        }
+
+                        .description {
+                            font-style: italic;
+                            opacity: 0.8;
+                        }
+                    }
+
+                    .report-card-body {
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        gap: 1rem;
+                        flex-flow: row-reverse nowrap;
+
+                        .delete-btn {
+                        }
+                    }
+                }
             }
         }
     }
+
+    .section-no-records {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 95%;
+        /*        background-color: blue;*/
+
+        .title-container {
+            align-self: center;
+        }
+    }
+
 }
+
+    .create-report-modal-footer{
+        display: flex;
+        justify-content: end;
+        gap: 0.5rem;
+    }

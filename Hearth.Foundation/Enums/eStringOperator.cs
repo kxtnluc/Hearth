@@ -19,7 +19,7 @@ namespace Hearth.Foundation.Enums
         [Description("contains")]
         Contains = 3,
 
-        [Description("is-not")]
-        IsNot = 4,
+        [Description("is-not-exact")]
+        IsNotExact = 4,
     }
 }

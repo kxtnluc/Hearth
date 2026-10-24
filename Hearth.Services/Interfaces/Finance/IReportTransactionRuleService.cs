@@ -8,5 +8,6 @@ namespace Hearth.Services.Interfaces.Finance
 {
     public interface IReportTransactionRuleService : ISqliteTableService<ReportTransactionRuleDTO, SqliteTableFilter>
     {
+        Task<List<ReportTransactionRuleDTO>> GetAllByReportId(int reportId);
     }
 }

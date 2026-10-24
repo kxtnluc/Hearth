@@ -9,6 +9,8 @@
 @inject IBankService _bankService
 @inject IUserService _userService
 @inject IPlaidService _plaidService
+@inject NavigationHistoryService _history
+@implements IDisposable
 
 <div class="page">
     <div class="layout @(_collapsed ? "layout--collapsed" : "")">
@@ -16,9 +18,13 @@
         <NavBarSide Label="Hearth"
                     OnToggle="HandleToggle"
                     Sidebar="Sidebar"
-                    Collapsed="_collapsed" />
+                    Collapsed="_collapsed" 
+                    HasTopBar="hasTopBar"
+                    OnBackNav="_history.GoBack"
+                    OnForwardNav="_history.GoForward"
+        />
 
-        <main class="layout__main">
+        <main class="layout__main @(hasTopBar ? "layout__main--has-topbar" : "")">
             @Body
         </main>
 
@@ -67,6 +73,7 @@
 @code {
     private bool _collapsed = false;
     private void HandleToggle() => _collapsed = !_collapsed;
+    private bool hasTopBar = true;
 
     public SidebarPyre Sidebar = new SidebarPyre
         {
@@ -87,6 +94,8 @@
     {
 
         currentUser = await _userService.GetCurrentUser();
+
+        _history.Changed += HandleHistoryChanged;
 
         if(currentUser != null)
         {
@@ -169,4 +178,9 @@
         isSyncComplete = true;
         StateHasChanged();
     }
+
+    // - Pyre TopBar Nav -
+    private void HandleHistoryChanged() => InvokeAsync(StateHasChanged);
+
+    public void Dispose() => _history.Changed -= HandleHistoryChanged;
 }

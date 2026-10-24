@@ -1,0 +1,6 @@
+.rule-title{
+    font-weight: 700;
+    border-radius: var(--radius-md);
+    background-color: var(--color-primary-faded-3);
+    padding: 0.5rem;
+}

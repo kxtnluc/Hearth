@@ -1,6 +1,12 @@
 ﻿@using Hearth.Services.DTOs
 @using Hearth.Services.Utility
+@using Hearth.Foundation.Enums.Finance.ConditionFields
 @inject IRuleConditionService _conditionService
+@inject ITransactionCategoryService _tranCatService
+
+@* ============================================================================
+   CONDITIONS TABLE
+   ============================================================================ *@
 
 <TableCompact HasActionColumn="true" IsHidden="@IsHidden">
     <TableCompactHeader>
@@ -13,11 +19,9 @@
     @for (int i = 0; i < Conditions.Count; i++)
     {
         var condition = Conditions[i];
-        var isOdd = i % 2 != 0;
-        var isLast = i == Conditions.Count - 1;
 
-        <TableCompactRow IsOdd="isOdd" IsLast="isLast">
-            <TableCompactCell Ratio="1/1">@condition.Field</TableCompactCell>
+        <TableCompactRow IsOdd="@(i % 2 != 0)" IsLast="@(i == Conditions.Count - 1)">
+            <TableCompactCell Ratio="1/1">@FieldLabel(condition.Field)</TableCompactCell>
             <TableCompactCell Ratio="3/8">@DisplayCondition(condition.Condition)</TableCompactCell>
             <TableCompactCell Ratio="2/4">@condition.Match</TableCompactCell>
             <TableCompactCell IsActionCell="true" Width="6rem">
@@ -39,7 +43,10 @@
     </Button>
 }
 
-@* Add / Edit Modal *@
+@* ============================================================================
+   ADD / EDIT MODAL
+   ============================================================================ *@
+
 <Modal Title="@(editingCondition is null ? "Add Condition" : "Edit Condition")"
        Size="E_SIZE.md"
        Open="showEditModal"
@@ -48,14 +55,51 @@
     <Form>
         <FormContent>
             <FormRow>
+                @* Field: label shown, property path stored *@
                 <FormCell Ratio="1/3">
-                    <Dropdown TValue="string" Label="Field" Options="FieldOptions" IncludeEmptyOption="true" @bind-Value="draft.Field" />
+                    <DropdownDynamic TValue="string"
+                                     Label="Field"
+                                     Options="_fieldOptions"
+                                     IncludeEmptyOption="true"
+                                     @bind-Value="draft.Field"
+                                     OnChange="HandleFieldChanged" />
                 </FormCell>
+
+                @* Condition: operators valid for the selected field's type *@
                 <FormCell Ratio="1/3">
-                    <Dropdown TValue="string" Label="Condition" Options="ConditionOptions" IncludeEmptyOption="true" @bind-Value="draft.Condition" />
+                    <Dropdown TValue="string"
+                              Label="Condition"
+                              Options="_conditionOptions"
+                              IncludeEmptyOption="true"
+                              @bind-Value="draft.Condition" />
                 </FormCell>
+
+                @* Match: input type depends on the selected field *@
                 <FormCell Ratio="1/3">
-                    <Input InputType="E_INPUT_TYPE.Text" Label="Match" @bind-Value="draft.Match" />
+                    @switch (_matchMode)
+                    {
+                        case E_MATCH_MODE.TransactionCategory:
+                            <DropdownDynamic TValue="string"
+                                             Label="Match"
+                                             Options="_categoryOptions"
+                                             IncludeEmptyOption="false"
+                                             @bind-Value="draft.Match" />
+                            break;
+
+                        case E_MATCH_MODE.Boolean:
+                            <Dropdown TValue="string"
+                                      Label="Match"
+                                      Options="_booleanOptions"
+                                      IncludeEmptyOption="false"
+                                      @bind-Value="draft.Match" />
+                            break;
+
+                        default:
+                            <Input InputType="E_INPUT_TYPE.Text"
+                                   Label="Match"
+                                   @bind-Value="draft.Match" />
+                            break;
+                    }
                 </FormCell>
             </FormRow>
         </FormContent>
@@ -66,12 +110,17 @@
     </Form>
 </Modal>
 
-@* Remove Modal *@
+@* 
+   ============================================================================
+   REMOVE MODAL
+   ============================================================================ 
+*@
+
 <Modal Title="Remove Condition"
        Size="E_SIZE.sm"
        Open="showRemoveModal"
        OnClose="CloseRemove">
-    <div>Remove "@removingCondition?.Field @DisplayCondition(removingCondition?.Condition) @removingCondition?.Match"?</div>
+    <div>Remove "@FieldLabel(removingCondition?.Field) @DisplayCondition(removingCondition?.Condition) @removingCondition?.Match"?</div>
     <FormFooter>
         <Button Variant="E_VARIANT.Secondary" Color="E_COLOR_BASIC.OffWhite" OnClick="CloseRemove">Cancel</Button>
         <Button Variant="E_VARIANT.Primary" Color="E_COLOR_BASIC.Remove" OnClick="RemoveCondition">Remove</Button>
@@ -79,19 +128,71 @@
 </Modal>
 
 @code {
-    // - Parameters -
-    /// <summary>The rule whose conditions this table shows and edits. Updated in place.</summary>
-    [Parameter, EditorRequired] public RuleDTO Rule { get; set; } = default!;
-    /// <summary>Field names conditions can target. Differs per rule type (transaction vs account fields).</summary>
-    [Parameter] public string[] FieldOptions { get; set; } = EnumDisplayHelper.ToDisplayStringArray<E_TRANSACTION_CONDITION_FIELDS>();
-    [Parameter] public string[] ConditionOptions { get; set; } = EnumDisplayHelper.ToDisplayStringArray<E_STRING_OPERATOR>();
-    [Parameter] public bool IsHidden { get; set; } = false;
-    /// <summary>Fires after any add, edit, or remove, so the parent can react (stats, re-render, etc).</summary>
-    [Parameter] public EventCallback<RuleDTO> OnChanged { get; set; }
+        #region Parameters
+        /// <summary>The rule whose conditions this table shows and edits. Updated in place.</summary>
+        [Parameter, EditorRequired] public RuleDTO Rule { get; set; } = default!;
 
-    List<RuleConditionDTO> Conditions => Rule.RuleConditions ??= new();
+        /// <summary>Fields conditions can target. Differs per rule type (transaction vs account fields).</summary>
+        [Parameter]
+        public List<ConditionFieldInfo> Fields { get; set; } =
+            ConditionFieldHelper.GetFields<E_REPORT_TRANSACTION_CONDITION_FIELDS>();
 
-    // - Add / Edit -
+        /// <summary>Hides the table and the Add button.</summary>
+        [Parameter] public bool IsHidden { get; set; } = false;
+
+        /// <summary>Fires after any add, edit, or remove, so the parent can react (stats, re-render, etc).</summary>
+        [Parameter] public EventCallback<RuleDTO> OnChanged { get; set; }
+        #endregion
+
+        #region Constants
+        /// <summary>
+        /// The field path that gets a category dropdown for its Match.
+        /// Must equal the Path in that field's [ConditionField] attribute.
+        /// </summary>
+        const string CategoryFieldPath = "Category.Name";
+
+        /// <summary>Which input the Match cell shows for the selected field.</summary>
+        #endregion
+
+        #region State
+        List<RuleConditionDTO> Conditions => Rule.RuleConditions ??= new();
+
+        // Dropdown options
+        List<DropdownDynamicOption<string>> _fieldOptions = new();      // built from Fields
+        List<DropdownDynamicOption<string>> _categoryOptions = new();   // loaded once from the DB
+        readonly string[] _booleanOptions = ["true", "false"];
+        string[] _conditionOptions = Array.Empty<string>();             // changes with the selected field
+
+        // Current Match input
+        E_MATCH_MODE _matchMode = E_MATCH_MODE.Text;
+    #endregion
+
+    #region Lifecycle
+    protected override async Task OnInitializedAsync()
+    {
+        // Categories only need loading once per component
+        var categories = await _tranCatService.GetAllAsDictionary();
+
+        _categoryOptions = new List<DropdownDynamicOption<string>>
+        {
+            // Matches transactions with no category. The evaluator reads a null category as "".
+            new() { Label = "Uncategorized", Value = string.Empty }
+        };
+
+        _categoryOptions.AddRange(categories
+            .Select(kvp => new DropdownDynamicOption<string> { Label = kvp.Value, Value = kvp.Value }));
+    }
+
+    protected override void OnParametersSet()
+    {
+        // Rebuilt whenever the parent passes a different Fields list
+        _fieldOptions = Fields
+            .Select(f => new DropdownDynamicOption<string> { Label = f.Label, Value = f.Path })
+            .ToList();
+    }
+    #endregion
+
+    #region Add / Edit
     bool showEditModal = false;
     RuleConditionDTO? editingCondition = null;   // the real row being edited, null when adding
     RuleConditionDTO draft = new();               // what the form binds to
@@ -100,6 +201,7 @@
     {
         editingCondition = null;
         draft = new RuleConditionDTO { RuleId = Rule.Id };
+        RefreshForSelectedField();
         showEditModal = true;
     }
 
@@ -107,6 +209,7 @@
     {
         editingCondition = condition;
         draft = Copy(condition);   // edit a copy, so Cancel leaves the table untouched
+        RefreshForSelectedField();
         showEditModal = true;
     }
 
@@ -134,8 +237,9 @@
         CloseEdit();
         await OnChanged.InvokeAsync(Rule);
     }
+    #endregion
 
-    // - Remove -
+    #region Remove
     bool showRemoveModal = false;
     RuleConditionDTO? removingCondition = null;
 
@@ -162,8 +266,78 @@
         CloseRemove();
         await OnChanged.InvokeAsync(Rule);
     }
+    #endregion
 
-    // - Helpers -
+    #region Field-Dependent Options
+    /// <summary>
+    /// Runs when the user picks a different field. Updates the operators and
+    /// match input, then clears any values that no longer apply.
+    /// </summary>
+    void HandleFieldChanged(string? path)
+    {
+        RefreshForSelectedField();
+
+        if (!_conditionOptions.Contains(draft.Condition))
+            draft.Condition = string.Empty;
+
+        if (!IsMatchValid(draft.Match))
+            draft.Match = string.Empty;
+    }
+
+    /// <summary>
+    /// Sets the operator list and match input for whatever draft.Field currently is.
+    /// </summary>
+    void RefreshForSelectedField()
+    {
+        var type = Fields.FirstOrDefault(f => f.Path == draft.Field)?.Type ?? E_FIELD_TYPE.String;
+
+        _conditionOptions = OperatorsFor(type);
+        _matchMode = MatchModeFor(draft.Field, type);
+    }
+
+    static string[] OperatorsFor(E_FIELD_TYPE type) => type switch
+    {
+        E_FIELD_TYPE.Number => EnumDisplayHelper.ToDisplayStringArray<E_OPERATOR>(),
+        E_FIELD_TYPE.Boolean => EnumDisplayHelper.ToDisplayStringArray<E_BOOLEAN_OPERATOR>(),
+        _ => EnumDisplayHelper.ToDisplayStringArray<E_STRING_OPERATOR>(),
+    };
+
+    static E_MATCH_MODE MatchModeFor(string? path, E_FIELD_TYPE type)
+    {
+        if (path == CategoryFieldPath) return E_MATCH_MODE.TransactionCategory;
+        if (type == E_FIELD_TYPE.Boolean) return E_MATCH_MODE.Boolean;
+        return E_MATCH_MODE.Text;
+    }
+
+    /// <summary>
+    /// Whether the current Match value still makes sense for the current match input.
+    /// Free text accepts anything, so it's kept when switching between text fields.
+    /// </summary>
+    bool IsMatchValid(string? match) => _matchMode switch
+    {
+        E_MATCH_MODE.TransactionCategory => _categoryOptions.Any(o => o.Value == match),
+        E_MATCH_MODE.Boolean => _booleanOptions.Contains(match),
+        _ => true,
+    };
+    #endregion
+
+    #region Display Helpers
+    string FieldLabel(string? path) =>
+        Fields.FirstOrDefault(f => f.Path == path)?.Label ?? path ?? string.Empty;
+
+    static string DisplayCondition(string? condition)
+    {
+        if (string.IsNullOrWhiteSpace(condition)) return string.Empty;
+
+        if (EnumDisplayHelper.FromDisplayString<E_STRING_OPERATOR>(condition) is not null)
+            return EnumDisplayHelper.ConvertDisplayString<E_STRING_OPERATOR, E_CONDITION>(condition);
+
+        if (EnumDisplayHelper.FromDisplayString<E_OPERATOR>(condition) is not null)
+            return EnumDisplayHelper.ConvertDisplayString<E_OPERATOR, E_CONDITION>(condition);
+
+        return condition;   // boolean operators and anything unrecognised show as stored
+    }
+
     static RuleConditionDTO Copy(RuleConditionDTO c) => new()
     {
         Id = c.Id,
@@ -172,13 +346,6 @@
         Condition = c.Condition,
         Match = c.Match
     };
+    #endregion
 
-    static string DisplayCondition(string? condition)
-    {
-        if (string.IsNullOrWhiteSpace(condition)) return string.Empty;
-
-        return EnumDisplayHelper.FromDisplayString<E_STRING_OPERATOR>(condition) is not null
-            ? EnumDisplayHelper.ConvertDisplayString<E_STRING_OPERATOR, E_CONDITION>(condition)
-            : EnumDisplayHelper.ConvertDisplayString<E_OPERATOR, E_CONDITION>(condition);
-    }
 }

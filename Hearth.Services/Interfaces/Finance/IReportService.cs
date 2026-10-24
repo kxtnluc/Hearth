@@ -18,5 +18,9 @@ namespace Hearth.Services.Interfaces.Finance
         /// </summary>
         /// <returns></returns>
         Task<int> CreateBuilderDraft();
+        /// <summary>
+        /// This deletes the report itself, along with all the rules and rules conditions assosiated.
+        /// </summary>
+        Task DeleteWithAll(int reportId);
     }
 }

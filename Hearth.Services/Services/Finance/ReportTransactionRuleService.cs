@@ -41,6 +41,14 @@ namespace Hearth.Services.Services.Finance
 
         #region Model Specific Functions
 
+        public async Task<List<ReportTransactionRuleDTO>> GetAllByReportId(int reportId)
+        {
+            var result = _context.ReportTransactionRules
+                .Where(r => r.ReportId == reportId)
+                .ToList();
+
+            return result.ToDtoList();
+        }
 
         #endregion
     }
